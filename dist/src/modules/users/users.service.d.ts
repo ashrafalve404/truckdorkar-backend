@@ -8,6 +8,8 @@ export declare class UsersService {
         message: string;
         data: {
             driver: {
+                licenseNumber: string | null;
+                experience: number | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -15,11 +17,9 @@ export declare class UsersService {
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
-                licenseNumber: string | null;
                 licenseFront: string | null;
                 licenseBack: string | null;
                 licenseExpiry: Date | null;
-                experience: number | null;
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
@@ -31,10 +31,10 @@ export declare class UsersService {
                 userId: string;
             } | null;
             employee: {
+                employeeId: string | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                employeeId: string | null;
                 department: string | null;
                 designation: string | null;
                 userId: string;

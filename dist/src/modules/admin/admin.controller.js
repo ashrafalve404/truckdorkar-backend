@@ -34,6 +34,12 @@ let AdminController = class AdminController {
     toggleUser(id, isActive) {
         return this.adminService.toggleUserStatus(id, isActive);
     }
+    getAllBookings(page, limit) {
+        return this.adminService.getAllBookings(page, limit);
+    }
+    getAllDrivers(page, limit) {
+        return this.adminService.getAllDrivers(page, limit);
+    }
 };
 exports.AdminController = AdminController;
 __decorate([
@@ -61,6 +67,24 @@ __decorate([
     __metadata("design:paramtypes", [String, Boolean]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "toggleUser", null);
+__decorate([
+    (0, common_1.Get)('bookings'),
+    (0, swagger_1.ApiOperation)({ summary: 'List all bookings in the system' }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "getAllBookings", null);
+__decorate([
+    (0, common_1.Get)('drivers'),
+    (0, swagger_1.ApiOperation)({ summary: 'List all drivers in the system' }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "getAllDrivers", null);
 exports.AdminController = AdminController = __decorate([
     (0, swagger_1.ApiTags)('admin'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

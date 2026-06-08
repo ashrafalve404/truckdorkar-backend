@@ -18,7 +18,7 @@ export class AuthService {
     // ─── Register ────────────────────────────────────────────────────────────
 
     async register(dto: RegisterDto) {
-        const { name, email, phone, password, role } = dto;
+        const { name, email, phone, password, role, licenseNumber, experience, companyName, employeeId } = dto;
 
         // Check uniqueness
         if (email) {
@@ -43,11 +43,22 @@ export class AuthService {
                 role: safeRole,
                 // Auto-create driver profile if role is DRIVER
                 ...(safeRole === Role.DRIVER && {
-                    driver: { create: {} },
+                    driver: {
+                        create: {
+                            licenseNumber,
+                            experience: experience ? Number(experience) : undefined,
+                        }
+                    },
                 }),
                 // Auto-create employee profile if role is EMPLOYEE
                 ...(safeRole === Role.EMPLOYEE && {
-                    employee: { create: {} },
+                    employee: {
+                        create: {
+                            employeeId,
+                            designation: 'Staff', // Default designation
+                            department: companyName || 'Operations',
+                        }
+                    },
                 }),
             },
             select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },

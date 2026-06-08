@@ -27,29 +27,29 @@ export declare class AdminService {
                     };
                 } | null;
             } & {
-                type: import("@prisma/client").$Enums.BookingType;
+                status: import("@prisma/client").$Enums.BookingStatus;
+                finalFare: number | null;
+                pickupLat: number | null;
+                pickupLng: number | null;
+                dropLat: number | null;
+                dropLng: number | null;
+                goodsWeight: number | null;
+                estimatedFare: number | null;
                 id: string;
+                bookingNumber: string;
+                userId: string;
+                driverId: string | null;
+                truckId: string | null;
+                type: import("@prisma/client").$Enums.BookingType;
+                pickupAddress: string;
+                dropAddress: string;
+                scheduledAt: Date | null;
+                goodsType: string | null;
+                specialNote: string | null;
+                cancelReason: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                status: import("@prisma/client").$Enums.BookingStatus;
-                userId: string;
-                bookingNumber: string;
-                driverId: string | null;
-                truckId: string | null;
-                pickupAddress: string;
-                pickupLat: number | null;
-                pickupLng: number | null;
-                dropAddress: string;
-                dropLat: number | null;
-                dropLng: number | null;
-                scheduledAt: Date | null;
-                goodsType: string | null;
-                goodsWeight: number | null;
-                specialNote: string | null;
-                estimatedFare: number | null;
-                finalFare: number | null;
-                cancelReason: string | null;
             })[];
         };
     }>;
@@ -57,13 +57,13 @@ export declare class AdminService {
         message: string;
         data: {
             users: {
+                role: import("@prisma/client").$Enums.Role;
+                id: string;
+                createdAt: Date;
                 name: string | null;
                 email: string | null;
                 phone: string | null;
-                role: import("@prisma/client").$Enums.Role;
-                id: string;
                 isActive: boolean;
-                createdAt: Date;
             }[];
             total: number;
             page: number;
@@ -75,6 +75,82 @@ export declare class AdminService {
         data: {
             id: string;
             isActive: boolean;
+        };
+    }>;
+    getAllBookings(page?: number, limit?: number): Promise<{
+        message: string;
+        data: {
+            bookings: ({
+                user: {
+                    name: string | null;
+                    phone: string | null;
+                };
+            } & {
+                status: import("@prisma/client").$Enums.BookingStatus;
+                finalFare: number | null;
+                pickupLat: number | null;
+                pickupLng: number | null;
+                dropLat: number | null;
+                dropLng: number | null;
+                goodsWeight: number | null;
+                estimatedFare: number | null;
+                id: string;
+                bookingNumber: string;
+                userId: string;
+                driverId: string | null;
+                truckId: string | null;
+                type: import("@prisma/client").$Enums.BookingType;
+                pickupAddress: string;
+                dropAddress: string;
+                scheduledAt: Date | null;
+                goodsType: string | null;
+                specialNote: string | null;
+                cancelReason: string | null;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
+            })[];
+            total: number;
+            page: number;
+            limit: number;
+        };
+    }>;
+    getAllDrivers(page?: number, limit?: number): Promise<{
+        message: string;
+        data: {
+            drivers: ({
+                user: {
+                    name: string | null;
+                    email: string | null;
+                    phone: string | null;
+                    isActive: boolean;
+                };
+            } & {
+                status: import("@prisma/client").$Enums.DriverStatus;
+                id: string;
+                userId: string;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
+                nidNumber: string | null;
+                nidFront: string | null;
+                nidBack: string | null;
+                licenseNumber: string | null;
+                licenseFront: string | null;
+                licenseBack: string | null;
+                licenseExpiry: Date | null;
+                experience: number | null;
+                totalTrips: number;
+                rating: number;
+                totalEarnings: number;
+                isAvailable: boolean;
+                currentLat: number | null;
+                currentLng: number | null;
+                verificationNote: string | null;
+            })[];
+            total: number;
+            page: number;
+            limit: number;
         };
     }>;
 }

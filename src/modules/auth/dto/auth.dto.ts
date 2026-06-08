@@ -26,6 +26,26 @@ export class RegisterDto {
     @IsOptional()
     @IsEnum(Role)
     role?: Role;
+
+    // Optional fields for Driver/Employee
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    licenseNumber?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    experience?: number;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    companyName?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    employeeId?: string;
 }
 
 export class LoginDto {

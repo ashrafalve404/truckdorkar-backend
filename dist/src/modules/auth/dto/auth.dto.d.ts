@@ -5,6 +5,10 @@ export declare class RegisterDto {
     phone: string;
     password: string;
     role?: Role;
+    licenseNumber?: string;
+    experience?: number;
+    companyName?: string;
+    employeeId?: string;
 }
 export declare class LoginDto {
     identifier: string;

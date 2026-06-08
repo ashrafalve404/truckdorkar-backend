@@ -72,6 +72,29 @@ let AdminService = class AdminService {
         });
         return { message: `User ${isActive ? 'activated' : 'deactivated'}`, data: { id: user.id, isActive: user.isActive } };
     }
+    async getAllBookings(page = 1, limit = 20) {
+        const [bookings, total] = await Promise.all([
+            this.prisma.booking.findMany({
+                skip: (page - 1) * limit,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: { user: { select: { name: true, phone: true } } },
+            }),
+            this.prisma.booking.count(),
+        ]);
+        return { message: 'Bookings fetched', data: { bookings, total, page, limit } };
+    }
+    async getAllDrivers(page = 1, limit = 20) {
+        const [drivers, total] = await Promise.all([
+            this.prisma.driver.findMany({
+                skip: (page - 1) * limit,
+                take: limit,
+                include: { user: { select: { name: true, phone: true, email: true, isActive: true } } },
+            }),
+            this.prisma.driver.count(),
+        ]);
+        return { message: 'Drivers fetched', data: { drivers, total, page, limit } };
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([

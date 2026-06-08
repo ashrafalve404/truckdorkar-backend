@@ -73,8 +73,8 @@ export declare class AuthController {
                 isAvailable: boolean;
             } | null;
             employee: {
-                id: string;
                 employeeId: string | null;
+                id: string;
                 department: string | null;
                 designation: string | null;
             } | null;

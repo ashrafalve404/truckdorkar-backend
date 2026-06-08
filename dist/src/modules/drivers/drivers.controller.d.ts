@@ -35,6 +35,8 @@ export declare class DriversController {
                 approvalNote: string | null;
             }[];
         } & {
+            licenseNumber: string | null;
+            experience: number | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -42,11 +44,9 @@ export declare class DriversController {
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
-            licenseNumber: string | null;
             licenseFront: string | null;
             licenseBack: string | null;
             licenseExpiry: Date | null;
-            experience: number | null;
             totalTrips: number;
             rating: number;
             totalEarnings: number;
@@ -61,6 +61,8 @@ export declare class DriversController {
     updateProfile(userId: string, dto: UpdateDriverProfileDto): Promise<{
         message: string;
         data: {
+            licenseNumber: string | null;
+            experience: number | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -68,11 +70,9 @@ export declare class DriversController {
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
-            licenseNumber: string | null;
             licenseFront: string | null;
             licenseBack: string | null;
             licenseExpiry: Date | null;
-            experience: number | null;
             totalTrips: number;
             rating: number;
             totalEarnings: number;
@@ -87,6 +87,8 @@ export declare class DriversController {
     uploadDocument(userId: string, file: Express.Multer.File, type: string): Promise<{
         message: string;
         data: {
+            licenseNumber: string | null;
+            experience: number | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -94,11 +96,9 @@ export declare class DriversController {
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
-            licenseNumber: string | null;
             licenseFront: string | null;
             licenseBack: string | null;
             licenseExpiry: Date | null;
-            experience: number | null;
             totalTrips: number;
             rating: number;
             totalEarnings: number;
@@ -185,6 +185,8 @@ export declare class DriversController {
                     status: import("@prisma/client").$Enums.TruckStatus;
                 }[];
             } & {
+                licenseNumber: string | null;
+                experience: number | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -192,11 +194,9 @@ export declare class DriversController {
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
-                licenseNumber: string | null;
                 licenseFront: string | null;
                 licenseBack: string | null;
                 licenseExpiry: Date | null;
-                experience: number | null;
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
@@ -215,6 +215,8 @@ export declare class DriversController {
     verify(id: string, dto: VerifyDriverDto): Promise<{
         message: string;
         data: {
+            licenseNumber: string | null;
+            experience: number | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -222,11 +224,9 @@ export declare class DriversController {
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
-            licenseNumber: string | null;
             licenseFront: string | null;
             licenseBack: string | null;
             licenseExpiry: Date | null;
-            experience: number | null;
             totalTrips: number;
             rating: number;
             totalEarnings: number;

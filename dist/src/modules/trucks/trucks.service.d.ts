@@ -42,6 +42,8 @@ export declare class TrucksService {
                         phone: string | null;
                     };
                 } & {
+                    licenseNumber: string | null;
+                    experience: number | null;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
@@ -49,11 +51,9 @@ export declare class TrucksService {
                     nidNumber: string | null;
                     nidFront: string | null;
                     nidBack: string | null;
-                    licenseNumber: string | null;
                     licenseFront: string | null;
                     licenseBack: string | null;
                     licenseExpiry: Date | null;
-                    experience: number | null;
                     totalTrips: number;
                     rating: number;
                     totalEarnings: number;
@@ -106,6 +106,8 @@ export declare class TrucksService {
                     avatar: string | null;
                 };
             } & {
+                licenseNumber: string | null;
+                experience: number | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -113,11 +115,9 @@ export declare class TrucksService {
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
-                licenseNumber: string | null;
                 licenseFront: string | null;
                 licenseBack: string | null;
                 licenseExpiry: Date | null;
-                experience: number | null;
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;

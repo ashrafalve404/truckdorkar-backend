@@ -20,10 +20,10 @@ export declare class EmployeesService {
                 isActive: boolean;
             };
         } & {
+            employeeId: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            employeeId: string | null;
             department: string | null;
             designation: string | null;
             userId: string;

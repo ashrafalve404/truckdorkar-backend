@@ -31,4 +31,16 @@ export class AdminController {
     toggleUser(@Param('id') id: string, @Body('isActive') isActive: boolean) {
         return this.adminService.toggleUserStatus(id, isActive);
     }
+
+    @Get('bookings')
+    @ApiOperation({ summary: 'List all bookings in the system' })
+    getAllBookings(@Query('page') page?: number, @Query('limit') limit?: number) {
+        return this.adminService.getAllBookings(page, limit);
+    }
+
+    @Get('drivers')
+    @ApiOperation({ summary: 'List all drivers in the system' })
+    getAllDrivers(@Query('page') page?: number, @Query('limit') limit?: number) {
+        return this.adminService.getAllDrivers(page, limit);
+    }
 }

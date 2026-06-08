@@ -27,6 +27,8 @@ export declare class QuotationsService {
                     avatar: string | null;
                 };
             } & {
+                licenseNumber: string | null;
+                experience: number | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -34,11 +36,9 @@ export declare class QuotationsService {
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
-                licenseNumber: string | null;
                 licenseFront: string | null;
                 licenseBack: string | null;
                 licenseExpiry: Date | null;
-                experience: number | null;
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;

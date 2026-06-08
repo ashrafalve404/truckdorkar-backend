@@ -60,7 +60,7 @@ let AuthService = class AuthService {
         this.config = config;
     }
     async register(dto) {
-        const { name, email, phone, password, role } = dto;
+        const { name, email, phone, password, role, licenseNumber, experience, companyName, employeeId } = dto;
         if (email) {
             const emailExists = await this.prisma.user.findUnique({ where: { email } });
             if (emailExists)
@@ -79,10 +79,21 @@ let AuthService = class AuthService {
                 password: hashed,
                 role: safeRole,
                 ...(safeRole === client_1.Role.DRIVER && {
-                    driver: { create: {} },
+                    driver: {
+                        create: {
+                            licenseNumber,
+                            experience: experience ? Number(experience) : undefined,
+                        }
+                    },
                 }),
                 ...(safeRole === client_1.Role.EMPLOYEE && {
-                    employee: { create: {} },
+                    employee: {
+                        create: {
+                            employeeId,
+                            designation: 'Staff',
+                            department: companyName || 'Operations',
+                        }
+                    },
                 }),
             },
             select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
