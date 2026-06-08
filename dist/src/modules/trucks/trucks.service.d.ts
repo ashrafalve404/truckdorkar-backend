@@ -7,14 +7,14 @@ export declare class TrucksService {
     create(userId: string, dto: CreateTruckDto): Promise<{
         message: string;
         data: {
-            description: string | null;
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
+            description: string | null;
             year: number | null;
             driverId: string;
             registrationNo: string;
@@ -38,12 +38,10 @@ export declare class TrucksService {
             trucks: ({
                 driver: {
                     user: {
-                        name: string | null;
                         phone: string | null;
+                        name: string | null;
                     };
                 } & {
-                    licenseNumber: string | null;
-                    experience: number | null;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
@@ -51,9 +49,11 @@ export declare class TrucksService {
                     nidNumber: string | null;
                     nidFront: string | null;
                     nidBack: string | null;
+                    licenseNumber: string | null;
                     licenseFront: string | null;
                     licenseBack: string | null;
                     licenseExpiry: Date | null;
+                    experience: number | null;
                     totalTrips: number;
                     rating: number;
                     totalEarnings: number;
@@ -72,14 +72,14 @@ export declare class TrucksService {
                     isPrimary: boolean;
                 }[];
             } & {
-                description: string | null;
-                name: string;
                 id: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
                 status: import("@prisma/client").$Enums.TruckStatus;
                 isAvailable: boolean;
+                description: string | null;
                 year: number | null;
                 driverId: string;
                 registrationNo: string;
@@ -101,13 +101,11 @@ export declare class TrucksService {
         data: {
             driver: {
                 user: {
-                    name: string | null;
                     phone: string | null;
+                    name: string | null;
                     avatar: string | null;
                 };
             } & {
-                licenseNumber: string | null;
-                experience: number | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -115,9 +113,11 @@ export declare class TrucksService {
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
+                licenseNumber: string | null;
                 licenseFront: string | null;
                 licenseBack: string | null;
                 licenseExpiry: Date | null;
+                experience: number | null;
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
@@ -136,22 +136,22 @@ export declare class TrucksService {
                 isPrimary: boolean;
             }[];
             documents: {
-                type: string;
                 id: string;
                 createdAt: Date;
+                type: string;
                 truckId: string;
                 url: string;
                 expiry: Date | null;
             }[];
         } & {
-            description: string | null;
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
+            description: string | null;
             year: number | null;
             driverId: string;
             registrationNo: string;
@@ -167,14 +167,14 @@ export declare class TrucksService {
     update(id: string, userId: string, role: Role, dto: UpdateTruckDto): Promise<{
         message: string;
         data: {
-            description: string | null;
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
+            description: string | null;
             year: number | null;
             driverId: string;
             registrationNo: string;
@@ -203,14 +203,14 @@ export declare class TrucksService {
     approveTruck(truckId: string, status: string, note?: string): Promise<{
         message: string;
         data: {
-            description: string | null;
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
+            description: string | null;
             year: number | null;
             driverId: string;
             registrationNo: string;

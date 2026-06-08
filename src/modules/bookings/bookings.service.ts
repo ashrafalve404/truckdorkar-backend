@@ -34,7 +34,26 @@ export class BookingsService {
     }
 
     async findAll(userId: string, role: Role) {
-        const where = role === Role.ADMIN || role === Role.EMPLOYEE ? {} : { userId };
+        let where: any = {};
+
+        if (role === Role.USER) {
+            where = { userId };
+        } else if (role === Role.DRIVER) {
+            // Find driver profile first
+            const driver = await this.prisma.driver.findUnique({ where: { userId } });
+            if (driver) {
+                where = {
+                    OR: [
+                        { status: BookingStatus.PENDING },
+                        { driverId: driver.id }
+                    ]
+                };
+            } else {
+                where = { userId }; // Fallback
+            }
+        }
+        // ADMIN and EMPLOYEE see everything (where = {})
+
         const bookings = await this.prisma.booking.findMany({
             where,
             include: {
@@ -84,7 +103,10 @@ export class BookingsService {
         return { message: 'Booking cancelled', data: updated };
     }
 
-    async driverAccept(bookingId: string, driverId: string) {
+    async driverAccept(bookingId: string, userId: string) {
+        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        if (!driver) throw new BadRequestException('Driver profile not found');
+
         const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } });
         if (!booking) throw new NotFoundException('Booking not found');
         if (booking.status !== BookingStatus.PENDING) throw new BadRequestException('Booking is not in pending state');
@@ -92,7 +114,7 @@ export class BookingsService {
         const updated = await this.prisma.booking.update({
             where: { id: bookingId },
             data: {
-                driverId,
+                driverId: driver.id,
                 status: BookingStatus.ACCEPTED,
                 statusLogs: { create: { status: BookingStatus.ACCEPTED, note: 'Driver accepted the booking' } },
             },
@@ -100,10 +122,13 @@ export class BookingsService {
         return { message: 'Booking accepted', data: updated };
     }
 
-    async updateStatus(bookingId: string, driverId: string, status: BookingStatus, note?: string) {
+    async updateStatus(bookingId: string, userId: string, status: BookingStatus, note?: string) {
+        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        if (!driver) throw new BadRequestException('Driver profile not found');
+
         const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } });
         if (!booking) throw new NotFoundException('Booking not found');
-        if (booking.driverId !== driverId) throw new ForbiddenException();
+        if (booking.driverId !== driver.id) throw new ForbiddenException();
 
         const updated = await this.prisma.booking.update({
             where: { id: bookingId },

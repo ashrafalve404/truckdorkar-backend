@@ -18,38 +18,38 @@ export declare class AdminController {
                 };
             })[];
             recentBookings: ({
-                user: {
-                    name: string | null;
-                };
                 driver: {
                     user: {
                         name: string | null;
                     };
                 } | null;
+                user: {
+                    name: string | null;
+                };
             } & {
-                status: import("@prisma/client").$Enums.BookingStatus;
-                finalFare: number | null;
-                pickupLat: number | null;
-                pickupLng: number | null;
-                dropLat: number | null;
-                dropLng: number | null;
-                goodsWeight: number | null;
-                estimatedFare: number | null;
                 id: string;
-                bookingNumber: string;
-                userId: string;
-                driverId: string | null;
-                truckId: string | null;
-                type: import("@prisma/client").$Enums.BookingType;
-                pickupAddress: string;
-                dropAddress: string;
-                scheduledAt: Date | null;
-                goodsType: string | null;
-                specialNote: string | null;
-                cancelReason: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
+                status: import("@prisma/client").$Enums.BookingStatus;
+                type: import("@prisma/client").$Enums.BookingType;
+                userId: string;
+                bookingNumber: string;
+                driverId: string | null;
+                truckId: string | null;
+                pickupAddress: string;
+                pickupLat: number | null;
+                pickupLng: number | null;
+                dropAddress: string;
+                dropLat: number | null;
+                dropLng: number | null;
+                scheduledAt: Date | null;
+                goodsType: string | null;
+                goodsWeight: number | null;
+                specialNote: string | null;
+                estimatedFare: number | null;
+                finalFare: number | null;
+                cancelReason: string | null;
             })[];
         };
     }>;
@@ -57,13 +57,13 @@ export declare class AdminController {
         message: string;
         data: {
             users: {
-                role: import("@prisma/client").$Enums.Role;
                 id: string;
-                createdAt: Date;
-                name: string | null;
                 email: string | null;
                 phone: string | null;
+                name: string | null;
+                role: import("@prisma/client").$Enums.Role;
                 isActive: boolean;
+                createdAt: Date;
             }[];
             total: number;
             page: number;
@@ -82,33 +82,33 @@ export declare class AdminController {
         data: {
             bookings: ({
                 user: {
-                    name: string | null;
                     phone: string | null;
+                    name: string | null;
                 };
             } & {
-                status: import("@prisma/client").$Enums.BookingStatus;
-                finalFare: number | null;
-                pickupLat: number | null;
-                pickupLng: number | null;
-                dropLat: number | null;
-                dropLng: number | null;
-                goodsWeight: number | null;
-                estimatedFare: number | null;
                 id: string;
-                bookingNumber: string;
-                userId: string;
-                driverId: string | null;
-                truckId: string | null;
-                type: import("@prisma/client").$Enums.BookingType;
-                pickupAddress: string;
-                dropAddress: string;
-                scheduledAt: Date | null;
-                goodsType: string | null;
-                specialNote: string | null;
-                cancelReason: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
+                status: import("@prisma/client").$Enums.BookingStatus;
+                type: import("@prisma/client").$Enums.BookingType;
+                userId: string;
+                bookingNumber: string;
+                driverId: string | null;
+                truckId: string | null;
+                pickupAddress: string;
+                pickupLat: number | null;
+                pickupLng: number | null;
+                dropAddress: string;
+                dropLat: number | null;
+                dropLng: number | null;
+                scheduledAt: Date | null;
+                goodsType: string | null;
+                goodsWeight: number | null;
+                specialNote: string | null;
+                estimatedFare: number | null;
+                finalFare: number | null;
+                cancelReason: string | null;
             })[];
             total: number;
             page: number;
@@ -120,15 +120,13 @@ export declare class AdminController {
         data: {
             drivers: ({
                 user: {
-                    name: string | null;
                     email: string | null;
                     phone: string | null;
+                    name: string | null;
                     isActive: boolean;
                 };
             } & {
-                status: import("@prisma/client").$Enums.DriverStatus;
                 id: string;
-                userId: string;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
@@ -143,10 +141,12 @@ export declare class AdminController {
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
+                status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                userId: string;
             })[];
             total: number;
             page: number;

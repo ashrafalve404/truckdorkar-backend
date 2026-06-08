@@ -7,9 +7,16 @@ export declare class UsersService {
     getProfile(userId: string): Promise<{
         message: string;
         data: {
+            id: string;
+            email: string | null;
+            phone: string | null;
+            name: string | null;
+            avatar: string | null;
+            role: import("@prisma/client").$Enums.Role;
+            isEmailVerified: boolean;
+            isPhoneVerified: boolean;
+            createdAt: Date;
             driver: {
-                licenseNumber: string | null;
-                experience: number | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -17,9 +24,11 @@ export declare class UsersService {
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
+                licenseNumber: string | null;
                 licenseFront: string | null;
                 licenseBack: string | null;
                 licenseExpiry: Date | null;
+                experience: number | null;
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
@@ -31,28 +40,19 @@ export declare class UsersService {
                 userId: string;
             } | null;
             employee: {
-                employeeId: string | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                employeeId: string | null;
                 department: string | null;
                 designation: string | null;
                 userId: string;
             } | null;
-            name: string | null;
-            email: string | null;
-            phone: string | null;
-            role: import("@prisma/client").$Enums.Role;
-            id: string;
-            avatar: string | null;
-            isEmailVerified: boolean;
-            isPhoneVerified: boolean;
-            createdAt: Date;
             addresses: {
-                address: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                address: string;
                 userId: string;
                 label: string;
                 city: string;
@@ -66,12 +66,12 @@ export declare class UsersService {
     updateProfile(userId: string, dto: UpdateUserDto): Promise<{
         message: string;
         data: {
-            name: string | null;
+            id: string;
             email: string | null;
             phone: string | null;
-            role: import("@prisma/client").$Enums.Role;
-            id: string;
+            name: string | null;
             avatar: string | null;
+            role: import("@prisma/client").$Enums.Role;
         };
     }>;
     updateAvatar(userId: string, avatarUrl: string): Promise<{
@@ -84,10 +84,10 @@ export declare class UsersService {
     getAddresses(userId: string): Promise<{
         message: string;
         data: {
-            address: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            address: string;
             userId: string;
             label: string;
             city: string;
@@ -100,10 +100,10 @@ export declare class UsersService {
     createAddress(userId: string, dto: CreateAddressDto): Promise<{
         message: string;
         data: {
-            address: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            address: string;
             userId: string;
             label: string;
             city: string;
@@ -116,10 +116,10 @@ export declare class UsersService {
     updateAddress(userId: string, addressId: string, dto: Partial<CreateAddressDto>): Promise<{
         message: string;
         data: {
-            address: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            address: string;
             userId: string;
             label: string;
             city: string;

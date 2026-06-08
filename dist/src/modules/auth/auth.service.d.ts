@@ -13,11 +13,11 @@ export declare class AuthService {
             accessToken: string;
             refreshToken: string;
             user: {
-                name: string | null;
+                id: string;
                 email: string | null;
                 phone: string | null;
+                name: string | null;
                 role: import("@prisma/client").$Enums.Role;
-                id: string;
                 createdAt: Date;
             };
         };
@@ -28,12 +28,12 @@ export declare class AuthService {
             accessToken: string;
             refreshToken: string;
             user: {
-                name: string | null;
+                id: string;
                 email: string | null;
                 phone: string | null;
-                role: import("@prisma/client").$Enums.Role;
-                id: string;
+                name: string | null;
                 avatar: string | null;
+                role: import("@prisma/client").$Enums.Role;
                 isEmailVerified: boolean;
                 isPhoneVerified: boolean;
                 isActive: boolean;
@@ -69,6 +69,15 @@ export declare class AuthService {
     getMe(userId: string): Promise<{
         message: string;
         data: {
+            id: string;
+            email: string | null;
+            phone: string | null;
+            name: string | null;
+            avatar: string | null;
+            role: import("@prisma/client").$Enums.Role;
+            isEmailVerified: boolean;
+            isPhoneVerified: boolean;
+            createdAt: Date;
             driver: {
                 id: string;
                 totalTrips: number;
@@ -77,20 +86,11 @@ export declare class AuthService {
                 isAvailable: boolean;
             } | null;
             employee: {
-                employeeId: string | null;
                 id: string;
+                employeeId: string | null;
                 department: string | null;
                 designation: string | null;
             } | null;
-            name: string | null;
-            email: string | null;
-            phone: string | null;
-            role: import("@prisma/client").$Enums.Role;
-            id: string;
-            avatar: string | null;
-            isEmailVerified: boolean;
-            isPhoneVerified: boolean;
-            createdAt: Date;
         };
     }>;
     private generateTokens;

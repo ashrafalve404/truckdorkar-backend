@@ -6,10 +6,10 @@ export declare class ContactController {
     submit(dto: CreateContactDto): Promise<{
         message: string;
         data: {
-            name: string;
+            id: string;
             email: string | null;
             phone: string;
-            id: string;
+            name: string;
             createdAt: Date;
             isRead: boolean;
             message: string;
@@ -19,10 +19,10 @@ export declare class ContactController {
         message: string;
         data: {
             messages: {
-                name: string;
+                id: string;
                 email: string | null;
                 phone: string;
-                id: string;
+                name: string;
                 createdAt: Date;
                 isRead: boolean;
                 message: string;
@@ -35,10 +35,10 @@ export declare class ContactController {
     markAsRead(id: string): Promise<{
         message: string;
         data: {
-            name: string;
+            id: string;
             email: string | null;
             phone: string;
-            id: string;
+            name: string;
             createdAt: Date;
             isRead: boolean;
             message: string;

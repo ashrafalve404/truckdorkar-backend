@@ -22,13 +22,11 @@ export declare class QuotationsController {
         data: ({
             driver: {
                 user: {
-                    name: string | null;
                     phone: string | null;
+                    name: string | null;
                     avatar: string | null;
                 };
             } & {
-                licenseNumber: string | null;
-                experience: number | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -36,9 +34,11 @@ export declare class QuotationsController {
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
+                licenseNumber: string | null;
                 licenseFront: string | null;
                 licenseBack: string | null;
                 licenseExpiry: Date | null;
+                experience: number | null;
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;

@@ -7,11 +7,11 @@ export declare class SupportController {
     create(userId: string, dto: CreateTicketDto): Promise<{
         message: string;
         data: {
-            description: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.TicketStatus;
+            description: string;
             userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;
@@ -24,15 +24,15 @@ export declare class SupportController {
         message: string;
         data: ({
             user: {
-                name: string | null;
                 phone: string | null;
+                name: string | null;
             };
         } & {
-            description: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.TicketStatus;
+            description: string;
             userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;
@@ -45,14 +45,14 @@ export declare class SupportController {
         message: string;
         data: {
             user: {
-                name: string | null;
                 phone: string | null;
+                name: string | null;
             };
             replies: ({
                 user: {
                     name: string | null;
-                    role: import("@prisma/client").$Enums.Role;
                     avatar: string | null;
+                    role: import("@prisma/client").$Enums.Role;
                 };
             } & {
                 id: string;
@@ -62,11 +62,11 @@ export declare class SupportController {
                 ticketId: string;
             })[];
         } & {
-            description: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.TicketStatus;
+            description: string;
             userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;
@@ -85,11 +85,11 @@ export declare class SupportController {
     updateStatus(id: string, status: TicketStatus): Promise<{
         message: string;
         data: {
-            description: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.TicketStatus;
+            description: string;
             userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;

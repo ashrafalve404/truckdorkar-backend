@@ -9,20 +9,20 @@ export declare class DriversController {
         message: string;
         data: {
             user: {
-                name: string | null;
                 email: string | null;
                 phone: string | null;
+                name: string | null;
                 avatar: string | null;
             };
             trucks: {
-                description: string | null;
-                name: string;
                 id: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
                 status: import("@prisma/client").$Enums.TruckStatus;
                 isAvailable: boolean;
+                description: string | null;
                 year: number | null;
                 driverId: string;
                 registrationNo: string;
@@ -35,8 +35,6 @@ export declare class DriversController {
                 approvalNote: string | null;
             }[];
         } & {
-            licenseNumber: string | null;
-            experience: number | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -44,9 +42,11 @@ export declare class DriversController {
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
+            licenseNumber: string | null;
             licenseFront: string | null;
             licenseBack: string | null;
             licenseExpiry: Date | null;
+            experience: number | null;
             totalTrips: number;
             rating: number;
             totalEarnings: number;
@@ -61,8 +61,6 @@ export declare class DriversController {
     updateProfile(userId: string, dto: UpdateDriverProfileDto): Promise<{
         message: string;
         data: {
-            licenseNumber: string | null;
-            experience: number | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -70,9 +68,11 @@ export declare class DriversController {
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
+            licenseNumber: string | null;
             licenseFront: string | null;
             licenseBack: string | null;
             licenseExpiry: Date | null;
+            experience: number | null;
             totalTrips: number;
             rating: number;
             totalEarnings: number;
@@ -87,8 +87,6 @@ export declare class DriversController {
     uploadDocument(userId: string, file: Express.Multer.File, type: string): Promise<{
         message: string;
         data: {
-            licenseNumber: string | null;
-            experience: number | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -96,9 +94,11 @@ export declare class DriversController {
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
+            licenseNumber: string | null;
             licenseFront: string | null;
             licenseBack: string | null;
             licenseExpiry: Date | null;
+            experience: number | null;
             totalTrips: number;
             rating: number;
             totalEarnings: number;
@@ -134,19 +134,19 @@ export declare class DriversController {
         message: string;
         data: ({
             user: {
-                name: string | null;
                 phone: string | null;
+                name: string | null;
             };
             truck: {
                 name: string;
             } | null;
         } & {
-            type: import("@prisma/client").$Enums.BookingType;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
+            type: import("@prisma/client").$Enums.BookingType;
             userId: string;
             bookingNumber: string;
             driverId: string | null;
@@ -175,18 +175,16 @@ export declare class DriversController {
         data: {
             drivers: ({
                 user: {
-                    name: string | null;
                     email: string | null;
                     phone: string | null;
+                    name: string | null;
                 };
                 trucks: {
-                    name: string;
                     id: string;
+                    name: string;
                     status: import("@prisma/client").$Enums.TruckStatus;
                 }[];
             } & {
-                licenseNumber: string | null;
-                experience: number | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -194,9 +192,11 @@ export declare class DriversController {
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
+                licenseNumber: string | null;
                 licenseFront: string | null;
                 licenseBack: string | null;
                 licenseExpiry: Date | null;
+                experience: number | null;
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
@@ -215,8 +215,6 @@ export declare class DriversController {
     verify(id: string, dto: VerifyDriverDto): Promise<{
         message: string;
         data: {
-            licenseNumber: string | null;
-            experience: number | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -224,9 +222,11 @@ export declare class DriversController {
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
+            licenseNumber: string | null;
             licenseFront: string | null;
             licenseBack: string | null;
             licenseExpiry: Date | null;
+            experience: number | null;
             totalTrips: number;
             rating: number;
             totalEarnings: number;
