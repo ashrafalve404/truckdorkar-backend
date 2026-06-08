@@ -1,0 +1,472 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ─────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  DRIVER
+  EMPLOYEE
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  ASSIGNED
+  PICKUP_STARTED
+  IN_TRANSIT
+  DELIVERED
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingType {
+  INTER_CITY
+  INTRA_CITY
+  SPECIALIZED
+}
+
+enum TruckCategory {
+  PICKUP
+  MINI_TRUCK
+  COVERED_VAN
+  OPEN_TRUCK
+  CONTAINER_TRUCK
+  HEAVY_TRUCK
+}
+
+enum DriverStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum TruckStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  INACTIVE
+}
+
+enum QuotationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  BOOKING
+  QUOTATION
+  PAYMENT
+  SYSTEM
+  SUPPORT
+}
+
+// ─── User ──────────────────────────────────────────────────────────────────
+
+model User {
+  id                String    @id @default(cuid())
+  name              String?
+  email             String?   @unique
+  phone             String?   @unique
+  password          String?
+  avatar            String?
+  role              Role      @default(USER)
+  isEmailVerified   Boolean   @default(false)
+  isPhoneVerified   Boolean   @default(false)
+  isActive          Boolean   @default(true)
+  refreshToken      String?
+  emailVerifyToken  String?
+  phoneOtp          String?
+  phoneOtpExpiry    DateTime?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  driver       Driver?
+  employee     Employee?
+  addresses    Address[]
+  bookings     Booking[]
+  reviews      Review[]      @relation("UserReviews")
+  receivedReviews Review[]   @relation("DriverUserReviews")
+  notifications Notification[]
+  tickets      SupportTicket[]
+  ticketReplies TicketReply[]
+  activityLogs ActivityLog[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+  @@map("users")
+}
+
+// ─── Address ───────────────────────────────────────────────────────────────
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  label     String
+  address   String
+  city      String
+  district  String?
+  latitude  Float?
+  longitude Float?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
+}
+
+// ─── Driver ────────────────────────────────────────────────────────────────
+
+model Driver {
+  id                 String       @id @default(cuid())
+  userId             String       @unique
+  nidNumber          String?
+  nidFront           String?
+  nidBack            String?
+  licenseNumber      String?
+  licenseFront       String?
+  licenseBack        String?
+  licenseExpiry      DateTime?
+  experience         Int?
+  totalTrips         Int          @default(0)
+  rating             Float        @default(0)
+  totalEarnings      Float        @default(0)
+  status             DriverStatus @default(PENDING)
+  isAvailable        Boolean      @default(false)
+  currentLat         Float?
+  currentLng         Float?
+  verificationNote   String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  deletedAt          DateTime?
+
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trucks  Truck[]
+  bookings Booking[]
+  quotations Quotation[]
+  reviews  Review[]  @relation("DriverReviews")
+
+  @@index([status])
+  @@map("drivers")
+}
+
+// ─── Employee ──────────────────────────────────────────────────────────────
+
+model Employee {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  employeeId  String?  @unique
+  department  String?
+  designation String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("employees")
+}
+
+// ─── Truck ─────────────────────────────────────────────────────────────────
+
+model Truck {
+  id               String        @id @default(cuid())
+  driverId         String
+  name             String
+  registrationNo   String        @unique
+  category         TruckCategory
+  capacityTon      Float
+  lengthFt         Float
+  make             String?
+  model            String?
+  year             Int?
+  color            String?
+  description      String?
+  status           TruckStatus   @default(PENDING)
+  images           TruckImage[]
+  documents        TruckDocument[]
+  isAvailable      Boolean       @default(false)
+  approvalNote     String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime?
+
+  driver   Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@index([driverId])
+  @@index([status])
+  @@map("trucks")
+}
+
+model TruckImage {
+  id        String   @id @default(cuid())
+  truckId   String
+  url       String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  truck Truck @relation(fields: [truckId], references: [id], onDelete: Cascade)
+
+  @@map("truck_images")
+}
+
+model TruckDocument {
+  id        String   @id @default(cuid())
+  truckId   String
+  type      String
+  url       String
+  expiry    DateTime?
+  createdAt DateTime  @default(now())
+
+  truck Truck @relation(fields: [truckId], references: [id], onDelete: Cascade)
+
+  @@map("truck_documents")
+}
+
+// ─── Booking ───────────────────────────────────────────────────────────────
+
+model Booking {
+  id              String        @id @default(cuid())
+  bookingNumber   String        @unique @default(cuid())
+  userId          String
+  driverId        String?
+  truckId         String?
+  type            BookingType   @default(INTER_CITY)
+  pickupAddress   String
+  pickupLat       Float?
+  pickupLng       Float?
+  dropAddress     String
+  dropLat         Float?
+  dropLng         Float?
+  scheduledAt     DateTime?
+  goodsType       String?
+  goodsWeight     Float?
+  specialNote     String?
+  estimatedFare   Float?
+  finalFare       Float?
+  status          BookingStatus @default(PENDING)
+  cancelReason    String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+
+  user        User          @relation(fields: [userId], references: [id])
+  driver      Driver?       @relation(fields: [driverId], references: [id])
+  truck       Truck?        @relation(fields: [truckId], references: [id])
+  statusLogs  BookingStatusLog[]
+  quotations  Quotation[]
+  review      Review?
+
+  @@index([userId])
+  @@index([driverId])
+  @@index([status])
+  @@map("bookings")
+}
+
+model BookingStatusLog {
+  id        String        @id @default(cuid())
+  bookingId String
+  status    BookingStatus
+  note      String?
+  createdAt DateTime      @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@map("booking_status_logs")
+}
+
+// ─── Quotation ─────────────────────────────────────────────────────────────
+
+model Quotation {
+  id          String          @id @default(cuid())
+  bookingId   String
+  driverId    String
+  amount      Float
+  note        String?
+  status      QuotationStatus @default(PENDING)
+  expiresAt   DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  driver  Driver  @relation(fields: [driverId], references: [id])
+
+  @@index([bookingId])
+  @@index([driverId])
+  @@map("quotations")
+}
+
+// ─── Review ────────────────────────────────────────────────────────────────
+
+model Review {
+  id          String   @id @default(cuid())
+  bookingId   String   @unique
+  reviewerId  String
+  driverUserId String
+  rating      Int
+  comment     String?
+  isVisible   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  booking  Booking @relation(fields: [bookingId], references: [id])
+  reviewer User    @relation("UserReviews", fields: [reviewerId], references: [id])
+  driver   User    @relation("DriverUserReviews", fields: [driverUserId], references: [id], map: "Review_driverUser_fkey")
+  driverProfile Driver? @relation("DriverReviews", fields: [driverUserId], references: [userId], map: "Review_driverProfile_fkey")
+
+  @@index([driverUserId])
+  @@map("reviews")
+}
+
+// ─── Notification ──────────────────────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+// ─── Support ───────────────────────────────────────────────────────────────
+
+model SupportTicket {
+  id          String         @id @default(cuid())
+  userId      String
+  subject     String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id])
+  replies TicketReply[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model TicketReply {
+  id        String   @id @default(cuid())
+  ticketId  String
+  userId    String
+  message   String
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id])
+
+  @@index([ticketId])
+  @@map("ticket_replies")
+}
+
+// ─── CMS ───────────────────────────────────────────────────────────────────
+
+model CmsContent {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  titleEn   String?
+  titleBn   String?
+  bodyEn    String?
+  bodyBn    String?
+  metaJson  Json?
+  updatedAt DateTime @updatedAt
+
+  @@map("cms_contents")
+}
+
+model Banner {
+  id        String   @id @default(cuid())
+  titleEn   String
+  titleBn   String?
+  imageUrl  String
+  linkUrl   String?
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("banners")
+}
+
+// ─── Contact ───────────────────────────────────────────────────────────────
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  email     String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+// ─── Activity Log ──────────────────────────────────────────────────────────
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@map("activity_logs")
+}

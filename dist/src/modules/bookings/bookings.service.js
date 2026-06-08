@@ -1,0 +1,146 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BookingsService = void 0;
+const common_1 = require("@nestjs/common");
+const prisma_service_1 = require("../../prisma/prisma.service");
+const client_1 = require("@prisma/client");
+const uuid_1 = require("uuid");
+let BookingsService = class BookingsService {
+    prisma;
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(userId, dto) {
+        const booking = await this.prisma.booking.create({
+            data: {
+                bookingNumber: `TD-${(0, uuid_1.v4)().slice(0, 8).toUpperCase()}`,
+                userId,
+                type: dto.type,
+                pickupAddress: dto.pickupAddress,
+                pickupLat: dto.pickupLat,
+                pickupLng: dto.pickupLng,
+                dropAddress: dto.dropAddress,
+                dropLat: dto.dropLat,
+                dropLng: dto.dropLng,
+                scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined,
+                goodsType: dto.goodsType,
+                goodsWeight: dto.goodsWeight,
+                specialNote: dto.specialNote,
+                statusLogs: {
+                    create: { status: client_1.BookingStatus.PENDING, note: 'Booking created' },
+                },
+            },
+            include: { statusLogs: true },
+        });
+        return { message: 'Booking created successfully', data: booking };
+    }
+    async findAll(userId, role) {
+        const where = role === client_1.Role.ADMIN || role === client_1.Role.EMPLOYEE ? {} : { userId };
+        const bookings = await this.prisma.booking.findMany({
+            where,
+            include: {
+                user: { select: { id: true, name: true, phone: true } },
+                driver: { select: { id: true, user: { select: { name: true, phone: true } } } },
+                truck: { select: { id: true, name: true, category: true } },
+                statusLogs: { orderBy: { createdAt: 'desc' }, take: 1 },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        return { message: 'Bookings fetched', data: bookings };
+    }
+    async findOne(id, userId, role) {
+        const booking = await this.prisma.booking.findUnique({
+            where: { id },
+            include: {
+                user: { select: { id: true, name: true, phone: true, email: true } },
+                driver: { include: { user: { select: { name: true, phone: true } } } },
+                truck: { include: { images: true } },
+                statusLogs: { orderBy: { createdAt: 'asc' } },
+                quotations: { include: { driver: { include: { user: { select: { name: true, phone: true } } } } } },
+                review: true,
+            },
+        });
+        if (!booking)
+            throw new common_1.NotFoundException('Booking not found');
+        if (role === client_1.Role.USER && booking.userId !== userId)
+            throw new common_1.ForbiddenException();
+        return { message: 'Booking fetched', data: booking };
+    }
+    async cancel(id, userId, dto) {
+        const booking = await this.prisma.booking.findUnique({ where: { id } });
+        if (!booking)
+            throw new common_1.NotFoundException('Booking not found');
+        if (booking.userId !== userId)
+            throw new common_1.ForbiddenException();
+        if ([client_1.BookingStatus.DELIVERED, client_1.BookingStatus.COMPLETED, client_1.BookingStatus.CANCELLED].includes(booking.status)) {
+            throw new common_1.BadRequestException('This booking cannot be cancelled');
+        }
+        const updated = await this.prisma.booking.update({
+            where: { id },
+            data: {
+                status: client_1.BookingStatus.CANCELLED,
+                cancelReason: dto.reason,
+                statusLogs: { create: { status: client_1.BookingStatus.CANCELLED, note: dto.reason || 'Cancelled by user' } },
+            },
+        });
+        return { message: 'Booking cancelled', data: updated };
+    }
+    async driverAccept(bookingId, driverId) {
+        const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } });
+        if (!booking)
+            throw new common_1.NotFoundException('Booking not found');
+        if (booking.status !== client_1.BookingStatus.PENDING)
+            throw new common_1.BadRequestException('Booking is not in pending state');
+        const updated = await this.prisma.booking.update({
+            where: { id: bookingId },
+            data: {
+                driverId,
+                status: client_1.BookingStatus.ACCEPTED,
+                statusLogs: { create: { status: client_1.BookingStatus.ACCEPTED, note: 'Driver accepted the booking' } },
+            },
+        });
+        return { message: 'Booking accepted', data: updated };
+    }
+    async updateStatus(bookingId, driverId, status, note) {
+        const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } });
+        if (!booking)
+            throw new common_1.NotFoundException('Booking not found');
+        if (booking.driverId !== driverId)
+            throw new common_1.ForbiddenException();
+        const updated = await this.prisma.booking.update({
+            where: { id: bookingId },
+            data: {
+                status,
+                statusLogs: { create: { status, note } },
+            },
+        });
+        return { message: 'Status updated', data: updated };
+    }
+    async getTracking(bookingId) {
+        const booking = await this.prisma.booking.findUnique({
+            where: { id: bookingId },
+            include: {
+                statusLogs: { orderBy: { createdAt: 'asc' } },
+                driver: { select: { currentLat: true, currentLng: true, isAvailable: true } },
+            },
+        });
+        if (!booking)
+            throw new common_1.NotFoundException('Booking not found');
+        return { message: 'Tracking info fetched', data: booking };
+    }
+};
+exports.BookingsService = BookingsService;
+exports.BookingsService = BookingsService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+], BookingsService);
+//# sourceMappingURL=bookings.service.js.map

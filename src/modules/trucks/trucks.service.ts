@@ -1,0 +1,80 @@
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { CreateTruckDto, UpdateTruckDto } from './dto/truck.dto';
+import { Role } from '@prisma/client';
+
+@Injectable()
+export class TrucksService {
+    constructor(private prisma: PrismaService) { }
+
+    async create(userId: string, dto: CreateTruckDto) {
+        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        if (!driver) throw new NotFoundException('Driver profile not found');
+        const truck = await this.prisma.truck.create({
+            data: { ...dto, driverId: driver.id },
+        });
+        return { message: 'Truck added', data: truck };
+    }
+
+    async findAll(query: { category?: string; isAvailable?: boolean; page?: number; limit?: number }) {
+        const { category, isAvailable, page = 1, limit = 20 } = query;
+        const where: any = { status: 'APPROVED', deletedAt: null };
+        if (category) where.category = category;
+        if (isAvailable !== undefined) where.isAvailable = isAvailable;
+        const [trucks, total] = await Promise.all([
+            this.prisma.truck.findMany({
+                where,
+                include: {
+                    images: true,
+                    driver: { include: { user: { select: { name: true, phone: true } } } },
+                },
+                skip: (page - 1) * limit,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.truck.count({ where }),
+        ]);
+        return { message: 'Trucks fetched', data: { trucks, total, page, limit } };
+    }
+
+    async findOne(id: string) {
+        const truck = await this.prisma.truck.findUnique({
+            where: { id },
+            include: { images: true, documents: true, driver: { include: { user: { select: { name: true, phone: true, avatar: true } } } } },
+        });
+        if (!truck) throw new NotFoundException('Truck not found');
+        return { message: 'Truck fetched', data: truck };
+    }
+
+    async update(id: string, userId: string, role: Role, dto: UpdateTruckDto) {
+        const truck = await this.prisma.truck.findUnique({ where: { id }, include: { driver: true } });
+        if (!truck) throw new NotFoundException('Truck not found');
+        if (role === Role.DRIVER && truck.driver.userId !== userId) throw new ForbiddenException();
+        const updated = await this.prisma.truck.update({ where: { id }, data: dto });
+        return { message: 'Truck updated', data: updated };
+    }
+
+    async remove(id: string, userId: string, role: Role) {
+        const truck = await this.prisma.truck.findUnique({ where: { id }, include: { driver: true } });
+        if (!truck) throw new NotFoundException('Truck not found');
+        if (role === Role.DRIVER && truck.driver.userId !== userId) throw new ForbiddenException();
+        await this.prisma.truck.update({ where: { id }, data: { deletedAt: new Date() } });
+        return { message: 'Truck removed' };
+    }
+
+    async addImage(truckId: string, userId: string, imageUrl: string, isPrimary = false) {
+        const truck = await this.prisma.truck.findUnique({ where: { id: truckId }, include: { driver: true } });
+        if (!truck || truck.driver.userId !== userId) throw new ForbiddenException();
+        if (isPrimary) await this.prisma.truckImage.updateMany({ where: { truckId }, data: { isPrimary: false } });
+        const image = await this.prisma.truckImage.create({ data: { truckId, url: imageUrl, isPrimary } });
+        return { message: 'Image added', data: image };
+    }
+
+    async approveTruck(truckId: string, status: string, note?: string) {
+        const truck = await this.prisma.truck.update({
+            where: { id: truckId },
+            data: { status: status as any, approvalNote: note },
+        });
+        return { message: 'Truck status updated', data: truck };
+    }
+}
