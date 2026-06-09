@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BookingStatus } from '@prisma/client';
+import { BookingStatus, DriverStatus, TicketStatus } from '@prisma/client';
 
 @Injectable()
 export class AdminService {
     constructor(private prisma: PrismaService) { }
 
     async getDashboardStats() {
-        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue] = await Promise.all([
+        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, pendingDrivers, openTickets] = await Promise.all([
             this.prisma.user.count({ where: { role: 'USER' } }),
             this.prisma.driver.count(),
             this.prisma.truck.count(),
@@ -16,6 +16,8 @@ export class AdminService {
                 where: { status: BookingStatus.COMPLETED },
                 _sum: { finalFare: true },
             }),
+            this.prisma.driver.count({ where: { status: DriverStatus.PENDING } }),
+            this.prisma.supportTicket.count({ where: { status: TicketStatus.OPEN } }),
         ]);
 
         const bookingStats = await this.prisma.booking.groupBy({
@@ -38,6 +40,8 @@ export class AdminService {
                     totalTrucks,
                     totalBookings,
                     totalRevenue: revenue._sum.finalFare || 0,
+                    pendingDrivers,
+                    openTickets
                 },
                 bookingStats,
                 recentBookings,
@@ -84,10 +88,68 @@ export class AdminService {
             this.prisma.driver.findMany({
                 skip: (page - 1) * limit,
                 take: limit,
-                include: { user: { select: { name: true, phone: true, email: true, isActive: true } } },
+                include: { user: { select: { id: true, name: true, phone: true, email: true, isActive: true } } },
             }),
             this.prisma.driver.count(),
         ]);
         return { message: 'Drivers fetched', data: { drivers, total, page, limit } };
+    }
+
+    async verifyDriver(id: string, status: string, note?: string) {
+        const driver = await this.prisma.driver.update({
+            where: { id },
+            data: { status: status as DriverStatus, verificationNote: note },
+        });
+        return { message: 'Driver status updated', data: driver };
+    }
+
+    async getSettings() {
+        const settings = await this.prisma.cmsContent.findUnique({
+            where: { key: 'SYSTEM_SETTINGS' }
+        });
+
+        // Default settings if not found
+        const defaultSettings = {
+            platformName: 'TruckDorkar',
+            adminEmail: 'admin@truckdorkar.com',
+            baseFarePerKm: 500
+        };
+
+        // Merge stored settings over defaults so new fields always have a value
+        const stored = settings?.metaJson && typeof settings.metaJson === 'object'
+            ? settings.metaJson as Record<string, any>
+            : {};
+
+        return {
+            message: 'Settings fetched',
+            data: { ...defaultSettings, ...stored }
+        };
+    }
+
+    async updateSettings(settingsData: any) {
+        // Spread into a plain object so Prisma's Json field serialises correctly
+        // (passing a class-validator DTO instance directly can cause issues)
+        const plainData = { ...settingsData };
+
+        // Fetch existing settings to merge (preserve keys not in this update)
+        const existing = await this.prisma.cmsContent.findUnique({
+            where: { key: 'SYSTEM_SETTINGS' }
+        });
+        const existingData = existing?.metaJson && typeof existing.metaJson === 'object'
+            ? existing.metaJson as Record<string, any>
+            : {};
+
+        const merged = { ...existingData, ...plainData };
+
+        const settings = await this.prisma.cmsContent.upsert({
+            where: { key: 'SYSTEM_SETTINGS' },
+            update: { metaJson: merged },
+            create: {
+                key: 'SYSTEM_SETTINGS',
+                metaJson: merged,
+                titleEn: 'System Settings'
+            }
+        });
+        return { message: 'Settings updated', data: settings.metaJson };
     }
 }

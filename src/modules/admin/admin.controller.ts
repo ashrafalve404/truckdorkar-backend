@@ -6,6 +6,8 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { AdminService } from './admin.service';
 import { Role } from '@prisma/client';
 
+import { UpdateSettingsDto } from './dto/admin.dto';
+
 @ApiTags('admin')
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -42,5 +44,23 @@ export class AdminController {
     @ApiOperation({ summary: 'List all drivers in the system' })
     getAllDrivers(@Query('page') page?: number, @Query('limit') limit?: number) {
         return this.adminService.getAllDrivers(page, limit);
+    }
+
+    @Patch('drivers/:id/verify')
+    @ApiOperation({ summary: 'Verify or reject a driver' })
+    verifyDriver(@Param('id') id: string, @Body('status') status: string, @Body('note') note?: string) {
+        return this.adminService.verifyDriver(id, status, note);
+    }
+
+    @Get('settings')
+    @ApiOperation({ summary: 'Get system settings' })
+    getSettings() {
+        return this.adminService.getSettings();
+    }
+
+    @Patch('settings')
+    @ApiOperation({ summary: 'Update system settings' })
+    updateSettings(@Body() dto: UpdateSettingsDto) {
+        return this.adminService.updateSettings(dto);
     }
 }

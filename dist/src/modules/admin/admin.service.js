@@ -19,7 +19,7 @@ let AdminService = class AdminService {
         this.prisma = prisma;
     }
     async getDashboardStats() {
-        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue] = await Promise.all([
+        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, pendingDrivers, openTickets] = await Promise.all([
             this.prisma.user.count({ where: { role: 'USER' } }),
             this.prisma.driver.count(),
             this.prisma.truck.count(),
@@ -28,6 +28,8 @@ let AdminService = class AdminService {
                 where: { status: client_1.BookingStatus.COMPLETED },
                 _sum: { finalFare: true },
             }),
+            this.prisma.driver.count({ where: { status: client_1.DriverStatus.PENDING } }),
+            this.prisma.supportTicket.count({ where: { status: client_1.TicketStatus.OPEN } }),
         ]);
         const bookingStats = await this.prisma.booking.groupBy({
             by: ['status'],
@@ -47,6 +49,8 @@ let AdminService = class AdminService {
                     totalTrucks,
                     totalBookings,
                     totalRevenue: revenue._sum.finalFare || 0,
+                    pendingDrivers,
+                    openTickets
                 },
                 bookingStats,
                 recentBookings,
@@ -89,11 +93,55 @@ let AdminService = class AdminService {
             this.prisma.driver.findMany({
                 skip: (page - 1) * limit,
                 take: limit,
-                include: { user: { select: { name: true, phone: true, email: true, isActive: true } } },
+                include: { user: { select: { id: true, name: true, phone: true, email: true, isActive: true } } },
             }),
             this.prisma.driver.count(),
         ]);
         return { message: 'Drivers fetched', data: { drivers, total, page, limit } };
+    }
+    async verifyDriver(id, status, note) {
+        const driver = await this.prisma.driver.update({
+            where: { id },
+            data: { status: status, verificationNote: note },
+        });
+        return { message: 'Driver status updated', data: driver };
+    }
+    async getSettings() {
+        const settings = await this.prisma.cmsContent.findUnique({
+            where: { key: 'SYSTEM_SETTINGS' }
+        });
+        const defaultSettings = {
+            platformName: 'TruckDorkar',
+            adminEmail: 'admin@truckdorkar.com',
+            baseFarePerKm: 500
+        };
+        const stored = settings?.metaJson && typeof settings.metaJson === 'object'
+            ? settings.metaJson
+            : {};
+        return {
+            message: 'Settings fetched',
+            data: { ...defaultSettings, ...stored }
+        };
+    }
+    async updateSettings(settingsData) {
+        const plainData = { ...settingsData };
+        const existing = await this.prisma.cmsContent.findUnique({
+            where: { key: 'SYSTEM_SETTINGS' }
+        });
+        const existingData = existing?.metaJson && typeof existing.metaJson === 'object'
+            ? existing.metaJson
+            : {};
+        const merged = { ...existingData, ...plainData };
+        const settings = await this.prisma.cmsContent.upsert({
+            where: { key: 'SYSTEM_SETTINGS' },
+            update: { metaJson: merged },
+            create: {
+                key: 'SYSTEM_SETTINGS',
+                metaJson: merged,
+                titleEn: 'System Settings'
+            }
+        });
+        return { message: 'Settings updated', data: settings.metaJson };
     }
 };
 exports.AdminService = AdminService;

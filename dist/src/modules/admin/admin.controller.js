@@ -20,6 +20,7 @@ const roles_guard_1 = require("../../common/guards/roles.guard");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const admin_service_1 = require("./admin.service");
 const client_1 = require("@prisma/client");
+const admin_dto_1 = require("./dto/admin.dto");
 let AdminController = class AdminController {
     adminService;
     constructor(adminService) {
@@ -39,6 +40,15 @@ let AdminController = class AdminController {
     }
     getAllDrivers(page, limit) {
         return this.adminService.getAllDrivers(page, limit);
+    }
+    verifyDriver(id, status, note) {
+        return this.adminService.verifyDriver(id, status, note);
+    }
+    getSettings() {
+        return this.adminService.getSettings();
+    }
+    updateSettings(dto) {
+        return this.adminService.updateSettings(dto);
     }
 };
 exports.AdminController = AdminController;
@@ -85,6 +95,31 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "getAllDrivers", null);
+__decorate([
+    (0, common_1.Patch)('drivers/:id/verify'),
+    (0, swagger_1.ApiOperation)({ summary: 'Verify or reject a driver' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('status')),
+    __param(2, (0, common_1.Body)('note')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "verifyDriver", null);
+__decorate([
+    (0, common_1.Get)('settings'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get system settings' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "getSettings", null);
+__decorate([
+    (0, common_1.Patch)('settings'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update system settings' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [admin_dto_1.UpdateSettingsDto]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "updateSettings", null);
 exports.AdminController = AdminController = __decorate([
     (0, swagger_1.ApiTags)('admin'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

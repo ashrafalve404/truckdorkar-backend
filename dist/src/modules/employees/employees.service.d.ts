@@ -5,9 +5,27 @@ export declare class EmployeesService {
     getDashboard(): Promise<{
         message: string;
         data: {
-            pendingDrivers: number;
-            pendingTrucks: number;
-            openTickets: number;
+            counts: {
+                pendingDrivers: number;
+                pendingTrucks: number;
+                openTickets: number;
+                todayBookings: number;
+            };
+            recentTickets: ({
+                user: {
+                    phone: string | null;
+                    name: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                status: import("@prisma/client").$Enums.TicketStatus;
+                description: string;
+                userId: string;
+                subject: string;
+                priority: import("@prisma/client").$Enums.TicketPriority;
+            })[];
         };
     }>;
     findAll(): Promise<{

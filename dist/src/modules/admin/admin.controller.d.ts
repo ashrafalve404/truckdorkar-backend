@@ -1,4 +1,5 @@
 import { AdminService } from './admin.service';
+import { UpdateSettingsDto } from './dto/admin.dto';
 export declare class AdminController {
     private readonly adminService;
     constructor(adminService: AdminService);
@@ -11,6 +12,8 @@ export declare class AdminController {
                 totalTrucks: number;
                 totalBookings: number;
                 totalRevenue: number;
+                pendingDrivers: number;
+                openTickets: number;
             };
             bookingStats: (import("@prisma/client").Prisma.PickEnumerable<import("@prisma/client").Prisma.BookingGroupByOutputType, "status"[]> & {
                 _count: {
@@ -120,6 +123,7 @@ export declare class AdminController {
         data: {
             drivers: ({
                 user: {
+                    id: string;
                     email: string | null;
                     phone: string | null;
                     name: string | null;
@@ -152,5 +156,43 @@ export declare class AdminController {
             page: number;
             limit: number;
         };
+    }>;
+    verifyDriver(id: string, status: string, note?: string): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            nidNumber: string | null;
+            nidFront: string | null;
+            nidBack: string | null;
+            licenseNumber: string | null;
+            licenseFront: string | null;
+            licenseBack: string | null;
+            licenseExpiry: Date | null;
+            experience: number | null;
+            totalTrips: number;
+            rating: number;
+            totalEarnings: number;
+            status: import("@prisma/client").$Enums.DriverStatus;
+            isAvailable: boolean;
+            currentLat: number | null;
+            currentLng: number | null;
+            verificationNote: string | null;
+            userId: string;
+        };
+    }>;
+    getSettings(): Promise<{
+        message: string;
+        data: {
+            platformName: string;
+            adminEmail: string;
+            baseFarePerKm: number;
+        };
+    }>;
+    updateSettings(dto: UpdateSettingsDto): Promise<{
+        message: string;
+        data: import("@prisma/client/runtime/library").JsonValue;
     }>;
 }

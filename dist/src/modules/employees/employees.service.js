@@ -12,20 +12,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmployeesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const client_1 = require("@prisma/client");
 let EmployeesService = class EmployeesService {
     prisma;
     constructor(prisma) {
         this.prisma = prisma;
     }
     async getDashboard() {
-        const [pendingDrivers, pendingTrucks, openTickets] = await Promise.all([
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const [pendingDrivers, pendingTrucks, openTickets, todayBookings, recentTickets] = await Promise.all([
             this.prisma.driver.count({ where: { status: 'PENDING' } }),
             this.prisma.truck.count({ where: { status: 'PENDING' } }),
-            this.prisma.supportTicket.count({ where: { status: 'OPEN' } }),
+            this.prisma.supportTicket.count({ where: { status: client_1.TicketStatus.OPEN } }),
+            this.prisma.booking.count({ where: { createdAt: { gte: today } } }),
+            this.prisma.supportTicket.findMany({
+                where: { status: { in: [client_1.TicketStatus.OPEN, client_1.TicketStatus.IN_PROGRESS] } },
+                include: { user: { select: { name: true, phone: true } } },
+                orderBy: { createdAt: 'desc' },
+                take: 5,
+            }),
         ]);
         return {
             message: 'Employee dashboard summary',
-            data: { pendingDrivers, pendingTrucks, openTickets },
+            data: {
+                counts: {
+                    pendingDrivers,
+                    pendingTrucks,
+                    openTickets,
+                    todayBookings,
+                },
+                recentTickets,
+            },
         };
     }
     async findAll() {
