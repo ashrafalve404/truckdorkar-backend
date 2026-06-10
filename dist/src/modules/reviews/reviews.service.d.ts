@@ -11,9 +11,9 @@ export declare class ReviewsService {
             updatedAt: Date;
             rating: number;
             bookingId: string;
+            comment: string | null;
             reviewerId: string;
             driverUserId: string;
-            comment: string | null;
             isVisible: boolean;
         };
     }>;
@@ -30,9 +30,9 @@ export declare class ReviewsService {
             updatedAt: Date;
             rating: number;
             bookingId: string;
+            comment: string | null;
             reviewerId: string;
             driverUserId: string;
-            comment: string | null;
             isVisible: boolean;
         })[];
     }>;
@@ -44,9 +44,9 @@ export declare class ReviewsService {
             updatedAt: Date;
             rating: number;
             bookingId: string;
+            comment: string | null;
             reviewerId: string;
             driverUserId: string;
-            comment: string | null;
             isVisible: boolean;
         };
     }>;

@@ -210,9 +210,9 @@ export declare class BookingsController {
                 updatedAt: Date;
                 rating: number;
                 bookingId: string;
+                comment: string | null;
                 reviewerId: string;
                 driverUserId: string;
-                comment: string | null;
                 isVisible: boolean;
             } | null;
             statusLogs: {
