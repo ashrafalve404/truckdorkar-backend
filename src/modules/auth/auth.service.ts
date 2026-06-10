@@ -18,7 +18,7 @@ export class AuthService {
     // ─── Register ────────────────────────────────────────────────────────────
 
     async register(dto: RegisterDto) {
-        const { name, email, phone, password, role, licenseNumber, experience, companyName, employeeId } = dto;
+        const { name, email, phone, password, role, licenseNumber, experience, companyName, employeeId, nidNumber, dateOfBirth } = dto;
 
         // Check uniqueness
         if (email) {
@@ -55,6 +55,8 @@ export class AuthService {
                     employee: {
                         create: {
                             employeeId,
+                            nidNumber,
+                            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
                             designation: 'Staff', // Default designation
                             department: companyName || 'Operations',
                         }

@@ -60,7 +60,7 @@ let AuthService = class AuthService {
         this.config = config;
     }
     async register(dto) {
-        const { name, email, phone, password, role, licenseNumber, experience, companyName, employeeId } = dto;
+        const { name, email, phone, password, role, licenseNumber, experience, companyName, employeeId, nidNumber, dateOfBirth } = dto;
         if (email) {
             const emailExists = await this.prisma.user.findUnique({ where: { email } });
             if (emailExists)
@@ -90,6 +90,8 @@ let AuthService = class AuthService {
                     employee: {
                         create: {
                             employeeId,
+                            nidNumber,
+                            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
                             designation: 'Staff',
                             department: companyName || 'Operations',
                         }

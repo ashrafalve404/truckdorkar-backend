@@ -9,6 +9,8 @@ export declare class RegisterDto {
     experience?: number;
     companyName?: string;
     employeeId?: string;
+    nidNumber?: string;
+    dateOfBirth?: string;
 }
 export declare class LoginDto {
     identifier: string;

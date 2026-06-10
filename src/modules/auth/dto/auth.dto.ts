@@ -46,6 +46,16 @@ export class RegisterDto {
     @IsOptional()
     @IsString()
     employeeId?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    nidNumber?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    dateOfBirth?: string;
 }
 
 export class LoginDto {

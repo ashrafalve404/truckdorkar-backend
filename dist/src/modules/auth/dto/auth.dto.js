@@ -23,6 +23,8 @@ class RegisterDto {
     experience;
     companyName;
     employeeId;
+    nidNumber;
+    dateOfBirth;
 }
 exports.RegisterDto = RegisterDto;
 __decorate([
@@ -77,6 +79,18 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "employeeId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "nidNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "dateOfBirth", void 0);
 class LoginDto {
     identifier;
     password;

@@ -193,6 +193,8 @@ model Employee {
   id          String   @id @default(cuid())
   userId      String   @unique
   employeeId  String?  @unique
+  nidNumber   String?
+  dateOfBirth DateTime?
   department  String?
   designation String?
   createdAt   DateTime @default(now())
