@@ -367,4 +367,7 @@ export declare class BookingsService {
             cancelReason: string | null;
         };
     }>;
+    remove(id: string): Promise<{
+        message: string;
+    }>;
 }

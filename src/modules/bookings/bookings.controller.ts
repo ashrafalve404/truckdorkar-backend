@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, UseGuards, Delete } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -61,5 +61,12 @@ export class BookingsController {
     @ApiOperation({ summary: 'Get booking tracking info' })
     getTracking(@Param('id') bookingId: string) {
         return this.bookingsService.getTracking(bookingId);
+    }
+
+    @Delete(':id')
+    @Roles(Role.ADMIN)
+    @ApiOperation({ summary: 'Admin deletes a booking' })
+    remove(@Param('id') id: string) {
+        return this.bookingsService.remove(id);
     }
 }

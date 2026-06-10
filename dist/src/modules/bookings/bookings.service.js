@@ -160,6 +160,13 @@ let BookingsService = class BookingsService {
             throw new common_1.NotFoundException('Booking not found');
         return { message: 'Tracking info fetched', data: booking };
     }
+    async remove(id) {
+        const booking = await this.prisma.booking.findUnique({ where: { id } });
+        if (!booking)
+            throw new common_1.NotFoundException('Booking not found');
+        await this.prisma.booking.delete({ where: { id } });
+        return { message: 'Booking deleted successfully' };
+    }
 };
 exports.BookingsService = BookingsService;
 exports.BookingsService = BookingsService = __decorate([

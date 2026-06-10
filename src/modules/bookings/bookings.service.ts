@@ -151,4 +151,11 @@ export class BookingsService {
         if (!booking) throw new NotFoundException('Booking not found');
         return { message: 'Tracking info fetched', data: booking };
     }
+
+    async remove(id: string) {
+        const booking = await this.prisma.booking.findUnique({ where: { id } });
+        if (!booking) throw new NotFoundException('Booking not found');
+        await this.prisma.booking.delete({ where: { id } });
+        return { message: 'Booking deleted successfully' };
+    }
 }

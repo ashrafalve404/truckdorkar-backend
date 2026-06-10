@@ -48,6 +48,9 @@ let BookingsController = class BookingsController {
     getTracking(bookingId) {
         return this.bookingsService.getTracking(bookingId);
     }
+    remove(id) {
+        return this.bookingsService.remove(id);
+    }
 };
 exports.BookingsController = BookingsController;
 __decorate([
@@ -115,6 +118,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], BookingsController.prototype, "getTracking", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Admin deletes a booking' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], BookingsController.prototype, "remove", null);
 exports.BookingsController = BookingsController = __decorate([
     (0, swagger_1.ApiTags)('bookings'),
     (0, swagger_1.ApiBearerAuth)('access-token'),
