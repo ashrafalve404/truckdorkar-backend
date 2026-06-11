@@ -18,14 +18,44 @@ let TrucksService = class TrucksService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(userId, dto) {
+    async create(userId, data) {
         const driver = await this.prisma.driver.findUnique({ where: { userId } });
         if (!driver)
             throw new common_1.NotFoundException('Driver profile not found');
         const truck = await this.prisma.truck.create({
-            data: { ...dto, driverId: driver.id },
+            data: {
+                driverId: driver.id,
+                name: data.name,
+                registrationNo: data.registrationNo,
+                category: data.category,
+                capacityTon: Number(data.capacityTon),
+                lengthFt: Number(data.lengthFt),
+                make: data.make,
+                model: data.model,
+                year: data.year ? Number(data.year) : undefined,
+                color: data.color,
+                description: data.description,
+                numberPlateText: data.numberPlateText,
+                roadPermitUrl: data.roadPermitUrl,
+                taxTokenUrl: data.taxTokenUrl,
+                blueBookUrl: data.blueBookUrl,
+                numberPlateImageUrl: data.numberPlateImageUrl,
+                drivingLicenseUrl: data.drivingLicenseUrl,
+                status: 'PENDING',
+            },
         });
-        return { message: 'Truck added', data: truck };
+        return { message: 'Truck added successfully for review', data: truck };
+    }
+    async findMyTrucks(userId) {
+        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        if (!driver)
+            throw new common_1.NotFoundException('Driver profile not found');
+        const trucks = await this.prisma.truck.findMany({
+            where: { driverId: driver.id, deletedAt: null },
+            include: { images: true, documents: true },
+            orderBy: { createdAt: 'desc' },
+        });
+        return { message: 'Your trucks fetched', data: trucks };
     }
     async findAll(query) {
         const { category, isAvailable, page = 1, limit = 20 } = query;

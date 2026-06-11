@@ -1,5 +1,5 @@
 import { TrucksService } from './trucks.service';
-import { CreateTruckDto, UpdateTruckDto, ApproveTruckDto } from './dto/truck.dto';
+import { UpdateTruckDto, ApproveTruckDto } from './dto/truck.dto';
 import { StorageService } from '../storage/storage.service';
 export declare class TrucksController {
     private readonly trucksService;
@@ -61,6 +61,7 @@ export declare class TrucksController {
                 taxTokenUrl: string | null;
                 blueBookUrl: string | null;
                 numberPlateImageUrl: string | null;
+                drivingLicenseUrl: string | null;
                 category: import("@prisma/client").$Enums.TruckCategory;
                 capacityTon: number;
                 lengthFt: number;
@@ -74,6 +75,52 @@ export declare class TrucksController {
             page: number;
             limit: number;
         };
+    }>;
+    getMyTrucks(userId: string): Promise<{
+        message: string;
+        data: ({
+            images: {
+                id: string;
+                createdAt: Date;
+                truckId: string;
+                url: string;
+                isPrimary: boolean;
+            }[];
+            documents: {
+                id: string;
+                createdAt: Date;
+                type: string;
+                truckId: string;
+                url: string;
+                expiry: Date | null;
+            }[];
+        } & {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
+            driverId: string;
+            registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
+            category: import("@prisma/client").$Enums.TruckCategory;
+            capacityTon: number;
+            lengthFt: number;
+            make: string | null;
+            model: string | null;
+            color: string | null;
+            approvalNote: string | null;
+            registeredByEmployeeId: string | null;
+        })[];
     }>;
     findOne(id: string): Promise<{
         message: string;
@@ -139,6 +186,7 @@ export declare class TrucksController {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -149,7 +197,13 @@ export declare class TrucksController {
             registeredByEmployeeId: string | null;
         };
     }>;
-    create(userId: string, dto: CreateTruckDto): Promise<{
+    create(userId: string, body: any, files: {
+        taxTokenFile?: Express.Multer.File[];
+        blueBookFile?: Express.Multer.File[];
+        numberPlateFile?: Express.Multer.File[];
+        roadPermitFile?: Express.Multer.File[];
+        drivingLicenseFile?: Express.Multer.File[];
+    }): Promise<{
         message: string;
         data: {
             id: string;
@@ -168,6 +222,7 @@ export declare class TrucksController {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -197,6 +252,7 @@ export declare class TrucksController {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -239,6 +295,7 @@ export declare class TrucksController {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;

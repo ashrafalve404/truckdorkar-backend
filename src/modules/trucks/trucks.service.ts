@@ -7,13 +7,45 @@ import { Role } from '@prisma/client';
 export class TrucksService {
     constructor(private prisma: PrismaService) { }
 
-    async create(userId: string, dto: CreateTruckDto) {
+    async create(userId: string, data: any) {
         const driver = await this.prisma.driver.findUnique({ where: { userId } });
         if (!driver) throw new NotFoundException('Driver profile not found');
+
         const truck = await this.prisma.truck.create({
-            data: { ...dto, driverId: driver.id },
+            data: {
+                driverId: driver.id,
+                name: data.name,
+                registrationNo: data.registrationNo,
+                category: data.category,
+                capacityTon: Number(data.capacityTon),
+                lengthFt: Number(data.lengthFt),
+                make: data.make,
+                model: data.model,
+                year: data.year ? Number(data.year) : undefined,
+                color: data.color,
+                description: data.description,
+                numberPlateText: data.numberPlateText,
+                roadPermitUrl: data.roadPermitUrl,
+                taxTokenUrl: data.taxTokenUrl,
+                blueBookUrl: data.blueBookUrl,
+                numberPlateImageUrl: data.numberPlateImageUrl,
+                drivingLicenseUrl: data.drivingLicenseUrl,
+                status: 'PENDING',
+            } as any,
         });
-        return { message: 'Truck added', data: truck };
+        return { message: 'Truck added successfully for review', data: truck };
+    }
+
+    async findMyTrucks(userId: string) {
+        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        if (!driver) throw new NotFoundException('Driver profile not found');
+
+        const trucks = await this.prisma.truck.findMany({
+            where: { driverId: driver.id, deletedAt: null },
+            include: { images: true, documents: true },
+            orderBy: { createdAt: 'desc' },
+        });
+        return { message: 'Your trucks fetched', data: trucks };
     }
 
     async findAll(query: { category?: string; isAvailable?: boolean; page?: number; limit?: number }) {

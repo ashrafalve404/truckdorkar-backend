@@ -88,6 +88,7 @@ let EmployeesService = class EmployeesService {
                 taxTokenUrl: data.taxTokenUrl,
                 blueBookUrl: data.blueBookUrl,
                 numberPlateImageUrl: data.numberPlateImageUrl,
+                drivingLicenseUrl: data.drivingLicenseUrl,
                 status: client_1.TruckStatus.PENDING,
             },
         });

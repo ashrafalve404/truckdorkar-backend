@@ -56,6 +56,7 @@ export declare class EmployeesController {
         blueBookFile?: Express.Multer.File[];
         numberPlateFile?: Express.Multer.File[];
         roadPermitFile?: Express.Multer.File[];
+        drivingLicenseFile?: Express.Multer.File[];
     }): Promise<{
         message: string;
         data: {
@@ -75,6 +76,7 @@ export declare class EmployeesController {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -140,6 +142,7 @@ export declare class EmployeesController {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -220,6 +223,7 @@ export declare class EmployeesController {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -249,6 +253,7 @@ export declare class EmployeesController {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;

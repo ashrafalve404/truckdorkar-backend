@@ -47,6 +47,7 @@ export class EmployeesController {
         { name: 'blueBookFile', maxCount: 1 },
         { name: 'numberPlateFile', maxCount: 1 },
         { name: 'roadPermitFile', maxCount: 1 },
+        { name: 'drivingLicenseFile', maxCount: 1 },
     ]))
     async registerTruck(
         @CurrentUser('id') userId: string,
@@ -56,14 +57,16 @@ export class EmployeesController {
             blueBookFile?: Express.Multer.File[];
             numberPlateFile?: Express.Multer.File[];
             roadPermitFile?: Express.Multer.File[];
+            drivingLicenseFile?: Express.Multer.File[];
         },
     ) {
         // Upload docs to storage
-        const [taxTokenUrl, blueBookUrl, numberPlateImageUrl, roadPermitUrl] = await Promise.all([
+        const [taxTokenUrl, blueBookUrl, numberPlateImageUrl, roadPermitUrl, drivingLicenseUrl] = await Promise.all([
             files.taxTokenFile?.[0] ? this.storageService.save(files.taxTokenFile[0], 'truck-docs') : Promise.resolve(undefined),
             files.blueBookFile?.[0] ? this.storageService.save(files.blueBookFile[0], 'truck-docs') : Promise.resolve(undefined),
             files.numberPlateFile?.[0] ? this.storageService.save(files.numberPlateFile[0], 'truck-docs') : Promise.resolve(undefined),
             files.roadPermitFile?.[0] ? this.storageService.save(files.roadPermitFile[0], 'truck-docs') : Promise.resolve(undefined),
+            files.drivingLicenseFile?.[0] ? this.storageService.save(files.drivingLicenseFile[0], 'truck-docs') : Promise.resolve(undefined),
         ]);
 
         return this.employeesService.registerTruck(userId, {
@@ -75,6 +78,7 @@ export class EmployeesController {
             blueBookUrl,
             numberPlateImageUrl,
             roadPermitUrl,
+            drivingLicenseUrl,
         });
     }
 

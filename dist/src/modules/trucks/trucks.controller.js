@@ -35,11 +35,31 @@ let TrucksController = class TrucksController {
     findAll(query) {
         return this.trucksService.findAll(query);
     }
+    getMyTrucks(userId) {
+        return this.trucksService.findMyTrucks(userId);
+    }
     findOne(id) {
         return this.trucksService.findOne(id);
     }
-    create(userId, dto) {
-        return this.trucksService.create(userId, dto);
+    async create(userId, body, files) {
+        const [taxTokenUrl, blueBookUrl, numberPlateImageUrl, roadPermitUrl, drivingLicenseUrl] = await Promise.all([
+            files.taxTokenFile?.[0] ? this.storageService.save(files.taxTokenFile[0], 'truck-docs') : Promise.resolve(undefined),
+            files.blueBookFile?.[0] ? this.storageService.save(files.blueBookFile[0], 'truck-docs') : Promise.resolve(undefined),
+            files.numberPlateFile?.[0] ? this.storageService.save(files.numberPlateFile[0], 'truck-docs') : Promise.resolve(undefined),
+            files.roadPermitFile?.[0] ? this.storageService.save(files.roadPermitFile[0], 'truck-docs') : Promise.resolve(undefined),
+            files.drivingLicenseFile?.[0] ? this.storageService.save(files.drivingLicenseFile[0], 'truck-docs') : Promise.resolve(undefined),
+        ]);
+        return this.trucksService.create(userId, {
+            ...body,
+            capacityTon: Number(body.capacityTon),
+            lengthFt: Number(body.lengthFt),
+            year: body.year ? Number(body.year) : undefined,
+            taxTokenUrl,
+            blueBookUrl,
+            numberPlateImageUrl,
+            roadPermitUrl,
+            drivingLicenseUrl,
+        });
     }
     update(id, user, dto) {
         return this.trucksService.update(id, user.id, user.role, dto);
@@ -66,6 +86,16 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TrucksController.prototype, "findAll", null);
 __decorate([
+    (0, common_1.Get)('mine'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, roles_decorator_1.Roles)(client_1.Role.DRIVER),
+    (0, swagger_1.ApiOperation)({ summary: '[Driver] Get my registered trucks' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TrucksController.prototype, "getMyTrucks", null);
+__decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get truck details (public)' }),
@@ -78,12 +108,20 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiBearerAuth)('access-token'),
     (0, roles_decorator_1.Roles)(client_1.Role.DRIVER),
-    (0, swagger_1.ApiOperation)({ summary: '[Driver] Add a truck' }),
+    (0, swagger_1.ApiOperation)({ summary: '[Driver] Add a truck with documents' }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'taxTokenFile', maxCount: 1 },
+        { name: 'blueBookFile', maxCount: 1 },
+        { name: 'numberPlateFile', maxCount: 1 },
+        { name: 'roadPermitFile', maxCount: 1 },
+        { name: 'drivingLicenseFile', maxCount: 1 },
+    ])),
     __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, truck_dto_1.CreateTruckDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
 ], TrucksController.prototype, "create", null);
 __decorate([
     (0, common_1.Patch)(':id'),

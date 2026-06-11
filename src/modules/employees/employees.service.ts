@@ -90,6 +90,7 @@ export class EmployeesService {
                 taxTokenUrl: data.taxTokenUrl,
                 blueBookUrl: data.blueBookUrl,
                 numberPlateImageUrl: data.numberPlateImageUrl,
+                drivingLicenseUrl: data.drivingLicenseUrl,
                 status: TruckStatus.PENDING,
             } as any,
         });

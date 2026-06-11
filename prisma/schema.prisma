@@ -218,6 +218,7 @@ model Truck {
   taxTokenUrl              String?
   blueBookUrl              String?
   numberPlateImageUrl      String?
+  drivingLicenseUrl        String?
   category                 TruckCategory
   capacityTon              Float
   lengthFt                 Float

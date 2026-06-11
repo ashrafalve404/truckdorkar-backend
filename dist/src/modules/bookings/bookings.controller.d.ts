@@ -201,6 +201,7 @@ export declare class BookingsController {
                 taxTokenUrl: string | null;
                 blueBookUrl: string | null;
                 numberPlateImageUrl: string | null;
+                drivingLicenseUrl: string | null;
                 category: import("@prisma/client").$Enums.TruckCategory;
                 capacityTon: number;
                 lengthFt: number;

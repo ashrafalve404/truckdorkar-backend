@@ -1,10 +1,10 @@
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateTruckDto, UpdateTruckDto } from './dto/truck.dto';
+import { UpdateTruckDto } from './dto/truck.dto';
 import { Role } from '@prisma/client';
 export declare class TrucksService {
     private prisma;
     constructor(prisma: PrismaService);
-    create(userId: string, dto: CreateTruckDto): Promise<{
+    create(userId: string, data: any): Promise<{
         message: string;
         data: {
             id: string;
@@ -23,6 +23,7 @@ export declare class TrucksService {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -32,6 +33,52 @@ export declare class TrucksService {
             approvalNote: string | null;
             registeredByEmployeeId: string | null;
         };
+    }>;
+    findMyTrucks(userId: string): Promise<{
+        message: string;
+        data: ({
+            images: {
+                id: string;
+                createdAt: Date;
+                truckId: string;
+                url: string;
+                isPrimary: boolean;
+            }[];
+            documents: {
+                id: string;
+                createdAt: Date;
+                type: string;
+                truckId: string;
+                url: string;
+                expiry: Date | null;
+            }[];
+        } & {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
+            driverId: string;
+            registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
+            category: import("@prisma/client").$Enums.TruckCategory;
+            capacityTon: number;
+            lengthFt: number;
+            make: string | null;
+            model: string | null;
+            color: string | null;
+            approvalNote: string | null;
+            registeredByEmployeeId: string | null;
+        })[];
     }>;
     findAll(query: {
         category?: string;
@@ -94,6 +141,7 @@ export declare class TrucksService {
                 taxTokenUrl: string | null;
                 blueBookUrl: string | null;
                 numberPlateImageUrl: string | null;
+                drivingLicenseUrl: string | null;
                 category: import("@prisma/client").$Enums.TruckCategory;
                 capacityTon: number;
                 lengthFt: number;
@@ -172,6 +220,7 @@ export declare class TrucksService {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -201,6 +250,7 @@ export declare class TrucksService {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -243,6 +293,7 @@ export declare class TrucksService {
             taxTokenUrl: string | null;
             blueBookUrl: string | null;
             numberPlateImageUrl: string | null;
+            drivingLicenseUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;

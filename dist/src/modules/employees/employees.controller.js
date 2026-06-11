@@ -37,11 +37,12 @@ let EmployeesController = class EmployeesController {
         return this.employeesService.findAll();
     }
     async registerTruck(userId, body, files) {
-        const [taxTokenUrl, blueBookUrl, numberPlateImageUrl, roadPermitUrl] = await Promise.all([
+        const [taxTokenUrl, blueBookUrl, numberPlateImageUrl, roadPermitUrl, drivingLicenseUrl] = await Promise.all([
             files.taxTokenFile?.[0] ? this.storageService.save(files.taxTokenFile[0], 'truck-docs') : Promise.resolve(undefined),
             files.blueBookFile?.[0] ? this.storageService.save(files.blueBookFile[0], 'truck-docs') : Promise.resolve(undefined),
             files.numberPlateFile?.[0] ? this.storageService.save(files.numberPlateFile[0], 'truck-docs') : Promise.resolve(undefined),
             files.roadPermitFile?.[0] ? this.storageService.save(files.roadPermitFile[0], 'truck-docs') : Promise.resolve(undefined),
+            files.drivingLicenseFile?.[0] ? this.storageService.save(files.drivingLicenseFile[0], 'truck-docs') : Promise.resolve(undefined),
         ]);
         return this.employeesService.registerTruck(userId, {
             ...body,
@@ -52,6 +53,7 @@ let EmployeesController = class EmployeesController {
             blueBookUrl,
             numberPlateImageUrl,
             roadPermitUrl,
+            drivingLicenseUrl,
         });
     }
     getMyTrucks(userId) {
@@ -94,6 +96,7 @@ __decorate([
         { name: 'blueBookFile', maxCount: 1 },
         { name: 'numberPlateFile', maxCount: 1 },
         { name: 'roadPermitFile', maxCount: 1 },
+        { name: 'drivingLicenseFile', maxCount: 1 },
     ])),
     __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
     __param(1, (0, common_1.Body)()),
