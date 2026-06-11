@@ -10,6 +10,12 @@ export declare class CreateTruckDto {
     year?: number;
     color?: string;
     description?: string;
+    numberPlateText?: string;
+    roadPermitUrl?: string;
+    taxTokenUrl?: string;
+    blueBookUrl?: string;
+    numberPlateImageUrl?: string;
+    registeredByEmployeeId?: string;
 }
 export declare class UpdateTruckDto {
     name?: string;

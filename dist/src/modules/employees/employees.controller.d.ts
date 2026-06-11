@@ -1,7 +1,9 @@
 import { EmployeesService } from './employees.service';
+import { StorageService } from '../storage/storage.service';
 export declare class EmployeesController {
     private readonly employeesService;
-    constructor(employeesService: EmployeesService);
+    private readonly storageService;
+    constructor(employeesService: EmployeesService, storageService: StorageService);
     getDashboard(): Promise<{
         message: string;
         data: {
@@ -48,5 +50,213 @@ export declare class EmployeesController {
             designation: string | null;
             userId: string;
         })[];
+    }>;
+    registerTruck(userId: string, body: any, files: {
+        taxTokenFile?: Express.Multer.File[];
+        blueBookFile?: Express.Multer.File[];
+        numberPlateFile?: Express.Multer.File[];
+        roadPermitFile?: Express.Multer.File[];
+    }): Promise<{
+        message: string;
+        data: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
+            driverId: string;
+            registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
+            category: import("@prisma/client").$Enums.TruckCategory;
+            capacityTon: number;
+            lengthFt: number;
+            make: string | null;
+            model: string | null;
+            color: string | null;
+            approvalNote: string | null;
+            registeredByEmployeeId: string | null;
+        };
+    }>;
+    getMyTrucks(userId: string): Promise<{
+        message: string;
+        data: ({
+            driver: {
+                user: {
+                    phone: string | null;
+                    name: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
+                nidNumber: string | null;
+                nidFront: string | null;
+                nidBack: string | null;
+                licenseNumber: string | null;
+                licenseFront: string | null;
+                licenseBack: string | null;
+                licenseExpiry: Date | null;
+                experience: number | null;
+                totalTrips: number;
+                rating: number;
+                totalEarnings: number;
+                status: import("@prisma/client").$Enums.DriverStatus;
+                isAvailable: boolean;
+                currentLat: number | null;
+                currentLng: number | null;
+                verificationNote: string | null;
+                userId: string;
+            };
+            images: {
+                id: string;
+                createdAt: Date;
+                truckId: string;
+                url: string;
+                isPrimary: boolean;
+            }[];
+        } & {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
+            driverId: string;
+            registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
+            category: import("@prisma/client").$Enums.TruckCategory;
+            capacityTon: number;
+            lengthFt: number;
+            make: string | null;
+            model: string | null;
+            color: string | null;
+            approvalNote: string | null;
+            registeredByEmployeeId: string | null;
+        })[];
+    }>;
+    getAdminOverview(): Promise<{
+        message: string;
+        data: {
+            id: any;
+            employeeId: any;
+            user: any;
+            department: any;
+            designation: any;
+            trucksTotal: any;
+            trucksPending: any;
+            trucksApproved: any;
+            trucksRejected: any;
+            recentTrucks: any;
+        }[];
+    }>;
+    getEmployeeTrucks(employeeId: string): Promise<{
+        message: string;
+        data: ({
+            driver: {
+                user: {
+                    phone: string | null;
+                    name: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
+                nidNumber: string | null;
+                nidFront: string | null;
+                nidBack: string | null;
+                licenseNumber: string | null;
+                licenseFront: string | null;
+                licenseBack: string | null;
+                licenseExpiry: Date | null;
+                experience: number | null;
+                totalTrips: number;
+                rating: number;
+                totalEarnings: number;
+                status: import("@prisma/client").$Enums.DriverStatus;
+                isAvailable: boolean;
+                currentLat: number | null;
+                currentLng: number | null;
+                verificationNote: string | null;
+                userId: string;
+            };
+            images: {
+                id: string;
+                createdAt: Date;
+                truckId: string;
+                url: string;
+                isPrimary: boolean;
+            }[];
+        } & {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
+            driverId: string;
+            registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
+            category: import("@prisma/client").$Enums.TruckCategory;
+            capacityTon: number;
+            lengthFt: number;
+            make: string | null;
+            model: string | null;
+            color: string | null;
+            approvalNote: string | null;
+            registeredByEmployeeId: string | null;
+        })[];
+    }>;
+    approveTruck(truckId: string, status: string, note?: string): Promise<{
+        message: string;
+        data: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
+            driverId: string;
+            registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
+            category: import("@prisma/client").$Enums.TruckCategory;
+            capacityTon: number;
+            lengthFt: number;
+            make: string | null;
+            model: string | null;
+            color: string | null;
+            approvalNote: string | null;
+            registeredByEmployeeId: string | null;
+        };
     }>;
 }

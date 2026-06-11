@@ -26,6 +26,11 @@ export declare class DriversController {
                 year: number | null;
                 driverId: string;
                 registrationNo: string;
+                numberPlateText: string | null;
+                roadPermitUrl: string | null;
+                taxTokenUrl: string | null;
+                blueBookUrl: string | null;
+                numberPlateImageUrl: string | null;
                 category: import("@prisma/client").$Enums.TruckCategory;
                 capacityTon: number;
                 lengthFt: number;
@@ -33,6 +38,7 @@ export declare class DriversController {
                 model: string | null;
                 color: string | null;
                 approvalNote: string | null;
+                registeredByEmployeeId: string | null;
             }[];
         } & {
             id: string;

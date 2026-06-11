@@ -18,6 +18,11 @@ export declare class TrucksService {
             year: number | null;
             driverId: string;
             registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -25,6 +30,7 @@ export declare class TrucksService {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
+            registeredByEmployeeId: string | null;
         };
     }>;
     findAll(query: {
@@ -83,6 +89,11 @@ export declare class TrucksService {
                 year: number | null;
                 driverId: string;
                 registrationNo: string;
+                numberPlateText: string | null;
+                roadPermitUrl: string | null;
+                taxTokenUrl: string | null;
+                blueBookUrl: string | null;
+                numberPlateImageUrl: string | null;
                 category: import("@prisma/client").$Enums.TruckCategory;
                 capacityTon: number;
                 lengthFt: number;
@@ -90,6 +101,7 @@ export declare class TrucksService {
                 model: string | null;
                 color: string | null;
                 approvalNote: string | null;
+                registeredByEmployeeId: string | null;
             })[];
             total: number;
             page: number;
@@ -155,6 +167,11 @@ export declare class TrucksService {
             year: number | null;
             driverId: string;
             registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -162,6 +179,7 @@ export declare class TrucksService {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
+            registeredByEmployeeId: string | null;
         };
     }>;
     update(id: string, userId: string, role: Role, dto: UpdateTruckDto): Promise<{
@@ -178,6 +196,11 @@ export declare class TrucksService {
             year: number | null;
             driverId: string;
             registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -185,6 +208,7 @@ export declare class TrucksService {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
+            registeredByEmployeeId: string | null;
         };
     }>;
     remove(id: string, userId: string, role: Role): Promise<{
@@ -214,6 +238,11 @@ export declare class TrucksService {
             year: number | null;
             driverId: string;
             registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -221,6 +250,7 @@ export declare class TrucksService {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
+            registeredByEmployeeId: string | null;
         };
     }>;
 }

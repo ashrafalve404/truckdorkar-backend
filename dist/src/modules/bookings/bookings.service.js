@@ -62,6 +62,19 @@ let BookingsService = class BookingsService {
                 where = { userId };
             }
         }
+        else if (role === client_1.Role.EMPLOYEE) {
+            const employee = await this.prisma.employee.findUnique({ where: { userId } });
+            if (employee) {
+                where = {
+                    truck: {
+                        registeredByEmployeeId: employee.id
+                    }
+                };
+            }
+            else {
+                where = { id: 'none' };
+            }
+        }
         const bookings = await this.prisma.booking.findMany({
             where,
             include: {

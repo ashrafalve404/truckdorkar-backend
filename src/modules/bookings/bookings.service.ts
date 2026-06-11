@@ -51,8 +51,19 @@ export class BookingsService {
             } else {
                 where = { userId }; // Fallback
             }
+        } else if (role === Role.EMPLOYEE) {
+            const employee = await this.prisma.employee.findUnique({ where: { userId } });
+            if (employee) {
+                where = {
+                    truck: {
+                        registeredByEmployeeId: employee.id
+                    }
+                };
+            } else {
+                where = { id: 'none' }; // Hide everything if no profile
+            }
         }
-        // ADMIN and EMPLOYEE see everything (where = {})
+        // ADMIN sees everything (where = {})
 
         const bookings = await this.prisma.booking.findMany({
             where,

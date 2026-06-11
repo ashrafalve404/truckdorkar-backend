@@ -56,6 +56,11 @@ export declare class TrucksController {
                 year: number | null;
                 driverId: string;
                 registrationNo: string;
+                numberPlateText: string | null;
+                roadPermitUrl: string | null;
+                taxTokenUrl: string | null;
+                blueBookUrl: string | null;
+                numberPlateImageUrl: string | null;
                 category: import("@prisma/client").$Enums.TruckCategory;
                 capacityTon: number;
                 lengthFt: number;
@@ -63,6 +68,7 @@ export declare class TrucksController {
                 model: string | null;
                 color: string | null;
                 approvalNote: string | null;
+                registeredByEmployeeId: string | null;
             })[];
             total: number;
             page: number;
@@ -128,6 +134,11 @@ export declare class TrucksController {
             year: number | null;
             driverId: string;
             registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -135,6 +146,7 @@ export declare class TrucksController {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
+            registeredByEmployeeId: string | null;
         };
     }>;
     create(userId: string, dto: CreateTruckDto): Promise<{
@@ -151,6 +163,11 @@ export declare class TrucksController {
             year: number | null;
             driverId: string;
             registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -158,6 +175,7 @@ export declare class TrucksController {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
+            registeredByEmployeeId: string | null;
         };
     }>;
     update(id: string, user: any, dto: UpdateTruckDto): Promise<{
@@ -174,6 +192,11 @@ export declare class TrucksController {
             year: number | null;
             driverId: string;
             registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -181,6 +204,7 @@ export declare class TrucksController {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
+            registeredByEmployeeId: string | null;
         };
     }>;
     remove(id: string, user: any): Promise<{
@@ -210,6 +234,11 @@ export declare class TrucksController {
             year: number | null;
             driverId: string;
             registrationNo: string;
+            numberPlateText: string | null;
+            roadPermitUrl: string | null;
+            taxTokenUrl: string | null;
+            blueBookUrl: string | null;
+            numberPlateImageUrl: string | null;
             category: import("@prisma/client").$Enums.TruckCategory;
             capacityTon: number;
             lengthFt: number;
@@ -217,6 +246,7 @@ export declare class TrucksController {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
+            registeredByEmployeeId: string | null;
         };
     }>;
 }

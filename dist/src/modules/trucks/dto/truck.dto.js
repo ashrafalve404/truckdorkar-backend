@@ -24,6 +24,12 @@ class CreateTruckDto {
     year;
     color;
     description;
+    numberPlateText;
+    roadPermitUrl;
+    taxTokenUrl;
+    blueBookUrl;
+    numberPlateImageUrl;
+    registeredByEmployeeId;
 }
 exports.CreateTruckDto = CreateTruckDto;
 __decorate([
@@ -81,6 +87,42 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateTruckDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTruckDto.prototype, "numberPlateText", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTruckDto.prototype, "roadPermitUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTruckDto.prototype, "taxTokenUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTruckDto.prototype, "blueBookUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTruckDto.prototype, "numberPlateImageUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTruckDto.prototype, "registeredByEmployeeId", void 0);
 class UpdateTruckDto {
     name;
     capacityTon;

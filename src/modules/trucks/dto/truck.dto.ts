@@ -13,6 +13,12 @@ export class CreateTruckDto {
     @ApiPropertyOptional() @IsOptional() @IsInt() year?: number;
     @ApiPropertyOptional() @IsOptional() @IsString() color?: string;
     @ApiPropertyOptional() @IsOptional() @IsString() description?: string;
+    @ApiPropertyOptional() @IsOptional() @IsString() numberPlateText?: string;
+    @ApiPropertyOptional() @IsOptional() @IsString() roadPermitUrl?: string;
+    @ApiPropertyOptional() @IsOptional() @IsString() taxTokenUrl?: string;
+    @ApiPropertyOptional() @IsOptional() @IsString() blueBookUrl?: string;
+    @ApiPropertyOptional() @IsOptional() @IsString() numberPlateImageUrl?: string;
+    @ApiPropertyOptional() @IsOptional() @IsString() registeredByEmployeeId?: string;
 }
 
 export class UpdateTruckDto {

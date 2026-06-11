@@ -200,7 +200,8 @@ model Employee {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trucks Truck[]
 
   @@map("employees")
 }
@@ -208,32 +209,40 @@ model Employee {
 // ─── Truck ─────────────────────────────────────────────────────────────────
 
 model Truck {
-  id               String        @id @default(cuid())
-  driverId         String
-  name             String
-  registrationNo   String        @unique
-  category         TruckCategory
-  capacityTon      Float
-  lengthFt         Float
-  make             String?
-  model            String?
-  year             Int?
-  color            String?
-  description      String?
-  status           TruckStatus   @default(PENDING)
-  images           TruckImage[]
-  documents        TruckDocument[]
-  isAvailable      Boolean       @default(false)
-  approvalNote     String?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  deletedAt        DateTime?
+  id                       String        @id @default(cuid())
+  driverId                 String
+  name                     String
+  registrationNo           String        @unique
+  numberPlateText          String?
+  roadPermitUrl            String?
+  taxTokenUrl              String?
+  blueBookUrl              String?
+  numberPlateImageUrl      String?
+  category                 TruckCategory
+  capacityTon              Float
+  lengthFt                 Float
+  make                     String?
+  model                    String?
+  year                     Int?
+  color                    String?
+  description              String?
+  status                   TruckStatus   @default(PENDING)
+  images                   TruckImage[]
+  documents                TruckDocument[]
+  isAvailable              Boolean       @default(false)
+  approvalNote             String?
+  registeredByEmployeeId   String?
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+  deletedAt                DateTime?
 
-  driver   Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
-  bookings Booking[]
+  driver             Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  registeredByEmployee Employee? @relation(fields: [registeredByEmployeeId], references: [id])
+  bookings           Booking[]
 
   @@index([driverId])
   @@index([status])
+  @@index([registeredByEmployeeId])
   @@map("trucks")
 }
 
