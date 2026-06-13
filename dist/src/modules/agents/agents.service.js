@@ -9,11 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EmployeesService = void 0;
+exports.AgentsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const client_1 = require("@prisma/client");
-let EmployeesService = class EmployeesService {
+let AgentsService = class AgentsService {
     prisma;
     constructor(prisma) {
         this.prisma = prisma;
@@ -34,7 +34,7 @@ let EmployeesService = class EmployeesService {
             }),
         ]);
         return {
-            message: 'Employee dashboard summary',
+            message: 'Agent dashboard summary',
             data: {
                 counts: {
                     pendingDrivers,
@@ -47,15 +47,15 @@ let EmployeesService = class EmployeesService {
         };
     }
     async findAll() {
-        const employees = await this.prisma.employee.findMany({
+        const agents = await this.prisma.agent.findMany({
             include: { user: { select: { name: true, phone: true, email: true, isActive: true } } },
         });
-        return { message: 'Employees fetched', data: employees };
+        return { message: 'Agents fetched', data: agents };
     }
     async registerTruck(userId, data) {
-        const employee = await this.prisma.employee.findUnique({ where: { userId } });
-        if (!employee)
-            throw new common_1.NotFoundException('Employee profile not found');
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent)
+            throw new common_1.NotFoundException('Agent profile not found');
         let driver = null;
         if (data.driverUserId) {
             driver = await this.prisma.driver.findFirst({ where: { userId: data.driverUserId } });
@@ -72,7 +72,7 @@ let EmployeesService = class EmployeesService {
         const truck = await this.prisma.truck.create({
             data: {
                 driverId: driver.id,
-                registeredByEmployeeId: employee.id,
+                registeredByAgentId: agent.id,
                 name: data.name,
                 registrationNo: data.registrationNo,
                 numberPlateText: data.numberPlateText,
@@ -94,22 +94,22 @@ let EmployeesService = class EmployeesService {
         });
         return { message: 'Truck registered for review', data: truck };
     }
-    async getTrucksByEmployee(userId) {
-        const employee = await this.prisma.employee.findUnique({ where: { userId } });
-        if (!employee)
-            throw new common_1.NotFoundException('Employee profile not found');
+    async getTrucksByAgent(userId) {
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent)
+            throw new common_1.NotFoundException('Agent profile not found');
         const trucks = await this.prisma.truck.findMany({
-            where: { registeredByEmployeeId: employee.id },
+            where: { registeredByAgentId: agent.id },
             include: {
                 driver: { include: { user: { select: { name: true, phone: true } } } },
                 images: true,
             },
             orderBy: { createdAt: 'desc' },
         });
-        return { message: 'Employee trucks fetched', data: trucks };
+        return { message: 'Agent trucks fetched', data: trucks };
     }
     async getAdminOverview() {
-        const employees = await this.prisma.employee.findMany({
+        const agents = await this.prisma.agent.findMany({
             include: {
                 user: { select: { name: true, phone: true, email: true, isActive: true } },
                 trucks: {
@@ -124,30 +124,30 @@ let EmployeesService = class EmployeesService {
             },
             orderBy: { createdAt: 'desc' },
         });
-        const overview = employees.map((emp) => ({
-            id: emp.id,
-            employeeId: emp.employeeId,
-            user: emp.user,
-            department: emp.department,
-            designation: emp.designation,
-            trucksTotal: emp.trucks ? emp.trucks.length : 0,
-            trucksPending: emp.trucks ? emp.trucks.filter((t) => t.status === 'PENDING').length : 0,
-            trucksApproved: emp.trucks ? emp.trucks.filter((t) => t.status === 'APPROVED').length : 0,
-            trucksRejected: emp.trucks ? emp.trucks.filter((t) => t.status === 'REJECTED').length : 0,
-            recentTrucks: emp.trucks ? emp.trucks.slice(0, 3) : [],
+        const overview = agents.map((agt) => ({
+            id: agt.id,
+            agentId: agt.agentId,
+            user: agt.user,
+            department: agt.department,
+            designation: agt.designation,
+            trucksTotal: agt.trucks ? agt.trucks.length : 0,
+            trucksPending: agt.trucks ? agt.trucks.filter((t) => t.status === 'PENDING').length : 0,
+            trucksApproved: agt.trucks ? agt.trucks.filter((t) => t.status === 'APPROVED').length : 0,
+            trucksRejected: agt.trucks ? agt.trucks.filter((t) => t.status === 'REJECTED').length : 0,
+            recentTrucks: agt.trucks ? agt.trucks.slice(0, 3) : [],
         }));
-        return { message: 'Admin employee overview fetched', data: overview };
+        return { message: 'Admin agent overview fetched', data: overview };
     }
-    async getTrucksByEmployeeId(employeeId) {
+    async getTrucksByAgentId(agentId) {
         const trucks = await this.prisma.truck.findMany({
-            where: { registeredByEmployeeId: employeeId },
+            where: { registeredByAgentId: agentId },
             include: {
                 driver: { include: { user: { select: { name: true, phone: true } } } },
                 images: true,
             },
             orderBy: { createdAt: 'desc' },
         });
-        return { message: 'Employee trucks fetched', data: trucks };
+        return { message: 'Agent trucks fetched', data: trucks };
     }
     async approveTruck(truckId, status, note) {
         const truck = await this.prisma.truck.update({
@@ -157,9 +157,9 @@ let EmployeesService = class EmployeesService {
         return { message: `Truck ${status.toLowerCase()}`, data: truck };
     }
 };
-exports.EmployeesService = EmployeesService;
-exports.EmployeesService = EmployeesService = __decorate([
+exports.AgentsService = AgentsService;
+exports.AgentsService = AgentsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
-], EmployeesService);
-//# sourceMappingURL=employees.service.js.map
+], AgentsService);
+//# sourceMappingURL=agents.service.js.map

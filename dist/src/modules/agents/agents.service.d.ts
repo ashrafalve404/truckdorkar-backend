@@ -1,9 +1,7 @@
-import { EmployeesService } from './employees.service';
-import { StorageService } from '../storage/storage.service';
-export declare class EmployeesController {
-    private readonly employeesService;
-    private readonly storageService;
-    constructor(employeesService: EmployeesService, storageService: StorageService);
+import { PrismaService } from '../../prisma/prisma.service';
+export declare class AgentsService {
+    private prisma;
+    constructor(prisma: PrismaService);
     getDashboard(): Promise<{
         message: string;
         data: {
@@ -44,20 +42,14 @@ export declare class EmployeesController {
             createdAt: Date;
             updatedAt: Date;
             nidNumber: string | null;
-            employeeId: string | null;
             dateOfBirth: Date | null;
+            userId: string;
+            agentId: string | null;
             department: string | null;
             designation: string | null;
-            userId: string;
         })[];
     }>;
-    registerTruck(userId: string, body: any, files: {
-        taxTokenFile?: Express.Multer.File[];
-        blueBookFile?: Express.Multer.File[];
-        numberPlateFile?: Express.Multer.File[];
-        roadPermitFile?: Express.Multer.File[];
-        drivingLicenseFile?: Express.Multer.File[];
-    }): Promise<{
+    registerTruck(userId: string, data: any): Promise<{
         message: string;
         data: {
             id: string;
@@ -84,10 +76,10 @@ export declare class EmployeesController {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
-            registeredByEmployeeId: string | null;
+            registeredByAgentId: string | null;
         };
     }>;
-    getMyTrucks(userId: string): Promise<{
+    getTrucksByAgent(userId: string): Promise<{
         message: string;
         data: ({
             driver: {
@@ -150,14 +142,14 @@ export declare class EmployeesController {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
-            registeredByEmployeeId: string | null;
+            registeredByAgentId: string | null;
         })[];
     }>;
     getAdminOverview(): Promise<{
         message: string;
         data: {
             id: any;
-            employeeId: any;
+            agentId: any;
             user: any;
             department: any;
             designation: any;
@@ -168,7 +160,7 @@ export declare class EmployeesController {
             recentTrucks: any;
         }[];
     }>;
-    getEmployeeTrucks(employeeId: string): Promise<{
+    getTrucksByAgentId(agentId: string): Promise<{
         message: string;
         data: ({
             driver: {
@@ -231,7 +223,7 @@ export declare class EmployeesController {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
-            registeredByEmployeeId: string | null;
+            registeredByAgentId: string | null;
         })[];
     }>;
     approveTruck(truckId: string, status: string, note?: string): Promise<{
@@ -261,7 +253,7 @@ export declare class EmployeesController {
             model: string | null;
             color: string | null;
             approvalNote: string | null;
-            registeredByEmployeeId: string | null;
+            registeredByAgentId: string | null;
         };
     }>;
 }

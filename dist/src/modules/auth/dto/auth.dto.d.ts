@@ -8,7 +8,7 @@ export declare class RegisterDto {
     licenseNumber?: string;
     experience?: number;
     companyName?: string;
-    employeeId?: string;
+    agentId?: string;
     nidNumber?: string;
     dateOfBirth?: string;
 }

@@ -70,14 +70,14 @@ export class DriversController {
 
     // Admin endpoints
     @Get()
-    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    @Roles(Role.ADMIN, Role.AGENT)
     @ApiOperation({ summary: '[Admin] List all drivers' })
     findAll(@Query() query: { status?: string; page?: number; limit?: number }) {
         return this.driversService.findAll(query);
     }
 
     @Patch(':id/verify')
-    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    @Roles(Role.ADMIN, Role.AGENT)
     @ApiOperation({ summary: '[Admin] Verify or reject a driver' })
     verify(@Param('id') id: string, @Body() dto: VerifyDriverDto) {
         return this.driversService.verifyDriver(id, dto.status, dto.note);

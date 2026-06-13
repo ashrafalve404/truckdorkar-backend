@@ -51,12 +51,12 @@ export class BookingsService {
             } else {
                 where = { userId }; // Fallback
             }
-        } else if (role === Role.EMPLOYEE) {
-            const employee = await this.prisma.employee.findUnique({ where: { userId } });
-            if (employee) {
+        } else if (role === Role.AGENT) {
+            const agent = await this.prisma.agent.findUnique({ where: { userId } });
+            if (agent) {
                 where = {
                     truck: {
-                        registeredByEmployeeId: employee.id
+                        registeredByAgentId: agent.id
                     }
                 };
             } else {

@@ -10,9 +10,9 @@ export declare class AuthController {
             refreshToken: string;
             user: {
                 id: string;
+                name: string | null;
                 email: string | null;
                 phone: string | null;
-                name: string | null;
                 role: import("@prisma/client").$Enums.Role;
                 createdAt: Date;
             };
@@ -25,9 +25,9 @@ export declare class AuthController {
             refreshToken: string;
             user: {
                 id: string;
+                name: string | null;
                 email: string | null;
                 phone: string | null;
-                name: string | null;
                 avatar: string | null;
                 role: import("@prisma/client").$Enums.Role;
                 isEmailVerified: boolean;
@@ -66,9 +66,9 @@ export declare class AuthController {
         message: string;
         data: {
             id: string;
+            name: string | null;
             email: string | null;
             phone: string | null;
-            name: string | null;
             avatar: string | null;
             role: import("@prisma/client").$Enums.Role;
             isEmailVerified: boolean;
@@ -81,9 +81,9 @@ export declare class AuthController {
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
             } | null;
-            employee: {
+            agent: {
                 id: string;
-                employeeId: string | null;
+                agentId: string | null;
                 department: string | null;
                 designation: string | null;
             } | null;

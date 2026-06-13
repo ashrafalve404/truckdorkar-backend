@@ -14,7 +14,7 @@ import { SupportModule } from './modules/support/support.module';
 import { CmsModule } from './modules/cms/cms.module';
 import { ContactModule } from './modules/contact/contact.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { EmployeesModule } from './modules/employees/employees.module';
+import { AgentsModule } from './modules/agents/agents.module';
 import { StorageModule } from './modules/storage/storage.module';
 
 @Module({
@@ -35,7 +35,7 @@ import { StorageModule } from './modules/storage/storage.module';
     CmsModule,
     ContactModule,
     AdminModule,
-    EmployeesModule,
+    AgentsModule,
   ],
 })
 export class AppModule { }

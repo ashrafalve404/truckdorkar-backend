@@ -50,7 +50,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiBearerAuth)('access-token'),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EMPLOYEE),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.AGENT),
     (0, swagger_1.ApiOperation)({ summary: '[Admin] List all inquiries' }),
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('limit')),
@@ -61,7 +61,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/read'),
     (0, swagger_1.ApiBearerAuth)('access-token'),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EMPLOYEE),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.AGENT),
     (0, swagger_1.ApiOperation)({ summary: '[Admin] Mark inquiry as read' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

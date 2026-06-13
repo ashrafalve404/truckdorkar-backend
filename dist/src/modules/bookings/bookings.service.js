@@ -62,12 +62,12 @@ let BookingsService = class BookingsService {
                 where = { userId };
             }
         }
-        else if (role === client_1.Role.EMPLOYEE) {
-            const employee = await this.prisma.employee.findUnique({ where: { userId } });
-            if (employee) {
+        else if (role === client_1.Role.AGENT) {
+            const agent = await this.prisma.agent.findUnique({ where: { userId } });
+            if (agent) {
                 where = {
                     truck: {
-                        registeredByEmployeeId: employee.id
+                        registeredByAgentId: agent.id
                     }
                 };
             }

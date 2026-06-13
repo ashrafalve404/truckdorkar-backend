@@ -118,7 +118,7 @@ export class TrucksController {
 
     @Patch(':id/approve')
     @ApiBearerAuth('access-token')
-    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    @Roles(Role.ADMIN, Role.AGENT)
     @ApiOperation({ summary: '[Admin] Approve or reject a truck' })
     approve(@Param('id') id: string, @Body() dto: ApproveTruckDto) {
         return this.trucksService.approveTruck(id, dto.status, dto.note);

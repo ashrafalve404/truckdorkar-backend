@@ -43,27 +43,27 @@ async function main() {
     });
     console.log('Driver created:', driverUser.phone);
 
-    // 3. Create Employee
-    const employeeUser = await prisma.user.upsert({
+    // 3. Create Agent
+    const agentUser = await prisma.user.upsert({
         where: { phone: '01911111111' },
         update: {},
         create: {
             name: 'Operations Staff',
             phone: '01911111111',
-            email: 'employee@truckdorkar.com',
+            email: 'agent@truckdorkar.com',
             password: hashedPassword,
-            role: Role.EMPLOYEE,
+            role: Role.AGENT,
             isActive: true,
-            employee: {
+            agent: {
                 create: {
-                    employeeId: 'EMP001',
+                    agentId: 'AGT001',
                     department: 'Logistics',
                     designation: 'Manager',
                 }
             }
         },
     });
-    console.log('Employee created:', employeeUser.phone);
+    console.log('Agent created:', agentUser.phone);
 
     // 4. Create Regular User
     const regularUser = await prisma.user.upsert({

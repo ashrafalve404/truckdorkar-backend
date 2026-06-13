@@ -23,7 +23,7 @@ let UsersService = class UsersService {
             select: {
                 id: true, name: true, email: true, phone: true, avatar: true,
                 role: true, isEmailVerified: true, isPhoneVerified: true, createdAt: true,
-                driver: true, employee: true, addresses: true,
+                driver: true, agent: true, addresses: true,
             },
         });
         if (!user)

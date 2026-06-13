@@ -21,6 +21,7 @@ export declare class UsersService {
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
+                userId: string;
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
@@ -37,25 +38,24 @@ export declare class UsersService {
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
-                userId: string;
             } | null;
-            employee: {
+            agent: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string;
                 nidNumber: string | null;
-                employeeId: string | null;
+                agentId: string | null;
                 dateOfBirth: Date | null;
                 department: string | null;
                 designation: string | null;
-                userId: string;
             } | null;
             addresses: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                address: string;
                 userId: string;
+                address: string;
                 label: string;
                 city: string;
                 district: string | null;
@@ -89,8 +89,8 @@ export declare class UsersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            address: string;
             userId: string;
+            address: string;
             label: string;
             city: string;
             district: string | null;
@@ -105,8 +105,8 @@ export declare class UsersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            address: string;
             userId: string;
+            address: string;
             label: string;
             city: string;
             district: string | null;
@@ -121,8 +121,8 @@ export declare class UsersService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            address: string;
             userId: string;
+            address: string;
             label: string;
             city: string;
             district: string | null;

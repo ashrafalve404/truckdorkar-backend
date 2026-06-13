@@ -119,7 +119,7 @@ __decorate([
 ], DriversController.prototype, "getBookings", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EMPLOYEE),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.AGENT),
     (0, swagger_1.ApiOperation)({ summary: '[Admin] List all drivers' }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -128,7 +128,7 @@ __decorate([
 ], DriversController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Patch)(':id/verify'),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EMPLOYEE),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.AGENT),
     (0, swagger_1.ApiOperation)({ summary: '[Admin] Verify or reject a driver' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),

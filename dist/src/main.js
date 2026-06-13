@@ -88,7 +88,7 @@ async function bootstrap() {
         .addTag('cms', 'Content Management')
         .addTag('contact', 'Contact Enquiries')
         .addTag('admin', 'Admin Dashboard')
-        .addTag('employees', 'Employee Management')
+        .addTag('agents', 'Agent Management')
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, swaggerConfig);
     swagger_1.SwaggerModule.setup(`${apiPrefix}/docs`, app, document, {

@@ -9,21 +9,19 @@ export declare class DriversController {
         message: string;
         data: {
             user: {
+                name: string | null;
                 email: string | null;
                 phone: string | null;
-                name: string | null;
                 avatar: string | null;
             };
             trucks: {
                 id: string;
-                name: string;
+                status: import("@prisma/client").$Enums.TruckStatus;
+                isAvailable: boolean;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                status: import("@prisma/client").$Enums.TruckStatus;
-                isAvailable: boolean;
-                description: string | null;
-                year: number | null;
+                name: string;
                 driverId: string;
                 registrationNo: string;
                 numberPlateText: string | null;
@@ -37,15 +35,15 @@ export declare class DriversController {
                 lengthFt: number;
                 make: string | null;
                 model: string | null;
+                year: number | null;
                 color: string | null;
+                description: string | null;
                 approvalNote: string | null;
-                registeredByEmployeeId: string | null;
+                registeredByAgentId: string | null;
             }[];
         } & {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            deletedAt: Date | null;
+            userId: string;
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
@@ -62,16 +60,16 @@ export declare class DriversController {
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
-            userId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
         };
     }>;
     updateProfile(userId: string, dto: UpdateDriverProfileDto): Promise<{
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            deletedAt: Date | null;
+            userId: string;
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
@@ -88,16 +86,16 @@ export declare class DriversController {
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
-            userId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
         };
     }>;
     uploadDocument(userId: string, file: Express.Multer.File, type: string): Promise<{
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            deletedAt: Date | null;
+            userId: string;
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
@@ -114,7 +112,9 @@ export declare class DriversController {
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
-            userId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
         };
     }>;
     setAvailability(userId: string, dto: SetAvailabilityDto): Promise<{
@@ -141,23 +141,23 @@ export declare class DriversController {
         message: string;
         data: ({
             user: {
-                phone: string | null;
                 name: string | null;
+                phone: string | null;
             };
             truck: {
                 name: string;
             } | null;
         } & {
             id: string;
+            userId: string;
+            status: import("@prisma/client").$Enums.BookingStatus;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            status: import("@prisma/client").$Enums.BookingStatus;
-            type: import("@prisma/client").$Enums.BookingType;
-            userId: string;
-            bookingNumber: string;
             driverId: string | null;
+            bookingNumber: string;
             truckId: string | null;
+            type: import("@prisma/client").$Enums.BookingType;
             pickupAddress: string;
             pickupLat: number | null;
             pickupLng: number | null;
@@ -182,20 +182,18 @@ export declare class DriversController {
         data: {
             drivers: ({
                 user: {
+                    name: string | null;
                     email: string | null;
                     phone: string | null;
-                    name: string | null;
                 };
                 trucks: {
                     id: string;
-                    name: string;
                     status: import("@prisma/client").$Enums.TruckStatus;
+                    name: string;
                 }[];
             } & {
                 id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                deletedAt: Date | null;
+                userId: string;
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
@@ -212,7 +210,9 @@ export declare class DriversController {
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
-                userId: string;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
             })[];
             total: number;
             page: number;
@@ -223,9 +223,7 @@ export declare class DriversController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            deletedAt: Date | null;
+            userId: string;
             nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
@@ -242,7 +240,9 @@ export declare class DriversController {
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
-            userId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
         };
     }>;
 }

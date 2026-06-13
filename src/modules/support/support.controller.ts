@@ -40,7 +40,7 @@ export class SupportController {
     }
 
     @Patch('tickets/:id/status')
-    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    @Roles(Role.ADMIN, Role.AGENT)
     @ApiOperation({ summary: '[Admin] Update ticket status' })
     updateStatus(@Param('id') id: string, @Body('status') status: TicketStatus) {
         return this.supportService.updateStatus(id, status);

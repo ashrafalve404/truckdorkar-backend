@@ -82,7 +82,7 @@ __decorate([
 ], SupportController.prototype, "reply", null);
 __decorate([
     (0, common_1.Patch)('tickets/:id/status'),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EMPLOYEE),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.AGENT),
     (0, swagger_1.ApiOperation)({ summary: '[Admin] Update ticket status' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)('status')),

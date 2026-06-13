@@ -23,7 +23,7 @@ export class ContactController {
 
     @Get()
     @ApiBearerAuth('access-token')
-    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    @Roles(Role.ADMIN, Role.AGENT)
     @ApiOperation({ summary: '[Admin] List all inquiries' })
     findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
         return this.contactService.findAll(page, limit);
@@ -31,7 +31,7 @@ export class ContactController {
 
     @Patch(':id/read')
     @ApiBearerAuth('access-token')
-    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    @Roles(Role.ADMIN, Role.AGENT)
     @ApiOperation({ summary: '[Admin] Mark inquiry as read' })
     markAsRead(@Param('id') id: string) {
         return this.contactService.markAsRead(id);

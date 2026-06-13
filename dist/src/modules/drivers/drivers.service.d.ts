@@ -37,7 +37,7 @@ export declare class DriversService {
                 model: string | null;
                 color: string | null;
                 approvalNote: string | null;
-                registeredByEmployeeId: string | null;
+                registeredByAgentId: string | null;
             }[];
         } & {
             id: string;

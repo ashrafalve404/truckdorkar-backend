@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EmployeesController = void 0;
+exports.AgentsController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const platform_express_1 = require("@nestjs/platform-express");
@@ -20,21 +20,21 @@ const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../common/guards/roles.guard");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
-const employees_service_1 = require("./employees.service");
+const agents_service_1 = require("./agents.service");
 const storage_service_1 = require("../storage/storage.service");
 const client_1 = require("@prisma/client");
-let EmployeesController = class EmployeesController {
-    employeesService;
+let AgentsController = class AgentsController {
+    agentsService;
     storageService;
-    constructor(employeesService, storageService) {
-        this.employeesService = employeesService;
+    constructor(agentsService, storageService) {
+        this.agentsService = agentsService;
         this.storageService = storageService;
     }
     getDashboard() {
-        return this.employeesService.getDashboard();
+        return this.agentsService.getDashboard();
     }
     findAll() {
-        return this.employeesService.findAll();
+        return this.agentsService.findAll();
     }
     async registerTruck(userId, body, files) {
         const [taxTokenUrl, blueBookUrl, numberPlateImageUrl, roadPermitUrl, drivingLicenseUrl] = await Promise.all([
@@ -44,7 +44,7 @@ let EmployeesController = class EmployeesController {
             files.roadPermitFile?.[0] ? this.storageService.save(files.roadPermitFile[0], 'truck-docs') : Promise.resolve(undefined),
             files.drivingLicenseFile?.[0] ? this.storageService.save(files.drivingLicenseFile[0], 'truck-docs') : Promise.resolve(undefined),
         ]);
-        return this.employeesService.registerTruck(userId, {
+        return this.agentsService.registerTruck(userId, {
             ...body,
             capacityTon: Number(body.capacityTon),
             lengthFt: Number(body.lengthFt),
@@ -57,39 +57,39 @@ let EmployeesController = class EmployeesController {
         });
     }
     getMyTrucks(userId) {
-        return this.employeesService.getTrucksByEmployee(userId);
+        return this.agentsService.getTrucksByAgent(userId);
     }
     getAdminOverview() {
-        return this.employeesService.getAdminOverview();
+        return this.agentsService.getAdminOverview();
     }
-    getEmployeeTrucks(employeeId) {
-        return this.employeesService.getTrucksByEmployeeId(employeeId);
+    getAgentTrucks(agentId) {
+        return this.agentsService.getTrucksByAgentId(agentId);
     }
     approveTruck(truckId, status, note) {
-        return this.employeesService.approveTruck(truckId, status, note);
+        return this.agentsService.approveTruck(truckId, status, note);
     }
 };
-exports.EmployeesController = EmployeesController;
+exports.AgentsController = AgentsController;
 __decorate([
     (0, common_1.Get)('dashboard'),
-    (0, roles_decorator_1.Roles)(client_1.Role.EMPLOYEE, client_1.Role.ADMIN),
-    (0, swagger_1.ApiOperation)({ summary: 'Get summary for employee task dashboard' }),
+    (0, roles_decorator_1.Roles)(client_1.Role.AGENT, client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Get summary for agent task dashboard' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], EmployeesController.prototype, "getDashboard", null);
+], AgentsController.prototype, "getDashboard", null);
 __decorate([
     (0, common_1.Get)(),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
-    (0, swagger_1.ApiOperation)({ summary: '[Admin] List all employees' }),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] List all agents' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], EmployeesController.prototype, "findAll", null);
+], AgentsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)('trucks'),
-    (0, roles_decorator_1.Roles)(client_1.Role.EMPLOYEE),
-    (0, swagger_1.ApiOperation)({ summary: '[Employee] Register a new truck with documents' }),
+    (0, roles_decorator_1.Roles)(client_1.Role.AGENT),
+    (0, swagger_1.ApiOperation)({ summary: '[Agent] Register a new truck with documents' }),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
         { name: 'taxTokenFile', maxCount: 1 },
@@ -104,50 +104,50 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
-], EmployeesController.prototype, "registerTruck", null);
+], AgentsController.prototype, "registerTruck", null);
 __decorate([
     (0, common_1.Get)('trucks'),
-    (0, roles_decorator_1.Roles)(client_1.Role.EMPLOYEE),
-    (0, swagger_1.ApiOperation)({ summary: '[Employee] List trucks registered by this employee' }),
+    (0, roles_decorator_1.Roles)(client_1.Role.AGENT),
+    (0, swagger_1.ApiOperation)({ summary: '[Agent] List trucks registered by this agent' }),
     __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], EmployeesController.prototype, "getMyTrucks", null);
+], AgentsController.prototype, "getMyTrucks", null);
 __decorate([
     (0, common_1.Get)('admin/overview'),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
-    (0, swagger_1.ApiOperation)({ summary: '[Admin] Get all employees with their truck counts and info' }),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Get all agents with their truck counts and info' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], EmployeesController.prototype, "getAdminOverview", null);
+], AgentsController.prototype, "getAdminOverview", null);
 __decorate([
-    (0, common_1.Get)('admin/:employeeId/trucks'),
+    (0, common_1.Get)('admin/:agentId/trucks'),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
-    (0, swagger_1.ApiOperation)({ summary: '[Admin] Get all trucks registered by a specific employee' }),
-    __param(0, (0, common_1.Param)('employeeId')),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Get all trucks registered by a specific agent' }),
+    __param(0, (0, common_1.Param)('agentId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], EmployeesController.prototype, "getEmployeeTrucks", null);
+], AgentsController.prototype, "getAgentTrucks", null);
 __decorate([
     (0, common_1.Patch)('admin/trucks/:truckId/approve'),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
-    (0, swagger_1.ApiOperation)({ summary: '[Admin] Approve or reject a truck submitted by an employee' }),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Approve or reject a truck submitted by an agent' }),
     __param(0, (0, common_1.Param)('truckId')),
     __param(1, (0, common_1.Body)('status')),
     __param(2, (0, common_1.Body)('note')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", void 0)
-], EmployeesController.prototype, "approveTruck", null);
-exports.EmployeesController = EmployeesController = __decorate([
-    (0, swagger_1.ApiTags)('employees'),
+], AgentsController.prototype, "approveTruck", null);
+exports.AgentsController = AgentsController = __decorate([
+    (0, swagger_1.ApiTags)('agents'),
     (0, swagger_1.ApiBearerAuth)('access-token'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, common_1.Controller)({ path: 'employees', version: '1' }),
-    __metadata("design:paramtypes", [employees_service_1.EmployeesService,
+    (0, common_1.Controller)({ path: 'agents', version: '1' }),
+    __metadata("design:paramtypes", [agents_service_1.AgentsService,
         storage_service_1.StorageService])
-], EmployeesController);
-//# sourceMappingURL=employees.controller.js.map
+], AgentsController);
+//# sourceMappingURL=agents.controller.js.map

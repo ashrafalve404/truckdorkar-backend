@@ -18,7 +18,7 @@ export class AuthService {
     // ─── Register ────────────────────────────────────────────────────────────
 
     async register(dto: RegisterDto) {
-        const { name, email, phone, password, role, licenseNumber, experience, companyName, employeeId, nidNumber, dateOfBirth } = dto;
+        const { name, email, phone, password, role, licenseNumber, experience, companyName, agentId, nidNumber, dateOfBirth } = dto;
 
         // Check uniqueness
         if (email) {
@@ -50,11 +50,11 @@ export class AuthService {
                         }
                     },
                 }),
-                // Auto-create employee profile if role is EMPLOYEE
-                ...(safeRole === Role.EMPLOYEE && {
-                    employee: {
+                // Auto-create agent profile if role is AGENT
+                ...(safeRole === Role.AGENT && {
+                    agent: {
                         create: {
-                            employeeId,
+                            agentId,
                             nidNumber,
                             dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
                             designation: 'Staff', // Default designation
@@ -204,7 +204,7 @@ export class AuthService {
                 driver: {
                     select: { id: true, status: true, rating: true, totalTrips: true, isAvailable: true },
                 },
-                employee: { select: { id: true, employeeId: true, department: true, designation: true } },
+                agent: { select: { id: true, agentId: true, department: true, designation: true } },
             },
         });
         if (!user) throw new NotFoundException('User not found');

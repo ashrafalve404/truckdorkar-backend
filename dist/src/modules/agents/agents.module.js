@@ -6,20 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EmployeesModule = void 0;
+exports.AgentsModule = void 0;
 const common_1 = require("@nestjs/common");
-const employees_controller_1 = require("./employees.controller");
-const employees_service_1 = require("./employees.service");
+const agents_controller_1 = require("./agents.controller");
+const agents_service_1 = require("./agents.service");
 const storage_module_1 = require("../storage/storage.module");
-let EmployeesModule = class EmployeesModule {
+let AgentsModule = class AgentsModule {
 };
-exports.EmployeesModule = EmployeesModule;
-exports.EmployeesModule = EmployeesModule = __decorate([
+exports.AgentsModule = AgentsModule;
+exports.AgentsModule = AgentsModule = __decorate([
     (0, common_1.Module)({
         imports: [storage_module_1.StorageModule],
-        controllers: [employees_controller_1.EmployeesController],
-        providers: [employees_service_1.EmployeesService],
-        exports: [employees_service_1.EmployeesService],
+        controllers: [agents_controller_1.AgentsController],
+        providers: [agents_service_1.AgentsService],
+        exports: [agents_service_1.AgentsService],
     })
-], EmployeesModule);
-//# sourceMappingURL=employees.module.js.map
+], AgentsModule);
+//# sourceMappingURL=agents.module.js.map

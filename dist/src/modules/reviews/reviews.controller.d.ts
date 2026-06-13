@@ -7,14 +7,14 @@ export declare class ReviewsController {
         message: string;
         data: {
             id: string;
+            rating: number;
+            comment: string | null;
+            isVisible: boolean;
             createdAt: Date;
             updatedAt: Date;
-            rating: number;
             bookingId: string;
-            comment: string | null;
             reviewerId: string;
             driverUserId: string;
-            isVisible: boolean;
         };
     }>;
     findForDriver(driverUserId: string): Promise<{
@@ -26,28 +26,28 @@ export declare class ReviewsController {
             };
         } & {
             id: string;
+            rating: number;
+            comment: string | null;
+            isVisible: boolean;
             createdAt: Date;
             updatedAt: Date;
-            rating: number;
             bookingId: string;
-            comment: string | null;
             reviewerId: string;
             driverUserId: string;
-            isVisible: boolean;
         })[];
     }>;
     moderate(id: string, isVisible: boolean): Promise<{
         message: string;
         data: {
             id: string;
+            rating: number;
+            comment: string | null;
+            isVisible: boolean;
             createdAt: Date;
             updatedAt: Date;
-            rating: number;
             bookingId: string;
-            comment: string | null;
             reviewerId: string;
             driverUserId: string;
-            isVisible: boolean;
         };
     }>;
 }

@@ -29,7 +29,7 @@ class CreateTruckDto {
     taxTokenUrl;
     blueBookUrl;
     numberPlateImageUrl;
-    registeredByEmployeeId;
+    registeredByAgentId;
 }
 exports.CreateTruckDto = CreateTruckDto;
 __decorate([
@@ -122,7 +122,7 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateTruckDto.prototype, "registeredByEmployeeId", void 0);
+], CreateTruckDto.prototype, "registeredByAgentId", void 0);
 class UpdateTruckDto {
     name;
     capacityTon;

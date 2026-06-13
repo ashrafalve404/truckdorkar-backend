@@ -27,7 +27,7 @@ export class RegisterDto {
     @IsEnum(Role)
     role?: Role;
 
-    // Optional fields for Driver/Employee
+    // Optional fields for Driver/Agent
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
@@ -45,7 +45,7 @@ export class RegisterDto {
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    employeeId?: string;
+    agentId?: string;
 
     @ApiPropertyOptional()
     @IsOptional()

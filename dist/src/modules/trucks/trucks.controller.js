@@ -163,7 +163,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/approve'),
     (0, swagger_1.ApiBearerAuth)('access-token'),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EMPLOYEE),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.AGENT),
     (0, swagger_1.ApiOperation)({ summary: '[Admin] Approve or reject a truck' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),

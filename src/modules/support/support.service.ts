@@ -15,7 +15,7 @@ export class SupportService {
     }
 
     async findAll(userId: string, role: Role) {
-        const where = role === Role.ADMIN || role === Role.EMPLOYEE ? {} : { userId };
+        const where = role === Role.ADMIN || role === Role.AGENT ? {} : { userId };
         const tickets = await this.prisma.supportTicket.findMany({
             where,
             include: { user: { select: { name: true, phone: true } } },
@@ -45,9 +45,9 @@ export class SupportService {
             data: { ticketId: id, userId, message: dto.message },
         });
 
-        // Auto update status if employee replies
+        // Auto update status if agent replies
         const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-        if (user?.role === Role.ADMIN || user?.role === Role.EMPLOYEE) {
+        if (user?.role === Role.ADMIN || user?.role === Role.AGENT) {
             await this.prisma.supportTicket.update({ where: { id }, data: { status: TicketStatus.IN_PROGRESS } });
         }
 

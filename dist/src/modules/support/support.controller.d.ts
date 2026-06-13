@@ -8,13 +8,13 @@ export declare class SupportController {
         message: string;
         data: {
             id: string;
+            subject: string;
+            description: string;
+            status: import("@prisma/client").$Enums.TicketStatus;
+            priority: import("@prisma/client").$Enums.TicketPriority;
             createdAt: Date;
             updatedAt: Date;
-            status: import("@prisma/client").$Enums.TicketStatus;
-            description: string;
             userId: string;
-            subject: string;
-            priority: import("@prisma/client").$Enums.TicketPriority;
         };
     }>;
     findAll(user: {
@@ -24,18 +24,18 @@ export declare class SupportController {
         message: string;
         data: ({
             user: {
-                phone: string | null;
                 name: string | null;
+                phone: string | null;
             };
         } & {
             id: string;
+            subject: string;
+            description: string;
+            status: import("@prisma/client").$Enums.TicketStatus;
+            priority: import("@prisma/client").$Enums.TicketPriority;
             createdAt: Date;
             updatedAt: Date;
-            status: import("@prisma/client").$Enums.TicketStatus;
-            description: string;
             userId: string;
-            subject: string;
-            priority: import("@prisma/client").$Enums.TicketPriority;
         })[];
     }>;
     findOne(id: string, user: {
@@ -45,8 +45,8 @@ export declare class SupportController {
         message: string;
         data: {
             user: {
-                phone: string | null;
                 name: string | null;
+                phone: string | null;
             };
             replies: ({
                 user: {
@@ -58,18 +58,18 @@ export declare class SupportController {
                 id: string;
                 createdAt: Date;
                 userId: string;
-                message: string;
                 ticketId: string;
+                message: string;
             })[];
         } & {
             id: string;
+            subject: string;
+            description: string;
+            status: import("@prisma/client").$Enums.TicketStatus;
+            priority: import("@prisma/client").$Enums.TicketPriority;
             createdAt: Date;
             updatedAt: Date;
-            status: import("@prisma/client").$Enums.TicketStatus;
-            description: string;
             userId: string;
-            subject: string;
-            priority: import("@prisma/client").$Enums.TicketPriority;
         };
     }>;
     reply(id: string, userId: string, dto: CreateReplyDto): Promise<{
@@ -78,21 +78,21 @@ export declare class SupportController {
             id: string;
             createdAt: Date;
             userId: string;
-            message: string;
             ticketId: string;
+            message: string;
         };
     }>;
     updateStatus(id: string, status: TicketStatus): Promise<{
         message: string;
         data: {
             id: string;
+            subject: string;
+            description: string;
+            status: import("@prisma/client").$Enums.TicketStatus;
+            priority: import("@prisma/client").$Enums.TicketPriority;
             createdAt: Date;
             updatedAt: Date;
-            status: import("@prisma/client").$Enums.TicketStatus;
-            description: string;
             userId: string;
-            subject: string;
-            priority: import("@prisma/client").$Enums.TicketPriority;
         };
     }>;
 }

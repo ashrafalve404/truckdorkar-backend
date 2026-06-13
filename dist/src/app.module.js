@@ -23,7 +23,7 @@ const support_module_1 = require("./modules/support/support.module");
 const cms_module_1 = require("./modules/cms/cms.module");
 const contact_module_1 = require("./modules/contact/contact.module");
 const admin_module_1 = require("./modules/admin/admin.module");
-const employees_module_1 = require("./modules/employees/employees.module");
+const agents_module_1 = require("./modules/agents/agents.module");
 const storage_module_1 = require("./modules/storage/storage.module");
 let AppModule = class AppModule {
 };
@@ -47,7 +47,7 @@ exports.AppModule = AppModule = __decorate([
             cms_module_1.CmsModule,
             contact_module_1.ContactModule,
             admin_module_1.AdminModule,
-            employees_module_1.EmployeesModule,
+            agents_module_1.AgentsModule,
         ],
     })
 ], AppModule);

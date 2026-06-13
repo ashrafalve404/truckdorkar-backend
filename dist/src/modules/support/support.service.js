@@ -25,7 +25,7 @@ let SupportService = class SupportService {
         return { message: 'Support ticket created', data: ticket };
     }
     async findAll(userId, role) {
-        const where = role === client_1.Role.ADMIN || role === client_1.Role.EMPLOYEE ? {} : { userId };
+        const where = role === client_1.Role.ADMIN || role === client_1.Role.AGENT ? {} : { userId };
         const tickets = await this.prisma.supportTicket.findMany({
             where,
             include: { user: { select: { name: true, phone: true } } },
@@ -55,7 +55,7 @@ let SupportService = class SupportService {
             data: { ticketId: id, userId, message: dto.message },
         });
         const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-        if (user?.role === client_1.Role.ADMIN || user?.role === client_1.Role.EMPLOYEE) {
+        if (user?.role === client_1.Role.ADMIN || user?.role === client_1.Role.AGENT) {
             await this.prisma.supportTicket.update({ where: { id }, data: { status: client_1.TicketStatus.IN_PROGRESS } });
         }
         return { message: 'Reply added', data: reply };

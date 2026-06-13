@@ -7,12 +7,12 @@ export declare class ContactController {
         message: string;
         data: {
             id: string;
-            email: string | null;
-            phone: string;
             name: string;
-            createdAt: Date;
-            isRead: boolean;
+            phone: string;
+            email: string | null;
             message: string;
+            isRead: boolean;
+            createdAt: Date;
         };
     }>;
     findAll(page?: number, limit?: number): Promise<{
@@ -20,12 +20,12 @@ export declare class ContactController {
         data: {
             messages: {
                 id: string;
-                email: string | null;
-                phone: string;
                 name: string;
-                createdAt: Date;
-                isRead: boolean;
+                phone: string;
+                email: string | null;
                 message: string;
+                isRead: boolean;
+                createdAt: Date;
             }[];
             total: number;
             page: number;
@@ -36,12 +36,12 @@ export declare class ContactController {
         message: string;
         data: {
             id: string;
-            email: string | null;
-            phone: string;
             name: string;
-            createdAt: Date;
-            isRead: boolean;
+            phone: string;
+            email: string | null;
             message: string;
+            isRead: boolean;
+            createdAt: Date;
         };
     }>;
 }

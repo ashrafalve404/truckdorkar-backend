@@ -30,7 +30,7 @@ export class ReviewsController {
     @Patch(':id/moderate')
     @ApiBearerAuth('access-token')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    @Roles(Role.ADMIN, Role.AGENT)
     @ApiOperation({ summary: '[Admin] Show or hide a review' })
     moderate(@Param('id') id: string, @Body('isVisible') isVisible: boolean) {
         return this.reviewsService.moderate(id, isVisible);

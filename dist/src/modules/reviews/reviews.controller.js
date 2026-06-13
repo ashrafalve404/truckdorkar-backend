@@ -61,7 +61,7 @@ __decorate([
     (0, common_1.Patch)(':id/moderate'),
     (0, swagger_1.ApiBearerAuth)('access-token'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.EMPLOYEE),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.AGENT),
     (0, swagger_1.ApiOperation)({ summary: '[Admin] Show or hide a review' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)('isVisible')),

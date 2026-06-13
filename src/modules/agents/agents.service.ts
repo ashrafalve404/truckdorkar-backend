@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { BookingStatus, TicketStatus, TruckStatus } from '@prisma/client';
 
 @Injectable()
-export class EmployeesService {
+export class AgentsService {
     constructor(private prisma: PrismaService) { }
 
     async getDashboard() {
@@ -24,7 +24,7 @@ export class EmployeesService {
         ]);
 
         return {
-            message: 'Employee dashboard summary',
+            message: 'Agent dashboard summary',
             data: {
                 counts: {
                     pendingDrivers,
@@ -38,25 +38,20 @@ export class EmployeesService {
     }
 
     async findAll() {
-        const employees = await this.prisma.employee.findMany({
+        const agents = await this.prisma.agent.findMany({
             include: { user: { select: { name: true, phone: true, email: true, isActive: true } } },
         });
-        return { message: 'Employees fetched', data: employees };
+        return { message: 'Agents fetched', data: agents };
     }
 
-    // ── Truck Registration by Employee ─────────────────────────────────────
+    // ── Truck Registration by Agent ─────────────────────────────────────
 
     async registerTruck(userId: string, data: any) {
-        // Find the employee record
-        const employee = await this.prisma.employee.findUnique({ where: { userId } });
-        if (!employee) throw new NotFoundException('Employee profile not found');
+        // Find the agent record
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent) throw new NotFoundException('Agent profile not found');
 
         // Find or create a driver placeholder linked to a "fleet driver" user
-        // Trucks registered by employees need a driverId — we use a system driver or find one
-        // For employee-registered trucks, we create a special relationship:
-        // The truck is owned by the employee fleet, so we need a dummy driverId.
-        // Best practice: the employee links a specific driver. For now we require driverPhone field.
-        // Find driver by phone or ID passed in body
         let driver: any = null;
         if (data.driverUserId) {
             driver = await this.prisma.driver.findFirst({ where: { userId: data.driverUserId } });
@@ -74,7 +69,7 @@ export class EmployeesService {
         const truck = await this.prisma.truck.create({
             data: {
                 driverId: driver.id,
-                registeredByEmployeeId: employee.id,
+                registeredByAgentId: agent.id,
                 name: data.name,
                 registrationNo: data.registrationNo,
                 numberPlateText: data.numberPlateText,
@@ -98,12 +93,12 @@ export class EmployeesService {
         return { message: 'Truck registered for review', data: truck };
     }
 
-    async getTrucksByEmployee(userId: string) {
-        const employee = await this.prisma.employee.findUnique({ where: { userId } });
-        if (!employee) throw new NotFoundException('Employee profile not found');
+    async getTrucksByAgent(userId: string) {
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent) throw new NotFoundException('Agent profile not found');
 
         const trucks = await this.prisma.truck.findMany({
-            where: { registeredByEmployeeId: employee.id } as any,
+            where: { registeredByAgentId: agent.id } as any,
             include: {
                 driver: { include: { user: { select: { name: true, phone: true } } } },
                 images: true,
@@ -111,13 +106,13 @@ export class EmployeesService {
             orderBy: { createdAt: 'desc' },
         });
 
-        return { message: 'Employee trucks fetched', data: trucks };
+        return { message: 'Agent trucks fetched', data: trucks };
     }
 
     // ── Admin Operations ──────────────────────────────────────────────────
 
     async getAdminOverview() {
-        const employees = await this.prisma.employee.findMany({
+        const agents = await this.prisma.agent.findMany({
             include: {
                 user: { select: { name: true, phone: true, email: true, isActive: true } },
                 trucks: {
@@ -133,25 +128,25 @@ export class EmployeesService {
             orderBy: { createdAt: 'desc' },
         });
 
-        const overview = employees.map((emp: any) => ({
-            id: emp.id,
-            employeeId: emp.employeeId,
-            user: emp.user,
-            department: emp.department,
-            designation: emp.designation,
-            trucksTotal: emp.trucks ? emp.trucks.length : 0,
-            trucksPending: emp.trucks ? emp.trucks.filter((t: any) => t.status === 'PENDING').length : 0,
-            trucksApproved: emp.trucks ? emp.trucks.filter((t: any) => t.status === 'APPROVED').length : 0,
-            trucksRejected: emp.trucks ? emp.trucks.filter((t: any) => t.status === 'REJECTED').length : 0,
-            recentTrucks: emp.trucks ? emp.trucks.slice(0, 3) : [],
+        const overview = agents.map((agt: any) => ({
+            id: agt.id,
+            agentId: agt.agentId,
+            user: agt.user,
+            department: agt.department,
+            designation: agt.designation,
+            trucksTotal: agt.trucks ? agt.trucks.length : 0,
+            trucksPending: agt.trucks ? agt.trucks.filter((t: any) => t.status === 'PENDING').length : 0,
+            trucksApproved: agt.trucks ? agt.trucks.filter((t: any) => t.status === 'APPROVED').length : 0,
+            trucksRejected: agt.trucks ? agt.trucks.filter((t: any) => t.status === 'REJECTED').length : 0,
+            recentTrucks: agt.trucks ? agt.trucks.slice(0, 3) : [],
         }));
 
-        return { message: 'Admin employee overview fetched', data: overview };
+        return { message: 'Admin agent overview fetched', data: overview };
     }
 
-    async getTrucksByEmployeeId(employeeId: string) {
+    async getTrucksByAgentId(agentId: string) {
         const trucks = await this.prisma.truck.findMany({
-            where: { registeredByEmployeeId: employeeId } as any,
+            where: { registeredByAgentId: agentId } as any,
             include: {
                 driver: { include: { user: { select: { name: true, phone: true } } } },
                 images: true,
@@ -159,7 +154,7 @@ export class EmployeesService {
             orderBy: { createdAt: 'desc' },
         });
 
-        return { message: 'Employee trucks fetched', data: trucks };
+        return { message: 'Agent trucks fetched', data: trucks };
     }
 
     async approveTruck(truckId: string, status: string, note?: string) {

@@ -18,7 +18,7 @@ export class CreateTruckDto {
     @ApiPropertyOptional() @IsOptional() @IsString() taxTokenUrl?: string;
     @ApiPropertyOptional() @IsOptional() @IsString() blueBookUrl?: string;
     @ApiPropertyOptional() @IsOptional() @IsString() numberPlateImageUrl?: string;
-    @ApiPropertyOptional() @IsOptional() @IsString() registeredByEmployeeId?: string;
+    @ApiPropertyOptional() @IsOptional() @IsString() registeredByAgentId?: string;
 }
 
 export class UpdateTruckDto {

@@ -8,39 +8,39 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { EmployeesService } from './employees.service';
+import { AgentsService } from './agents.service';
 import { StorageService } from '../storage/storage.service';
 import { Role } from '@prisma/client';
 
-@ApiTags('employees')
+@ApiTags('agents')
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller({ path: 'employees', version: '1' })
-export class EmployeesController {
+@Controller({ path: 'agents', version: '1' })
+export class AgentsController {
     constructor(
-        private readonly employeesService: EmployeesService,
+        private readonly agentsService: AgentsService,
         private readonly storageService: StorageService,
     ) { }
 
     @Get('dashboard')
-    @Roles(Role.EMPLOYEE, Role.ADMIN)
-    @ApiOperation({ summary: 'Get summary for employee task dashboard' })
+    @Roles(Role.AGENT, Role.ADMIN)
+    @ApiOperation({ summary: 'Get summary for agent task dashboard' })
     getDashboard() {
-        return this.employeesService.getDashboard();
+        return this.agentsService.getDashboard();
     }
 
     @Get()
     @Roles(Role.ADMIN)
-    @ApiOperation({ summary: '[Admin] List all employees' })
+    @ApiOperation({ summary: '[Admin] List all agents' })
     findAll() {
-        return this.employeesService.findAll();
+        return this.agentsService.findAll();
     }
 
-    // ── Truck Registration by Employee ─────────────────────────────────────
+    // ── Truck Registration by Agent ─────────────────────────────────────
 
     @Post('trucks')
-    @Roles(Role.EMPLOYEE)
-    @ApiOperation({ summary: '[Employee] Register a new truck with documents' })
+    @Roles(Role.AGENT)
+    @ApiOperation({ summary: '[Agent] Register a new truck with documents' })
     @ApiConsumes('multipart/form-data')
     @UseInterceptors(FileFieldsInterceptor([
         { name: 'taxTokenFile', maxCount: 1 },
@@ -69,7 +69,7 @@ export class EmployeesController {
             files.drivingLicenseFile?.[0] ? this.storageService.save(files.drivingLicenseFile[0], 'truck-docs') : Promise.resolve(undefined),
         ]);
 
-        return this.employeesService.registerTruck(userId, {
+        return this.agentsService.registerTruck(userId, {
             ...body,
             capacityTon: Number(body.capacityTon),
             lengthFt: Number(body.lengthFt),
@@ -83,36 +83,36 @@ export class EmployeesController {
     }
 
     @Get('trucks')
-    @Roles(Role.EMPLOYEE)
-    @ApiOperation({ summary: '[Employee] List trucks registered by this employee' })
+    @Roles(Role.AGENT)
+    @ApiOperation({ summary: '[Agent] List trucks registered by this agent' })
     getMyTrucks(@CurrentUser('id') userId: string) {
-        return this.employeesService.getTrucksByEmployee(userId);
+        return this.agentsService.getTrucksByAgent(userId);
     }
 
-    // ── Admin: Employee Overview ────────────────────────────────────────────
+    // ── Admin: Agent Overview ────────────────────────────────────────────
 
     @Get('admin/overview')
     @Roles(Role.ADMIN)
-    @ApiOperation({ summary: '[Admin] Get all employees with their truck counts and info' })
+    @ApiOperation({ summary: '[Admin] Get all agents with their truck counts and info' })
     getAdminOverview() {
-        return this.employeesService.getAdminOverview();
+        return this.agentsService.getAdminOverview();
     }
 
-    @Get('admin/:employeeId/trucks')
+    @Get('admin/:agentId/trucks')
     @Roles(Role.ADMIN)
-    @ApiOperation({ summary: '[Admin] Get all trucks registered by a specific employee' })
-    getEmployeeTrucks(@Param('employeeId') employeeId: string) {
-        return this.employeesService.getTrucksByEmployeeId(employeeId);
+    @ApiOperation({ summary: '[Admin] Get all trucks registered by a specific agent' })
+    getAgentTrucks(@Param('agentId') agentId: string) {
+        return this.agentsService.getTrucksByAgentId(agentId);
     }
 
     @Patch('admin/trucks/:truckId/approve')
     @Roles(Role.ADMIN)
-    @ApiOperation({ summary: '[Admin] Approve or reject a truck submitted by an employee' })
+    @ApiOperation({ summary: '[Admin] Approve or reject a truck submitted by an agent' })
     approveTruck(
         @Param('truckId') truckId: string,
         @Body('status') status: string,
         @Body('note') note?: string,
     ) {
-        return this.employeesService.approveTruck(truckId, status, note);
+        return this.agentsService.approveTruck(truckId, status, note);
     }
 }

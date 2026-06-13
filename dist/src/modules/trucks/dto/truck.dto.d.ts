@@ -15,7 +15,7 @@ export declare class CreateTruckDto {
     taxTokenUrl?: string;
     blueBookUrl?: string;
     numberPlateImageUrl?: string;
-    registeredByEmployeeId?: string;
+    registeredByAgentId?: string;
 }
 export declare class UpdateTruckDto {
     name?: string;
