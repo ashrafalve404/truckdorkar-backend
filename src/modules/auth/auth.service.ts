@@ -4,11 +4,14 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, SocialLoginDto } from './dto/auth.dto';
 import { Role } from '@prisma/client';
+import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
+    private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
     constructor(
         private prisma: PrismaService,
         private jwtService: JwtService,
@@ -95,6 +98,55 @@ export class AuthService {
 
         const { password: _, refreshToken: __, resetToken: ___, ...safeUser } = user;
         return { message: 'Login successful', data: { user: safeUser, ...tokens } };
+    }
+
+    // ─── Google Login ────────────────────────────────────────────────────────
+
+    async googleLogin(dto: SocialLoginDto) {
+        try {
+            let email: string;
+
+            try {
+                // Try verifying as ID Token first
+                const ticket = await this.googleClient.verifyIdToken({
+                    idToken: dto.token,
+                    audience: process.env.GOOGLE_CLIENT_ID,
+                });
+                const payload = ticket.getPayload();
+                if (!payload || !payload.email) throw new Error('No email in payload');
+                email = payload.email;
+            } catch (e) {
+                // If not an ID Token, it might be an Access Token (implicit flow)
+                // Fetch user info from Google directly
+                const userInfo = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${dto.token}`)
+                    .then(res => res.json());
+
+                if (!userInfo || !userInfo.email) {
+                    throw new BadRequestException('Invalid Google token or unable to fetch user info');
+                }
+                email = userInfo.email;
+            }
+
+            // Find user by email
+            const user = await this.prisma.user.findUnique({
+                where: { email, isActive: true },
+            });
+
+            if (!user) {
+                throw new NotFoundException('No account found with this Google email. Please register first.');
+            }
+
+            // Generate tokens for existing user
+            const tokens = await this.generateTokens(user.id, user.email!, user.phone || 'G-User', user.role);
+            await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+            const { password: _, refreshToken: __, resetToken: ___, ...safeUser } = user;
+            return { message: 'Google login successful', data: { user: safeUser, ...tokens } };
+        } catch (error) {
+            if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
+            console.error('Google Auth Error:', error);
+            throw new UnauthorizedException('Google authentication failed');
+        }
     }
 
     // ─── Refresh Token ───────────────────────────────────────────────────────

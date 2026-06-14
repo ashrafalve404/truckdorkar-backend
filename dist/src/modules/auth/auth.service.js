@@ -50,10 +50,12 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const bcrypt = __importStar(require("bcryptjs"));
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
+const google_auth_library_1 = require("google-auth-library");
 let AuthService = class AuthService {
     prisma;
     jwtService;
     config;
+    googleClient = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     constructor(prisma, jwtService, config) {
         this.prisma = prisma;
         this.jwtService = jwtService;
@@ -121,6 +123,45 @@ let AuthService = class AuthService {
         await this.updateRefreshToken(user.id, tokens.refreshToken);
         const { password: _, refreshToken: __, resetToken: ___, ...safeUser } = user;
         return { message: 'Login successful', data: { user: safeUser, ...tokens } };
+    }
+    async googleLogin(dto) {
+        try {
+            let email;
+            try {
+                const ticket = await this.googleClient.verifyIdToken({
+                    idToken: dto.token,
+                    audience: process.env.GOOGLE_CLIENT_ID,
+                });
+                const payload = ticket.getPayload();
+                if (!payload || !payload.email)
+                    throw new Error('No email in payload');
+                email = payload.email;
+            }
+            catch (e) {
+                const userInfo = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${dto.token}`)
+                    .then(res => res.json());
+                if (!userInfo || !userInfo.email) {
+                    throw new common_1.BadRequestException('Invalid Google token or unable to fetch user info');
+                }
+                email = userInfo.email;
+            }
+            const user = await this.prisma.user.findUnique({
+                where: { email, isActive: true },
+            });
+            if (!user) {
+                throw new common_1.NotFoundException('No account found with this Google email. Please register first.');
+            }
+            const tokens = await this.generateTokens(user.id, user.email, user.phone || 'G-User', user.role);
+            await this.updateRefreshToken(user.id, tokens.refreshToken);
+            const { password: _, refreshToken: __, resetToken: ___, ...safeUser } = user;
+            return { message: 'Google login successful', data: { user: safeUser, ...tokens } };
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException || error instanceof common_1.BadRequestException)
+                throw error;
+            console.error('Google Auth Error:', error);
+            throw new common_1.UnauthorizedException('Google authentication failed');
+        }
     }
     async refreshTokens(userId, refreshToken) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });

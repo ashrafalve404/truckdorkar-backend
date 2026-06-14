@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, RefreshTokenDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, RefreshTokenDto, SocialLoginDto } from './dto/auth.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -29,6 +29,14 @@ export class AuthController {
     @ApiOperation({ summary: 'Login with phone/email and password' })
     login(@Body() dto: LoginDto) {
         return this.authService.login(dto);
+    }
+
+    @Public()
+    @Post('google')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Login with Google ID Token' })
+    googleLogin(@Body() dto: SocialLoginDto) {
+        return this.authService.googleLogin(dto);
     }
 
     @Public()

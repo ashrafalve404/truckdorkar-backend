@@ -30,3 +30,6 @@ export declare class ChangePasswordDto {
 export declare class RefreshTokenDto {
     refreshToken: string;
 }
+export declare class SocialLoginDto {
+    token: string;
+}

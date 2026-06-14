@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, RefreshTokenDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, RefreshTokenDto, SocialLoginDto } from './dto/auth.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
@@ -19,6 +19,31 @@ export declare class AuthController {
         };
     }>;
     login(dto: LoginDto): Promise<{
+        message: string;
+        data: {
+            accessToken: string;
+            refreshToken: string;
+            user: {
+                id: string;
+                email: string | null;
+                phone: string | null;
+                name: string | null;
+                avatar: string | null;
+                role: import("@prisma/client").$Enums.Role;
+                isEmailVerified: boolean;
+                isPhoneVerified: boolean;
+                isActive: boolean;
+                emailVerifyToken: string | null;
+                phoneOtp: string | null;
+                phoneOtpExpiry: Date | null;
+                resetTokenExpiry: Date | null;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
+            };
+        };
+    }>;
+    googleLogin(dto: SocialLoginDto): Promise<{
         message: string;
         data: {
             accessToken: string;

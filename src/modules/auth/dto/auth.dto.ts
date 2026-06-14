@@ -101,3 +101,9 @@ export class RefreshTokenDto {
     @IsString()
     refreshToken: string;
 }
+
+export class SocialLoginDto {
+    @ApiProperty({ description: 'Social platform ID Token' })
+    @IsString()
+    token: string;
+}

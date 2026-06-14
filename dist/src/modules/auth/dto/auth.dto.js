@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RefreshTokenDto = exports.ChangePasswordDto = exports.ResetPasswordDto = exports.ForgotPasswordDto = exports.LoginDto = exports.RegisterDto = void 0;
+exports.SocialLoginDto = exports.RefreshTokenDto = exports.ChangePasswordDto = exports.ResetPasswordDto = exports.ForgotPasswordDto = exports.LoginDto = exports.RegisterDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 const client_1 = require("@prisma/client");
@@ -156,4 +156,13 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], RefreshTokenDto.prototype, "refreshToken", void 0);
+class SocialLoginDto {
+    token;
+}
+exports.SocialLoginDto = SocialLoginDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Social platform ID Token' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SocialLoginDto.prototype, "token", void 0);
 //# sourceMappingURL=auth.dto.js.map

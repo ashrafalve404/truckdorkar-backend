@@ -31,6 +31,9 @@ let AuthController = class AuthController {
     login(dto) {
         return this.authService.login(dto);
     }
+    googleLogin(dto) {
+        return this.authService.googleLogin(dto);
+    }
     refreshToken(dto, userId) {
         return this.authService.refreshTokens(userId, dto.refreshToken);
     }
@@ -72,6 +75,16 @@ __decorate([
     __metadata("design:paramtypes", [auth_dto_1.LoginDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('google'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Login with Google ID Token' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_dto_1.SocialLoginDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "googleLogin", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)('refresh-token'),
