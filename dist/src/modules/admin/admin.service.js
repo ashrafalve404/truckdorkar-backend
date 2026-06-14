@@ -19,7 +19,7 @@ let AdminService = class AdminService {
         this.prisma = prisma;
     }
     async getDashboardStats() {
-        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, pendingDrivers, openTickets] = await Promise.all([
+        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, pendingDrivers, pendingTrucks, openTickets] = await Promise.all([
             this.prisma.user.count({ where: { role: 'USER' } }),
             this.prisma.driver.count(),
             this.prisma.truck.count(),
@@ -29,6 +29,7 @@ let AdminService = class AdminService {
                 _sum: { finalFare: true },
             }),
             this.prisma.driver.count({ where: { status: client_1.DriverStatus.PENDING } }),
+            this.prisma.truck.count({ where: { status: 'PENDING' } }),
             this.prisma.supportTicket.count({ where: { status: client_1.TicketStatus.OPEN } }),
         ]);
         const bookingStats = await this.prisma.booking.groupBy({
@@ -50,6 +51,7 @@ let AdminService = class AdminService {
                     totalBookings,
                     totalRevenue: revenue._sum.finalFare || 0,
                     pendingDrivers,
+                    pendingTrucks,
                     openTickets
                 },
                 bookingStats,
@@ -122,6 +124,26 @@ let AdminService = class AdminService {
             message: 'Settings fetched',
             data: { ...defaultSettings, ...stored }
         };
+    }
+    async getAllTrucks(page = 1, limit = 20, status) {
+        const where = { deletedAt: null };
+        if (status)
+            where.status = status;
+        const [trucks, total] = await Promise.all([
+            this.prisma.truck.findMany({
+                where,
+                skip: (page - 1) * limit,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    driver: { include: { user: { select: { name: true, phone: true } } } },
+                    registeredByAgent: { include: { user: { select: { name: true } } } },
+                    images: { where: { isPrimary: true }, take: 1 },
+                },
+            }),
+            this.prisma.truck.count({ where }),
+        ]);
+        return { message: 'Trucks fetched', data: { trucks, total, page, limit } };
     }
     async updateSettings(settingsData) {
         const plainData = { ...settingsData };

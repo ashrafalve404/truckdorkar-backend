@@ -52,6 +52,16 @@ export class AdminController {
         return this.adminService.verifyDriver(id, status, note);
     }
 
+    @Get('trucks')
+    @ApiOperation({ summary: 'List all trucks in the system' })
+    getAllTrucks(
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+        @Query('status') status?: string,
+    ) {
+        return this.adminService.getAllTrucks(page, limit, status);
+    }
+
     @Get('settings')
     @ApiOperation({ summary: 'Get system settings' })
     getSettings() {

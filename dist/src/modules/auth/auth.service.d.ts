@@ -14,9 +14,9 @@ export declare class AuthService {
             refreshToken: string;
             user: {
                 id: string;
-                name: string | null;
                 email: string | null;
                 phone: string | null;
+                name: string | null;
                 role: import("@prisma/client").$Enums.Role;
                 createdAt: Date;
             };
@@ -29,9 +29,9 @@ export declare class AuthService {
             refreshToken: string;
             user: {
                 id: string;
-                name: string | null;
                 email: string | null;
                 phone: string | null;
+                name: string | null;
                 avatar: string | null;
                 role: import("@prisma/client").$Enums.Role;
                 isEmailVerified: boolean;
@@ -70,9 +70,9 @@ export declare class AuthService {
         message: string;
         data: {
             id: string;
-            name: string | null;
             email: string | null;
             phone: string | null;
+            name: string | null;
             avatar: string | null;
             role: import("@prisma/client").$Enums.Role;
             isEmailVerified: boolean;

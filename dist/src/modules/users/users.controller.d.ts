@@ -23,7 +23,6 @@ export declare class UsersController {
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                userId: string;
                 nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
@@ -40,24 +39,25 @@ export declare class UsersController {
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                userId: string;
             } | null;
             agent: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                userId: string;
                 nidNumber: string | null;
                 agentId: string | null;
                 dateOfBirth: Date | null;
                 department: string | null;
                 designation: string | null;
+                userId: string;
             } | null;
             addresses: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                userId: string;
                 address: string;
+                userId: string;
                 label: string;
                 city: string;
                 district: string | null;
@@ -91,8 +91,8 @@ export declare class UsersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             address: string;
+            userId: string;
             label: string;
             city: string;
             district: string | null;
@@ -107,8 +107,8 @@ export declare class UsersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             address: string;
+            userId: string;
             label: string;
             city: string;
             district: string | null;
@@ -123,8 +123,8 @@ export declare class UsersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             address: string;
+            userId: string;
             label: string;
             city: string;
             district: string | null;

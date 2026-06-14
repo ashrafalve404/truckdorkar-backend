@@ -42,11 +42,11 @@ export declare class AgentsService {
             createdAt: Date;
             updatedAt: Date;
             nidNumber: string | null;
-            dateOfBirth: Date | null;
-            userId: string;
             agentId: string | null;
+            dateOfBirth: Date | null;
             department: string | null;
             designation: string | null;
+            userId: string;
         })[];
     }>;
     registerTruck(userId: string, data: any): Promise<{
