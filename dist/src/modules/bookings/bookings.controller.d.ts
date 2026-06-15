@@ -31,6 +31,7 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
+            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -87,6 +88,7 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
+            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -246,6 +248,7 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
+            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -274,6 +277,7 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
+            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -302,6 +306,7 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
+            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -330,6 +335,7 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
+            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -371,6 +377,7 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
+            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;

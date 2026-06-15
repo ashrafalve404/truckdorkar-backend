@@ -7,6 +7,7 @@ export declare class CreateBookingDto {
     dropAddress: string;
     dropLat?: number;
     dropLng?: number;
+    truckType?: string;
     scheduledAt?: string;
     goodsType?: string;
     goodsWeight?: number;

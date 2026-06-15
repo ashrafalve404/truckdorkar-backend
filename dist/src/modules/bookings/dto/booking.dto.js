@@ -21,6 +21,7 @@ class CreateBookingDto {
     dropAddress;
     dropLat;
     dropLng;
+    truckType;
     scheduledAt;
     goodsType;
     goodsWeight;
@@ -66,6 +67,12 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], CreateBookingDto.prototype, "dropLng", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: '1_ton_open_7ft' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateBookingDto.prototype, "truckType", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: '2024-12-25T10:00:00Z' }),
     (0, class_validator_1.IsOptional)(),

@@ -21,6 +21,11 @@ export class CreateBookingDto {
     @ApiPropertyOptional() @IsOptional() @IsNumber() dropLat?: number;
     @ApiPropertyOptional() @IsOptional() @IsNumber() dropLng?: number;
 
+    @ApiPropertyOptional({ example: '1_ton_open_7ft' })
+    @IsOptional()
+    @IsString()
+    truckType?: string;
+
     @ApiPropertyOptional({ example: '2024-12-25T10:00:00Z' })
     @IsOptional()
     @IsDateString()

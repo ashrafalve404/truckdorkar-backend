@@ -20,6 +20,7 @@ export class BookingsService {
                 dropAddress: dto.dropAddress,
                 dropLat: dto.dropLat,
                 dropLng: dto.dropLng,
+                truckType: dto.truckType,
                 scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined,
                 goodsType: dto.goodsType,
                 goodsWeight: dto.goodsWeight,
