@@ -57,17 +57,46 @@ let AgentsService = class AgentsService {
         if (!agent)
             throw new common_1.NotFoundException('Agent profile not found');
         let driver = null;
+        let driverExisted = false;
         if (data.driverUserId) {
             driver = await this.prisma.driver.findFirst({ where: { userId: data.driverUserId } });
+            if (driver)
+                driverExisted = true;
         }
         else if (data.driverPhone) {
-            const driverUser = await this.prisma.user.findFirst({ where: { phone: data.driverPhone } });
+            let driverUser = await this.prisma.user.findFirst({ where: { phone: data.driverPhone } });
             if (driverUser) {
+                driverExisted = true;
                 driver = await this.prisma.driver.findFirst({ where: { userId: driverUser.id } });
+                if (!driver) {
+                    driver = await this.prisma.driver.create({
+                        data: {
+                            userId: driverUser.id,
+                            status: client_1.DriverStatus.VERIFIED,
+                        }
+                    });
+                }
+            }
+            else {
+                const newDriverUser = await this.prisma.user.create({
+                    data: {
+                        phone: data.driverPhone,
+                        name: data.name.split(' ')[0] + "'s Driver",
+                        role: 'DRIVER',
+                        password: '$2b$10$placeholderhashedpassword',
+                        isActive: true,
+                    }
+                });
+                driver = await this.prisma.driver.create({
+                    data: {
+                        userId: newDriverUser.id,
+                        status: client_1.DriverStatus.VERIFIED,
+                    }
+                });
             }
         }
         if (!driver) {
-            throw new common_1.NotFoundException('Driver not found. Please provide a valid driver phone number or user ID.');
+            throw new common_1.NotFoundException('Could not identify or create a driver for this truck.');
         }
         const truck = await this.prisma.truck.create({
             data: {
@@ -92,7 +121,13 @@ let AgentsService = class AgentsService {
                 status: client_1.TruckStatus.PENDING,
             },
         });
-        return { message: 'Truck registered for review', data: truck };
+        return {
+            message: driverExisted
+                ? 'Truck registered and linked to existing driver'
+                : 'Truck registered and new driver account created',
+            data: truck,
+            info: driverExisted ? 'This driver phone is already registered in our system.' : undefined
+        };
     }
     async getTrucksByAgent(userId) {
         const agent = await this.prisma.agent.findUnique({ where: { userId } });
@@ -155,6 +190,16 @@ let AgentsService = class AgentsService {
             data: { status: status, approvalNote: note, isAvailable: status === 'APPROVED' },
         });
         return { message: `Truck ${status.toLowerCase()}`, data: truck };
+    }
+    async remove(agentId) {
+        const agent = await this.prisma.agent.findUnique({ where: { id: agentId } });
+        if (!agent)
+            throw new common_1.NotFoundException('Agent not found');
+        await this.prisma.user.update({
+            where: { id: agent.userId },
+            data: { isActive: false, deletedAt: new Date() }
+        });
+        return { message: 'Agent removed successfully' };
     }
 };
 exports.AgentsService = AgentsService;

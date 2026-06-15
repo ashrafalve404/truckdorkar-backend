@@ -1,6 +1,6 @@
 import {
     Controller, Get, Post, Patch, Body, Param, UseGuards,
-    UploadedFiles, UseInterceptors, Request, Query
+    UploadedFiles, UseInterceptors, Request, Query, Delete
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -114,5 +114,12 @@ export class AgentsController {
         @Body('note') note?: string,
     ) {
         return this.agentsService.approveTruck(truckId, status, note);
+    }
+
+    @Delete(':agentId')
+    @Roles(Role.ADMIN)
+    @ApiOperation({ summary: '[Admin] Remove an agent' })
+    remove(@Param('agentId') agentId: string) {
+        return this.agentsService.remove(agentId);
     }
 }

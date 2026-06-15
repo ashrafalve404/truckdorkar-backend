@@ -24,6 +24,8 @@ const cms_module_1 = require("./modules/cms/cms.module");
 const contact_module_1 = require("./modules/contact/contact.module");
 const admin_module_1 = require("./modules/admin/admin.module");
 const agents_module_1 = require("./modules/agents/agents.module");
+const serve_static_1 = require("@nestjs/serve-static");
+const path_1 = require("path");
 const storage_module_1 = require("./modules/storage/storage.module");
 let AppModule = class AppModule {
 };
@@ -32,6 +34,10 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(process.cwd(), 'uploads'),
+                serveRoot: '/uploads',
+            }),
             throttler_1.ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
             prisma_module_1.PrismaModule,
             storage_module_1.StorageModule,

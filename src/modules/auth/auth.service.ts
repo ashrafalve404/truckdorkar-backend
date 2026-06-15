@@ -151,8 +151,21 @@ export class AuthService {
 
     // ─── Refresh Token ───────────────────────────────────────────────────────
 
-    async refreshTokens(userId: string, refreshToken: string) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    async refreshTokens(userId: string | undefined, refreshToken: string) {
+        let finalUserId = userId;
+
+        if (!finalUserId) {
+            try {
+                const payload = await this.jwtService.verifyAsync(refreshToken, {
+                    secret: this.config.get('JWT_REFRESH_SECRET'),
+                });
+                finalUserId = payload.sub;
+            } catch (e) {
+                throw new UnauthorizedException('Invalid refresh token');
+            }
+        }
+
+        const user = await this.prisma.user.findUnique({ where: { id: finalUserId } });
         if (!user?.refreshToken) throw new UnauthorizedException('Access denied');
 
         const rtMatches = await bcrypt.compare(refreshToken, user.refreshToken);

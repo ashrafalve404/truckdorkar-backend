@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BookingStatus, TicketStatus, TruckStatus } from '@prisma/client';
+import { BookingStatus, TicketStatus, TruckStatus, DriverStatus } from '@prisma/client';
 
 @Injectable()
 export class AgentsService {
@@ -53,17 +53,51 @@ export class AgentsService {
 
         // Find or create a driver placeholder linked to a "fleet driver" user
         let driver: any = null;
+        let driverExisted = false;
+
         if (data.driverUserId) {
             driver = await this.prisma.driver.findFirst({ where: { userId: data.driverUserId } });
+            if (driver) driverExisted = true;
         } else if (data.driverPhone) {
-            const driverUser = await this.prisma.user.findFirst({ where: { phone: data.driverPhone } });
+            let driverUser = await this.prisma.user.findFirst({ where: { phone: data.driverPhone } });
+
             if (driverUser) {
+                driverExisted = true;
+                // User exists, find their driver profile
                 driver = await this.prisma.driver.findFirst({ where: { userId: driverUser.id } });
+
+                // If user exists but has no driver profile, create one
+                if (!driver) {
+                    driver = await this.prisma.driver.create({
+                        data: {
+                            userId: driverUser.id,
+                            status: DriverStatus.VERIFIED, // Auto-verify if agent is adding them
+                        }
+                    });
+                }
+            } else {
+                // User doesn't exist, create both User (Driver role) and Driver profile
+                const newDriverUser = await this.prisma.user.create({
+                    data: {
+                        phone: data.driverPhone,
+                        name: data.name.split(' ')[0] + "'s Driver", // Placeholder name
+                        role: 'DRIVER',
+                        password: '$2b$10$placeholderhashedpassword', // Should be a random or default password
+                        isActive: true,
+                    }
+                });
+
+                driver = await this.prisma.driver.create({
+                    data: {
+                        userId: newDriverUser.id,
+                        status: DriverStatus.VERIFIED,
+                    }
+                });
             }
         }
 
         if (!driver) {
-            throw new NotFoundException('Driver not found. Please provide a valid driver phone number or user ID.');
+            throw new NotFoundException('Could not identify or create a driver for this truck.');
         }
 
         const truck = await this.prisma.truck.create({
@@ -90,7 +124,13 @@ export class AgentsService {
             } as any,
         });
 
-        return { message: 'Truck registered for review', data: truck };
+        return {
+            message: driverExisted
+                ? 'Truck registered and linked to existing driver'
+                : 'Truck registered and new driver account created',
+            data: truck,
+            info: driverExisted ? 'This driver phone is already registered in our system.' : undefined
+        };
     }
 
     async getTrucksByAgent(userId: string) {
@@ -163,5 +203,17 @@ export class AgentsService {
             data: { status: status as TruckStatus, approvalNote: note, isAvailable: status === 'APPROVED' },
         });
         return { message: `Truck ${status.toLowerCase()}`, data: truck };
+    }
+
+    async remove(agentId: string) {
+        const agent = await this.prisma.agent.findUnique({ where: { id: agentId } });
+        if (!agent) throw new NotFoundException('Agent not found');
+
+        await this.prisma.user.update({
+            where: { id: agent.userId },
+            data: { isActive: false, deletedAt: new Date() }
+        });
+
+        return { message: 'Agent removed successfully' };
     }
 }

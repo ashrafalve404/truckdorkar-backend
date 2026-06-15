@@ -68,6 +68,9 @@ let AgentsController = class AgentsController {
     approveTruck(truckId, status, note) {
         return this.agentsService.approveTruck(truckId, status, note);
     }
+    remove(agentId) {
+        return this.agentsService.remove(agentId);
+    }
 };
 exports.AgentsController = AgentsController;
 __decorate([
@@ -142,6 +145,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", void 0)
 ], AgentsController.prototype, "approveTruck", null);
+__decorate([
+    (0, common_1.Delete)(':agentId'),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Remove an agent' }),
+    __param(0, (0, common_1.Param)('agentId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AgentsController.prototype, "remove", null);
 exports.AgentsController = AgentsController = __decorate([
     (0, swagger_1.ApiTags)('agents'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

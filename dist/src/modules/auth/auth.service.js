@@ -164,7 +164,19 @@ let AuthService = class AuthService {
         }
     }
     async refreshTokens(userId, refreshToken) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        let finalUserId = userId;
+        if (!finalUserId) {
+            try {
+                const payload = await this.jwtService.verifyAsync(refreshToken, {
+                    secret: this.config.get('JWT_REFRESH_SECRET'),
+                });
+                finalUserId = payload.sub;
+            }
+            catch (e) {
+                throw new common_1.UnauthorizedException('Invalid refresh token');
+            }
+        }
+        const user = await this.prisma.user.findUnique({ where: { id: finalUserId } });
         if (!user?.refreshToken)
             throw new common_1.UnauthorizedException('Access denied');
         const rtMatches = await bcrypt.compare(refreshToken, user.refreshToken);

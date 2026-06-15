@@ -43,7 +43,7 @@ export class AuthController {
     @Post('refresh-token')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Refresh access token using refresh token' })
-    refreshToken(@Body() dto: RefreshTokenDto, @CurrentUser('id') userId: string) {
+    refreshToken(@Body() dto: RefreshTokenDto, @CurrentUser('id') userId?: string) {
         return this.authService.refreshTokens(userId, dto.refreshToken);
     }
 
