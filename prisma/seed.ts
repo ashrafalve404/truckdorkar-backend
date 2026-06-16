@@ -48,7 +48,7 @@ async function main() {
         where: { phone: '01911111111' },
         update: {},
         create: {
-            name: 'Operations Staff',
+            name: 'Agent',
             phone: '01911111111',
             email: 'agent@truckdorkar.com',
             password: hashedPassword,

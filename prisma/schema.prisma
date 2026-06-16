@@ -227,6 +227,7 @@ model Truck {
   year                     Int?
   color                    String?
   description              String?
+  truckType                String?       // e.g., '1_ton_open_7ft'
   status                   TruckStatus   @default(PENDING)
   images                   TruckImage[]
   documents                TruckDocument[]
@@ -294,6 +295,8 @@ model Booking {
   specialNote     String?
   estimatedFare   Float?
   finalFare       Float?
+  distance        Float?
+  agentCommission Float?
   status          BookingStatus @default(PENDING)
   cancelReason    String?
   createdAt       DateTime      @default(now())

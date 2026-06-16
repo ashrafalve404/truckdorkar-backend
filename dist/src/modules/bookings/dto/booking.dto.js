@@ -26,6 +26,8 @@ class CreateBookingDto {
     goodsType;
     goodsWeight;
     specialNote;
+    estimatedFare;
+    distance;
 }
 exports.CreateBookingDto = CreateBookingDto;
 __decorate([
@@ -97,6 +99,18 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateBookingDto.prototype, "specialNote", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 4500 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateBookingDto.prototype, "estimatedFare", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 15.5 }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateBookingDto.prototype, "distance", void 0);
 class UpdateBookingStatusDto {
     status;
     note;

@@ -38,6 +38,8 @@ export declare class BookingsService {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -92,6 +94,8 @@ export declare class BookingsService {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         })[];
     }>;
@@ -191,6 +195,7 @@ export declare class BookingsService {
                 description: string | null;
                 year: number | null;
                 driverId: string;
+                truckType: string | null;
                 registrationNo: string;
                 numberPlateText: string | null;
                 roadPermitUrl: string | null;
@@ -249,6 +254,8 @@ export declare class BookingsService {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -278,6 +285,8 @@ export declare class BookingsService {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -307,6 +316,39 @@ export declare class BookingsService {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
+            cancelReason: string | null;
+        };
+    }>;
+    updateFare(id: string, userId: string, fare: number): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            status: import("@prisma/client").$Enums.BookingStatus;
+            type: import("@prisma/client").$Enums.BookingType;
+            userId: string;
+            bookingNumber: string;
+            driverId: string | null;
+            truckId: string | null;
+            pickupAddress: string;
+            pickupLat: number | null;
+            pickupLng: number | null;
+            dropAddress: string;
+            dropLat: number | null;
+            dropLng: number | null;
+            truckType: string | null;
+            scheduledAt: Date | null;
+            goodsType: string | null;
+            goodsWeight: number | null;
+            specialNote: string | null;
+            estimatedFare: number | null;
+            finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -336,6 +378,8 @@ export declare class BookingsService {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -378,6 +422,8 @@ export declare class BookingsService {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         };
     }>;

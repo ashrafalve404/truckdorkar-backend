@@ -4,30 +4,16 @@ export declare class AgentsController {
     private readonly agentsService;
     private readonly storageService;
     constructor(agentsService: AgentsService, storageService: StorageService);
-    getDashboard(): Promise<{
+    getDashboard(userId: string): Promise<{
         message: string;
         data: {
             counts: {
-                pendingDrivers: number;
+                myTrucksCount: number;
                 pendingTrucks: number;
-                openTickets: number;
+                totalCommission: number;
                 todayBookings: number;
+                totalTrips: number;
             };
-            recentTickets: ({
-                user: {
-                    phone: string | null;
-                    name: string | null;
-                };
-            } & {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                status: import("@prisma/client").$Enums.TicketStatus;
-                description: string;
-                userId: string;
-                subject: string;
-                priority: import("@prisma/client").$Enums.TicketPriority;
-            })[];
         };
     }>;
     findAll(): Promise<{
@@ -70,6 +56,7 @@ export declare class AgentsController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -137,6 +124,7 @@ export declare class AgentsController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -153,6 +141,25 @@ export declare class AgentsController {
             approvalNote: string | null;
             registeredByAgentId: string | null;
         })[];
+    }>;
+    getEarnings(userId: string): Promise<{
+        message: string;
+        data: {
+            totalCommissions: number;
+            totalTrips: number;
+            trips: {
+                id: string;
+                bookingNumber: string;
+                truckName: string | undefined;
+                truckReg: string | undefined;
+                driverName: string | null | undefined;
+                driverPhone: string | null | undefined;
+                fare: number;
+                commission: number;
+                completedAt: Date;
+                distance: number | null;
+            }[];
+        };
     }>;
     getAdminOverview(): Promise<{
         message: string;
@@ -218,6 +225,7 @@ export declare class AgentsController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -248,6 +256,7 @@ export declare class AgentsController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;

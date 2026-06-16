@@ -2,30 +2,16 @@ import { PrismaService } from '../../prisma/prisma.service';
 export declare class AgentsService {
     private prisma;
     constructor(prisma: PrismaService);
-    getDashboard(): Promise<{
+    getDashboard(userId: string): Promise<{
         message: string;
         data: {
             counts: {
-                pendingDrivers: number;
+                myTrucksCount: number;
                 pendingTrucks: number;
-                openTickets: number;
+                totalCommission: number;
                 todayBookings: number;
+                totalTrips: number;
             };
-            recentTickets: ({
-                user: {
-                    phone: string | null;
-                    name: string | null;
-                };
-            } & {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                status: import("@prisma/client").$Enums.TicketStatus;
-                description: string;
-                userId: string;
-                subject: string;
-                priority: import("@prisma/client").$Enums.TicketPriority;
-            })[];
         };
     }>;
     findAll(): Promise<{
@@ -62,6 +48,7 @@ export declare class AgentsService {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -80,7 +67,7 @@ export declare class AgentsService {
         };
         info: string | undefined;
     }>;
-    getTrucksByAgent(userId: string): Promise<{
+    getAgentTrucks(userId: string): Promise<{
         message: string;
         data: ({
             driver: {
@@ -129,6 +116,7 @@ export declare class AgentsService {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -145,6 +133,25 @@ export declare class AgentsService {
             approvalNote: string | null;
             registeredByAgentId: string | null;
         })[];
+    }>;
+    getAgentEarnings(userId: string): Promise<{
+        message: string;
+        data: {
+            totalCommissions: number;
+            totalTrips: number;
+            trips: {
+                id: string;
+                bookingNumber: string;
+                truckName: string | undefined;
+                truckReg: string | undefined;
+                driverName: string | null | undefined;
+                driverPhone: string | null | undefined;
+                fare: number;
+                commission: number;
+                completedAt: Date;
+                distance: number | null;
+            }[];
+        };
     }>;
     getAdminOverview(): Promise<{
         message: string;
@@ -210,6 +217,7 @@ export declare class AgentsService {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -240,6 +248,7 @@ export declare class AgentsService {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;

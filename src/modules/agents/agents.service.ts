@@ -6,33 +6,35 @@ import { BookingStatus, TicketStatus, TruckStatus, DriverStatus } from '@prisma/
 export class AgentsService {
     constructor(private prisma: PrismaService) { }
 
-    async getDashboard() {
+    async getDashboard(userId: string) {
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent) throw new NotFoundException('Agent profile not found');
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const [pendingDrivers, pendingTrucks, openTickets, todayBookings, recentTickets] = await Promise.all([
-            this.prisma.driver.count({ where: { status: 'PENDING' } }),
-            this.prisma.truck.count({ where: { status: 'PENDING' } }),
-            this.prisma.supportTicket.count({ where: { status: TicketStatus.OPEN } }),
-            this.prisma.booking.count({ where: { createdAt: { gte: today } } }),
-            this.prisma.supportTicket.findMany({
-                where: { status: { in: [TicketStatus.OPEN, TicketStatus.IN_PROGRESS] } },
-                include: { user: { select: { name: true, phone: true } } },
-                orderBy: { createdAt: 'desc' },
-                take: 5,
+        const [myTrucksCount, pendingTrucks, completedBookings, todayBookings] = await Promise.all([
+            this.prisma.truck.count({ where: { registeredByAgentId: agent.id } }),
+            this.prisma.truck.count({ where: { registeredByAgentId: agent.id, status: TruckStatus.PENDING } }),
+            this.prisma.booking.findMany({
+                where: { truck: { registeredByAgentId: agent.id }, status: BookingStatus.COMPLETED },
+                select: { agentCommission: true }
             }),
+            this.prisma.booking.count({ where: { createdAt: { gte: today } } }),
         ]);
+
+        const totalCommission = completedBookings.reduce((sum, b) => sum + (b.agentCommission || 0), 0);
 
         return {
             message: 'Agent dashboard summary',
             data: {
                 counts: {
-                    pendingDrivers,
+                    myTrucksCount,
                     pendingTrucks,
-                    openTickets,
+                    totalCommission,
                     todayBookings,
+                    totalTrips: completedBookings.length,
                 },
-                recentTickets,
             },
         };
     }
@@ -120,6 +122,7 @@ export class AgentsService {
                 blueBookUrl: data.blueBookUrl,
                 numberPlateImageUrl: data.numberPlateImageUrl,
                 drivingLicenseUrl: data.drivingLicenseUrl,
+                truckType: `${data.capacityTon}_ton_${data.category.toLowerCase().replace('_truck', '')}_${data.lengthFt}ft`,
                 status: TruckStatus.PENDING,
             } as any,
         });
@@ -133,7 +136,7 @@ export class AgentsService {
         };
     }
 
-    async getTrucksByAgent(userId: string) {
+    async getAgentTrucks(userId: string) {
         const agent = await this.prisma.agent.findUnique({ where: { userId } });
         if (!agent) throw new NotFoundException('Agent profile not found');
 
@@ -147,6 +150,46 @@ export class AgentsService {
         });
 
         return { message: 'Agent trucks fetched', data: trucks };
+    }
+
+    async getAgentEarnings(userId: string) {
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent) throw new NotFoundException('Agent profile not found');
+
+        // Fetch bookings for trucks registered by this agent that are COMPLETED
+        const completedBookings = await this.prisma.booking.findMany({
+            where: {
+                truck: { registeredByAgentId: agent.id },
+                status: BookingStatus.COMPLETED,
+            },
+            include: {
+                truck: { select: { name: true, registrationNo: true } },
+                driver: { include: { user: { select: { name: true, phone: true } } } },
+            },
+            orderBy: { updatedAt: 'desc' },
+        });
+
+        const totalCommissions = completedBookings.reduce((sum, b) => sum + (b.agentCommission || 0), 0);
+
+        return {
+            message: 'Agent earnings fetched',
+            data: {
+                totalCommissions,
+                totalTrips: completedBookings.length,
+                trips: completedBookings.map(b => ({
+                    id: b.id,
+                    bookingNumber: b.bookingNumber,
+                    truckName: b.truck?.name,
+                    truckReg: b.truck?.registrationNo,
+                    driverName: b.driver?.user?.name,
+                    driverPhone: b.driver?.user?.phone,
+                    fare: b.finalFare || b.estimatedFare || 0,
+                    commission: b.agentCommission || 0,
+                    completedAt: b.updatedAt,
+                    distance: b.distance,
+                }))
+            }
+        };
     }
 
     // ── Admin Operations ──────────────────────────────────────────────────

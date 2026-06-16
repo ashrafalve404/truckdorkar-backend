@@ -20,6 +20,9 @@ let BookingsService = class BookingsService {
         this.prisma = prisma;
     }
     async create(userId, dto) {
+        if ((dto.estimatedFare || 0) < 1000) {
+            throw new common_1.BadRequestException('Minimum fare for any booking is 1000 TK');
+        }
         const booking = await this.prisma.booking.create({
             data: {
                 bookingNumber: `TD-${(0, uuid_1.v4)().slice(0, 8).toUpperCase()}`,
@@ -36,6 +39,8 @@ let BookingsService = class BookingsService {
                 goodsType: dto.goodsType,
                 goodsWeight: dto.goodsWeight,
                 specialNote: dto.specialNote,
+                estimatedFare: dto.estimatedFare,
+                distance: dto.distance,
                 statusLogs: {
                     create: { status: client_1.BookingStatus.PENDING, note: 'Booking created' },
                 },
@@ -50,12 +55,19 @@ let BookingsService = class BookingsService {
             where = { userId };
         }
         else if (role === client_1.Role.DRIVER) {
-            const driver = await this.prisma.driver.findUnique({ where: { userId } });
+            const driver = await this.prisma.driver.findUnique({
+                where: { userId },
+                include: { trucks: { where: { status: client_1.TruckStatus.APPROVED } } }
+            });
             if (driver) {
+                const driverTruckTypes = driver.trucks.map(t => t.truckType).filter(Boolean);
                 where = {
                     OR: [
-                        { status: client_1.BookingStatus.PENDING },
-                        { driverId: driver.id }
+                        { driverId: driver.id },
+                        {
+                            status: client_1.BookingStatus.PENDING,
+                            truckType: { in: driverTruckTypes }
+                        }
                     ]
                 };
             }
@@ -134,29 +146,71 @@ let BookingsService = class BookingsService {
             throw new common_1.NotFoundException('Booking not found');
         if (booking.status !== client_1.BookingStatus.PENDING)
             throw new common_1.BadRequestException('Booking is not in pending state');
+        const matchingTruck = await this.prisma.truck.findFirst({
+            where: {
+                driverId: driver.id,
+                truckType: booking.truckType,
+                status: client_1.TruckStatus.APPROVED,
+            }
+        });
+        if (!matchingTruck) {
+            throw new common_1.BadRequestException('You do not have an approved truck that matches the required type.');
+        }
         const updated = await this.prisma.booking.update({
             where: { id: bookingId },
             data: {
                 driverId: driver.id,
+                truckId: matchingTruck.id,
                 status: client_1.BookingStatus.ACCEPTED,
-                statusLogs: { create: { status: client_1.BookingStatus.ACCEPTED, note: 'Driver accepted the booking' } },
+                statusLogs: { create: { status: client_1.BookingStatus.ACCEPTED, note: `Driver accepted the booking with truck ${matchingTruck.name}` } },
             },
         });
         return { message: 'Booking accepted', data: updated };
+    }
+    async updateFare(id, userId, fare) {
+        const booking = await this.prisma.booking.findUnique({ where: { id } });
+        if (!booking)
+            throw new common_1.NotFoundException('Booking not found');
+        if (booking.userId !== userId)
+            throw new common_1.ForbiddenException();
+        if (booking.status !== client_1.BookingStatus.PENDING)
+            throw new common_1.BadRequestException('Fare can only be updated for pending bookings');
+        if (booking.distance !== null && booking.distance <= 10 && fare < 1000) {
+            throw new common_1.BadRequestException('Minimum fare for trips up to 10km is 1000 TK');
+        }
+        const updated = await this.prisma.booking.update({
+            where: { id },
+            data: {
+                estimatedFare: fare,
+                statusLogs: { create: { status: booking.status, note: `User updated fare offer to ${fare} TK` } },
+            },
+        });
+        return { message: 'Fare updated successfully', data: updated };
     }
     async updateStatus(bookingId, userId, status, note) {
         const driver = await this.prisma.driver.findUnique({ where: { userId } });
         if (!driver)
             throw new common_1.BadRequestException('Driver profile not found');
-        const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } });
+        const booking = await this.prisma.booking.findUnique({
+            where: { id: bookingId },
+            include: { truck: true }
+        });
         if (!booking)
             throw new common_1.NotFoundException('Booking not found');
         if (booking.driverId !== driver.id)
             throw new common_1.ForbiddenException();
+        let agentCommission = undefined;
+        if (status === client_1.BookingStatus.COMPLETED) {
+            if (booking.truck?.registeredByAgentId) {
+                const fare = booking.finalFare || booking.estimatedFare || 0;
+                agentCommission = fare * 0.20;
+            }
+        }
         const updated = await this.prisma.booking.update({
             where: { id: bookingId },
             data: {
                 status,
+                agentCommission,
                 statusLogs: { create: { status, note } },
             },
         });

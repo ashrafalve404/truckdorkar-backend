@@ -45,6 +45,16 @@ export class CreateBookingDto {
     @IsOptional()
     @IsString()
     specialNote?: string;
+
+    @ApiPropertyOptional({ example: 4500 })
+    @IsOptional()
+    @IsNumber()
+    estimatedFare?: number;
+
+    @ApiPropertyOptional({ example: 15.5 })
+    @IsOptional()
+    @IsNumber()
+    distance?: number;
 }
 
 export class UpdateBookingStatusDto {

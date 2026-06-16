@@ -55,6 +55,7 @@ export declare class TrucksController {
                 description: string | null;
                 year: number | null;
                 driverId: string;
+                truckType: string | null;
                 registrationNo: string;
                 numberPlateText: string | null;
                 roadPermitUrl: string | null;
@@ -105,6 +106,7 @@ export declare class TrucksController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -180,6 +182,7 @@ export declare class TrucksController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -216,6 +219,7 @@ export declare class TrucksController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -246,6 +250,7 @@ export declare class TrucksController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -289,6 +294,7 @@ export declare class TrucksController {
             description: string | null;
             year: number | null;
             driverId: string;
+            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;

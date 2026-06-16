@@ -25,6 +25,7 @@ export declare class DriversController {
                 description: string | null;
                 year: number | null;
                 driverId: string;
+                truckType: string | null;
                 registrationNo: string;
                 numberPlateText: string | null;
                 roadPermitUrl: string | null;
@@ -171,6 +172,8 @@ export declare class DriversController {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         })[];
     }>;

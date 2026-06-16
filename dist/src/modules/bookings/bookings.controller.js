@@ -39,6 +39,9 @@ let BookingsController = class BookingsController {
     cancel(id, userId, dto) {
         return this.bookingsService.cancel(id, userId, dto);
     }
+    updateFare(id, userId, fare) {
+        return this.bookingsService.updateFare(id, userId, fare);
+    }
     accept(bookingId, userId) {
         return this.bookingsService.driverAccept(bookingId, userId);
     }
@@ -89,6 +92,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String, booking_dto_1.CancelBookingDto]),
     __metadata("design:returntype", void 0)
 ], BookingsController.prototype, "cancel", null);
+__decorate([
+    (0, common_1.Patch)(':id/update-fare'),
+    (0, roles_decorator_1.Roles)(client_1.Role.USER),
+    (0, swagger_1.ApiOperation)({ summary: 'Update trip fare (User only)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, current_user_decorator_1.CurrentUser)('id')),
+    __param(2, (0, common_1.Body)('fare')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Number]),
+    __metadata("design:returntype", void 0)
+], BookingsController.prototype, "updateFare", null);
 __decorate([
     (0, common_1.Patch)(':id/accept'),
     (0, roles_decorator_1.Roles)(client_1.Role.DRIVER),

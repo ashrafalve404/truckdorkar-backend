@@ -23,6 +23,7 @@ export declare class DriversService {
                 description: string | null;
                 year: number | null;
                 driverId: string;
+                truckType: string | null;
                 registrationNo: string;
                 numberPlateText: string | null;
                 roadPermitUrl: string | null;
@@ -169,6 +170,8 @@ export declare class DriversService {
             specialNote: string | null;
             estimatedFare: number | null;
             finalFare: number | null;
+            distance: number | null;
+            agentCommission: number | null;
             cancelReason: string | null;
         })[];
     }>;

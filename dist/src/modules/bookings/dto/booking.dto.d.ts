@@ -12,6 +12,8 @@ export declare class CreateBookingDto {
     goodsType?: string;
     goodsWeight?: number;
     specialNote?: string;
+    estimatedFare?: number;
+    distance?: number;
 }
 export declare class UpdateBookingStatusDto {
     status: string;

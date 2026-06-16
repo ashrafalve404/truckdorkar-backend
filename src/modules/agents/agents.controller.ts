@@ -25,8 +25,8 @@ export class AgentsController {
     @Get('dashboard')
     @Roles(Role.AGENT, Role.ADMIN)
     @ApiOperation({ summary: 'Get summary for agent task dashboard' })
-    getDashboard() {
-        return this.agentsService.getDashboard();
+    getDashboard(@CurrentUser('id') userId: string) {
+        return this.agentsService.getDashboard(userId);
     }
 
     @Get()
@@ -86,7 +86,14 @@ export class AgentsController {
     @Roles(Role.AGENT)
     @ApiOperation({ summary: '[Agent] List trucks registered by this agent' })
     getMyTrucks(@CurrentUser('id') userId: string) {
-        return this.agentsService.getTrucksByAgent(userId);
+        return this.agentsService.getAgentTrucks(userId);
+    }
+
+    @Get('earnings')
+    @Roles(Role.AGENT)
+    @ApiOperation({ summary: '[Agent] View earnings and commissions from completed trips' })
+    getEarnings(@CurrentUser('id') userId: string) {
+        return this.agentsService.getAgentEarnings(userId);
     }
 
     // ── Admin: Agent Overview ────────────────────────────────────────────

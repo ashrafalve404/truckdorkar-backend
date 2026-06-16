@@ -39,6 +39,17 @@ export class BookingsController {
         return this.bookingsService.cancel(id, userId, dto);
     }
 
+    @Patch(':id/update-fare')
+    @Roles(Role.USER)
+    @ApiOperation({ summary: 'Update trip fare (User only)' })
+    updateFare(
+        @Param('id') id: string,
+        @CurrentUser('id') userId: string,
+        @Body('fare') fare: number
+    ) {
+        return this.bookingsService.updateFare(id, userId, fare);
+    }
+
     @Patch(':id/accept')
     @Roles(Role.DRIVER)
     @ApiOperation({ summary: 'Driver accepts a booking' })
