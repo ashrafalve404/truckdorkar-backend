@@ -207,27 +207,34 @@ let BookingsService = class BookingsService {
             }
         }
         const updated = await this.prisma.$transaction(async (tx) => {
-            const booking = await tx.booking.update({
+            const currentBooking = await tx.booking.update({
                 where: { id: bookingId },
                 data: {
                     status,
                     agentCommission,
                     statusLogs: { create: { status, note } },
                 },
+                include: { truck: true }
             });
-            if (agentCommission && booking.truckId) {
-                const truck = await tx.truck.findUnique({
-                    where: { id: booking.truckId },
-                    select: { registeredByAgentId: true }
+            if (status === client_1.BookingStatus.COMPLETED) {
+                const fare = currentBooking.finalFare || currentBooking.estimatedFare || 0;
+                const commissionVal = agentCommission || 0;
+                const driverEarnings = fare - commissionVal;
+                await tx.driver.update({
+                    where: { id: driver.id },
+                    data: {
+                        totalTrips: { increment: 1 },
+                        totalEarnings: { increment: driverEarnings }
+                    }
                 });
-                if (truck?.registeredByAgentId) {
+                if (commissionVal > 0 && currentBooking.truck?.registeredByAgentId) {
                     await tx.agent.update({
-                        where: { id: truck.registeredByAgentId },
-                        data: { totalEarnings: { increment: agentCommission } }
+                        where: { id: currentBooking.truck.registeredByAgentId },
+                        data: { totalEarnings: { increment: commissionVal } }
                     });
                 }
             }
-            return booking;
+            return currentBooking;
         });
         return { message: 'Status updated', data: updated };
     }

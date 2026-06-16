@@ -361,6 +361,35 @@ export declare class BookingsController {
     updateStatus(bookingId: string, userId: string, dto: UpdateBookingStatusDto): Promise<{
         message: string;
         data: {
+            truck: {
+                id: string;
+                name: string;
+                createdAt: Date;
+                updatedAt: Date;
+                deletedAt: Date | null;
+                status: import("@prisma/client").$Enums.TruckStatus;
+                isAvailable: boolean;
+                description: string | null;
+                year: number | null;
+                driverId: string;
+                truckType: string | null;
+                registrationNo: string;
+                numberPlateText: string | null;
+                roadPermitUrl: string | null;
+                taxTokenUrl: string | null;
+                blueBookUrl: string | null;
+                numberPlateImageUrl: string | null;
+                drivingLicenseUrl: string | null;
+                category: import("@prisma/client").$Enums.TruckCategory;
+                capacityTon: number;
+                lengthFt: number;
+                make: string | null;
+                model: string | null;
+                color: string | null;
+                approvalNote: string | null;
+                registeredByAgentId: string | null;
+            } | null;
+        } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
