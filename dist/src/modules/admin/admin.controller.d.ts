@@ -238,6 +238,7 @@ export declare class AdminController {
                     createdAt: Date;
                     updatedAt: Date;
                     nidNumber: string | null;
+                    totalEarnings: number;
                     agentId: string | null;
                     dateOfBirth: Date | null;
                     department: string | null;
@@ -288,5 +289,17 @@ export declare class AdminController {
     updateSettings(dto: UpdateSettingsDto): Promise<{
         message: string;
         data: import("@prisma/client/runtime/library").JsonValue;
+    }>;
+    deleteUser(id: string): Promise<{
+        message: string;
+    }>;
+    deleteDriver(id: string): Promise<{
+        message: string;
+    }>;
+    deleteTruck(id: string): Promise<{
+        message: string;
+    }>;
+    deleteAgent(id: string): Promise<{
+        message: string;
     }>;
 }

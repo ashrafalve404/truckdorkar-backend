@@ -44,6 +44,7 @@ export declare class UsersService {
                 createdAt: Date;
                 updatedAt: Date;
                 nidNumber: string | null;
+                totalEarnings: number;
                 agentId: string | null;
                 dateOfBirth: Date | null;
                 department: string | null;

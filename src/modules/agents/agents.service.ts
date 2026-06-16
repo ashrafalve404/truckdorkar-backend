@@ -53,54 +53,25 @@ export class AgentsService {
         const agent = await this.prisma.agent.findUnique({ where: { userId } });
         if (!agent) throw new NotFoundException('Agent profile not found');
 
-        // Find or create a driver placeholder linked to a "fleet driver" user
-        let driver: any = null;
-        let driverExisted = false;
+        // Find existing driver by phone - MUST ALREADY EXIST
+        if (!data.driverPhone) throw new NotFoundException('Driver phone number is required');
 
-        if (data.driverUserId) {
-            driver = await this.prisma.driver.findFirst({ where: { userId: data.driverUserId } });
-            if (driver) driverExisted = true;
-        } else if (data.driverPhone) {
-            let driverUser = await this.prisma.user.findFirst({ where: { phone: data.driverPhone } });
+        const driverUser = await this.prisma.user.findFirst({
+            where: { phone: data.driverPhone, role: 'DRIVER' }
+        });
 
-            if (driverUser) {
-                driverExisted = true;
-                // User exists, find their driver profile
-                driver = await this.prisma.driver.findFirst({ where: { userId: driverUser.id } });
-
-                // If user exists but has no driver profile, create one
-                if (!driver) {
-                    driver = await this.prisma.driver.create({
-                        data: {
-                            userId: driverUser.id,
-                            status: DriverStatus.VERIFIED, // Auto-verify if agent is adding them
-                        }
-                    });
-                }
-            } else {
-                // User doesn't exist, create both User (Driver role) and Driver profile
-                const newDriverUser = await this.prisma.user.create({
-                    data: {
-                        phone: data.driverPhone,
-                        name: data.name.split(' ')[0] + "'s Driver", // Placeholder name
-                        role: 'DRIVER',
-                        password: '$2b$10$placeholderhashedpassword', // Should be a random or default password
-                        isActive: true,
-                    }
-                });
-
-                driver = await this.prisma.driver.create({
-                    data: {
-                        userId: newDriverUser.id,
-                        status: DriverStatus.VERIFIED,
-                    }
-                });
-            }
+        if (!driverUser) {
+            throw new NotFoundException('The provided phone number is not registered as a driver. Please ask the driver to register first.');
         }
 
+        const driver = await this.prisma.driver.findFirst({ where: { userId: driverUser.id } });
         if (!driver) {
-            throw new NotFoundException('Could not identify or create a driver for this truck.');
+            throw new NotFoundException('Driver profile not found. Please ask the driver to complete their profile registration.');
         }
+
+        // Standardized Truck Type Mapping
+        // data.category here will be the selected value from the new dropdown list (e.g. "T1_OPEN_7FT")
+        const truckType = data.category;
 
         const truck = await this.prisma.truck.create({
             data: {
@@ -122,17 +93,14 @@ export class AgentsService {
                 blueBookUrl: data.blueBookUrl,
                 numberPlateImageUrl: data.numberPlateImageUrl,
                 drivingLicenseUrl: data.drivingLicenseUrl,
-                truckType: `${data.capacityTon}_ton_${data.category.toLowerCase().replace('_truck', '')}_${data.lengthFt}ft`,
+                truckType: truckType,
                 status: TruckStatus.PENDING,
             } as any,
         });
 
         return {
-            message: driverExisted
-                ? 'Truck registered and linked to existing driver'
-                : 'Truck registered and new driver account created',
+            message: 'Truck registered and linked to driver',
             data: truck,
-            info: driverExisted ? 'This driver phone is already registered in our system.' : undefined
         };
     }
 

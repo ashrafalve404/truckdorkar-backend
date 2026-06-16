@@ -46,6 +46,7 @@ export declare class UsersController {
                 createdAt: Date;
                 updatedAt: Date;
                 nidNumber: string | null;
+                totalEarnings: number;
                 agentId: string | null;
                 dateOfBirth: Date | null;
                 department: string | null;

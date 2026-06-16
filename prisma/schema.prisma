@@ -34,12 +34,14 @@ enum BookingType {
 }
 
 enum TruckCategory {
-  PICKUP
-  MINI_TRUCK
-  COVERED_VAN
-  OPEN_TRUCK
-  CONTAINER_TRUCK
-  HEAVY_TRUCK
+  T1_OPEN_7FT
+  T1_COVER_7FT
+  T1_5_OPEN_9FT
+  T1_5_COVER_9FT
+  T2_OPEN_9FT
+  T3_OPEN_12FT
+  T3_COVER_12FT
+  T5_OPEN_17FT
 }
 
 enum DriverStatus {
@@ -197,6 +199,7 @@ model Agent {
   dateOfBirth DateTime?
   department  String?
   designation String?
+  totalEarnings Float    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

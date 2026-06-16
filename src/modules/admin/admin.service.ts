@@ -149,6 +149,38 @@ export class AdminService {
         return { message: 'Trucks fetched', data: { trucks, total, page, limit } };
     }
 
+    async deleteUser(id: string) {
+        // Due to Cascade in schema, this deletes driver/agent/addresses too
+        await this.prisma.user.delete({ where: { id } });
+        return { message: 'User and all related data permanently deleted' };
+    }
+
+    async deleteDriver(id: string) {
+        // Find user linked to driver
+        const driver = await this.prisma.driver.findUnique({ where: { id }, select: { userId: true } });
+        if (driver) {
+            await this.prisma.user.delete({ where: { id: driver.userId } });
+        } else {
+            await this.prisma.driver.delete({ where: { id } });
+        }
+        return { message: 'Driver and associated user permanently deleted' };
+    }
+
+    async deleteAgent(id: string) {
+        const agent = await this.prisma.agent.findUnique({ where: { id }, select: { userId: true } });
+        if (agent) {
+            await this.prisma.user.delete({ where: { id: agent.userId } });
+        } else {
+            await this.prisma.agent.delete({ where: { id } });
+        }
+        return { message: 'Agent and associated user permanently deleted' };
+    }
+
+    async deleteTruck(id: string) {
+        await this.prisma.truck.delete({ where: { id } });
+        return { message: 'Truck permanently deleted' };
+    }
+
     async updateSettings(settingsData: any) {
         // Spread into a plain object so Prisma's Json field serialises correctly
         // (passing a class-validator DTO instance directly can cause issues)

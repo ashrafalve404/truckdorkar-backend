@@ -145,6 +145,34 @@ let AdminService = class AdminService {
         ]);
         return { message: 'Trucks fetched', data: { trucks, total, page, limit } };
     }
+    async deleteUser(id) {
+        await this.prisma.user.delete({ where: { id } });
+        return { message: 'User and all related data permanently deleted' };
+    }
+    async deleteDriver(id) {
+        const driver = await this.prisma.driver.findUnique({ where: { id }, select: { userId: true } });
+        if (driver) {
+            await this.prisma.user.delete({ where: { id: driver.userId } });
+        }
+        else {
+            await this.prisma.driver.delete({ where: { id } });
+        }
+        return { message: 'Driver and associated user permanently deleted' };
+    }
+    async deleteAgent(id) {
+        const agent = await this.prisma.agent.findUnique({ where: { id }, select: { userId: true } });
+        if (agent) {
+            await this.prisma.user.delete({ where: { id: agent.userId } });
+        }
+        else {
+            await this.prisma.agent.delete({ where: { id } });
+        }
+        return { message: 'Agent and associated user permanently deleted' };
+    }
+    async deleteTruck(id) {
+        await this.prisma.truck.delete({ where: { id } });
+        return { message: 'Truck permanently deleted' };
+    }
     async updateSettings(settingsData) {
         const plainData = { ...settingsData };
         const existing = await this.prisma.cmsContent.findUnique({

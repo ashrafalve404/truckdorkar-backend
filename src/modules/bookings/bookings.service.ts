@@ -202,16 +202,34 @@ export class BookingsService {
             }
         }
 
-        const updated = await this.prisma.booking.update({
-            where: { id: bookingId },
-            data: {
-                status,
-                agentCommission,
-                statusLogs: { create: { status, note } },
-            },
+        const updated = await this.prisma.$transaction(async (tx) => {
+            const booking = await tx.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status,
+                    agentCommission,
+                    statusLogs: { create: { status, note } },
+                },
+            });
+
+            if (agentCommission && booking.truckId) {
+                const truck = await tx.truck.findUnique({
+                    where: { id: booking.truckId },
+                    select: { registeredByAgentId: true }
+                });
+                if (truck?.registeredByAgentId) {
+                    await tx.agent.update({
+                        where: { id: truck.registeredByAgentId },
+                        data: { totalEarnings: { increment: agentCommission } }
+                    });
+                }
+            }
+            return booking;
         });
+
         return { message: 'Status updated', data: updated };
     }
+
 
     async getTracking(bookingId: string) {
         const booking = await this.prisma.booking.findUnique({

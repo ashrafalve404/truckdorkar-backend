@@ -28,6 +28,7 @@ export declare class AgentsService {
             createdAt: Date;
             updatedAt: Date;
             nidNumber: string | null;
+            totalEarnings: number;
             agentId: string | null;
             dateOfBirth: Date | null;
             department: string | null;
@@ -65,7 +66,6 @@ export declare class AgentsService {
             approvalNote: string | null;
             registeredByAgentId: string | null;
         };
-        info: string | undefined;
     }>;
     getAgentTrucks(userId: string): Promise<{
         message: string;

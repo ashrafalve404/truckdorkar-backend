@@ -53,6 +53,18 @@ let AdminController = class AdminController {
     updateSettings(dto) {
         return this.adminService.updateSettings(dto);
     }
+    deleteUser(id) {
+        return this.adminService.deleteUser(id);
+    }
+    deleteDriver(id) {
+        return this.adminService.deleteDriver(id);
+    }
+    deleteTruck(id) {
+        return this.adminService.deleteTruck(id);
+    }
+    deleteAgent(id) {
+        return this.adminService.deleteAgent(id);
+    }
 };
 exports.AdminController = AdminController;
 __decorate([
@@ -133,6 +145,38 @@ __decorate([
     __metadata("design:paramtypes", [admin_dto_1.UpdateSettingsDto]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "updateSettings", null);
+__decorate([
+    (0, common_1.Delete)('users/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Permanently delete a user' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "deleteUser", null);
+__decorate([
+    (0, common_1.Delete)('drivers/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Permanently delete a driver' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "deleteDriver", null);
+__decorate([
+    (0, common_1.Delete)('trucks/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Permanently delete a truck' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "deleteTruck", null);
+__decorate([
+    (0, common_1.Delete)('agents/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Permanently delete an agent' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "deleteAgent", null);
 exports.AdminController = AdminController = __decorate([
     (0, swagger_1.ApiTags)('admin'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

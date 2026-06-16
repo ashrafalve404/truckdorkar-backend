@@ -30,6 +30,7 @@ export declare class AgentsController {
             createdAt: Date;
             updatedAt: Date;
             nidNumber: string | null;
+            totalEarnings: number;
             agentId: string | null;
             dateOfBirth: Date | null;
             department: string | null;
@@ -73,7 +74,6 @@ export declare class AgentsController {
             approvalNote: string | null;
             registeredByAgentId: string | null;
         };
-        info: string | undefined;
     }>;
     getMyTrucks(userId: string): Promise<{
         message: string;

@@ -41,6 +41,7 @@ let TrucksService = class TrucksService {
                 blueBookUrl: data.blueBookUrl,
                 numberPlateImageUrl: data.numberPlateImageUrl,
                 drivingLicenseUrl: data.drivingLicenseUrl,
+                truckType: data.category,
                 status: 'PENDING',
             },
         });

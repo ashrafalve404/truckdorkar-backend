@@ -245,6 +245,7 @@ export declare class AdminService {
                     createdAt: Date;
                     updatedAt: Date;
                     nidNumber: string | null;
+                    totalEarnings: number;
                     agentId: string | null;
                     dateOfBirth: Date | null;
                     department: string | null;
@@ -283,6 +284,18 @@ export declare class AdminService {
             page: number;
             limit: number;
         };
+    }>;
+    deleteUser(id: string): Promise<{
+        message: string;
+    }>;
+    deleteDriver(id: string): Promise<{
+        message: string;
+    }>;
+    deleteAgent(id: string): Promise<{
+        message: string;
+    }>;
+    deleteTruck(id: string): Promise<{
+        message: string;
     }>;
     updateSettings(settingsData: any): Promise<{
         message: string;

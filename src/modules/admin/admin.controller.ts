@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -72,5 +72,29 @@ export class AdminController {
     @ApiOperation({ summary: 'Update system settings' })
     updateSettings(@Body() dto: UpdateSettingsDto) {
         return this.adminService.updateSettings(dto);
+    }
+
+    @Delete('users/:id')
+    @ApiOperation({ summary: 'Permanently delete a user' })
+    deleteUser(@Param('id') id: string) {
+        return this.adminService.deleteUser(id);
+    }
+
+    @Delete('drivers/:id')
+    @ApiOperation({ summary: 'Permanently delete a driver' })
+    deleteDriver(@Param('id') id: string) {
+        return this.adminService.deleteDriver(id);
+    }
+
+    @Delete('trucks/:id')
+    @ApiOperation({ summary: 'Permanently delete a truck' })
+    deleteTruck(@Param('id') id: string) {
+        return this.adminService.deleteTruck(id);
+    }
+
+    @Delete('agents/:id')
+    @ApiOperation({ summary: 'Permanently delete an agent' })
+    deleteAgent(@Param('id') id: string) {
+        return this.adminService.deleteAgent(id);
     }
 }
