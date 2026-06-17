@@ -20,8 +20,10 @@ let BookingsService = class BookingsService {
         this.prisma = prisma;
     }
     async create(userId, dto) {
-        if ((dto.estimatedFare || 0) < 1000) {
-            throw new common_1.BadRequestException('Minimum fare for any booking is 1000 TK');
+        const distanceKm = dto.distance || 0;
+        const minFare = distanceKm <= 10 ? 1000 : 1000 + Math.ceil(distanceKm - 10) * 50;
+        if ((dto.estimatedFare || 0) < minFare) {
+            throw new common_1.BadRequestException(`Minimum fare for this trip distance is ${minFare} TK`);
         }
         const booking = await this.prisma.booking.create({
             data: {
