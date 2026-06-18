@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BookingStatus, Role, TruckStatus } from '@prisma/client';
+import { BookingStatus, Role, TruckStatus, NotificationType } from '@prisma/client';
 import { CreateBookingDto, CancelBookingDto } from './dto/booking.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class BookingsService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private notifications: NotificationsService
+    ) { }
 
     async create(userId: string, dto: CreateBookingDto) {
         // Distance-based minimum fare: 1000 TK base, +50 TK per km beyond 10km
@@ -35,6 +39,7 @@ export class BookingsService {
                 specialNote: dto.specialNote,
                 estimatedFare: dto.estimatedFare,
                 distance: dto.distance,
+                contactPhone: dto.contactPhone,
                 statusLogs: {
                     create: { status: BookingStatus.PENDING, note: 'Booking created' },
                 },
@@ -162,6 +167,16 @@ export class BookingsService {
                 statusLogs: { create: { status: BookingStatus.ACCEPTED, note: `Driver accepted the booking with truck ${matchingTruck.name}` } },
             },
         });
+
+        // Send notification to user
+        await this.notifications.create(
+            booking.userId,
+            NotificationType.BOOKING,
+            'Booking Accepted',
+            `Your booking #${booking.bookingNumber} has been accepted by driver ${driver.id.slice(0, 5)}.`,
+            { bookingId: booking.id }
+        );
+
         return { message: 'Booking accepted', data: updated };
     }
 

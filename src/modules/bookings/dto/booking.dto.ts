@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsOptional, IsNumber, IsDateString } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsNumber, IsDateString, IsPhoneNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BookingType } from '@prisma/client';
 
@@ -55,6 +55,10 @@ export class CreateBookingDto {
     @IsOptional()
     @IsNumber()
     distance?: number;
+
+    @ApiProperty({ example: '01XXXXXXXXX' })
+    @IsString()
+    contactPhone: string;
 }
 
 export class UpdateBookingStatusDto {

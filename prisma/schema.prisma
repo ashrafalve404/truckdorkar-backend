@@ -299,6 +299,7 @@ model Booking {
   estimatedFare   Float?
   finalFare       Float?
   distance        Float?
+  contactPhone    String?
   agentCommission Float?
   status          BookingStatus @default(PENDING)
   cancelReason    String?

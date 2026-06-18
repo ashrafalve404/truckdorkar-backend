@@ -55,6 +55,7 @@ export declare class AdminController {
                 estimatedFare: number | null;
                 finalFare: number | null;
                 distance: number | null;
+                contactPhone: string | null;
                 agentCommission: number | null;
                 cancelReason: string | null;
             })[];
@@ -117,6 +118,7 @@ export declare class AdminController {
                 estimatedFare: number | null;
                 finalFare: number | null;
                 distance: number | null;
+                contactPhone: string | null;
                 agentCommission: number | null;
                 cancelReason: string | null;
             })[];

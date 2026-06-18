@@ -173,6 +173,7 @@ export declare class DriversController {
             estimatedFare: number | null;
             finalFare: number | null;
             distance: number | null;
+            contactPhone: string | null;
             agentCommission: number | null;
             cancelReason: string | null;
         })[];

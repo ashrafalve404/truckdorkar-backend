@@ -14,6 +14,7 @@ export declare class CreateBookingDto {
     specialNote?: string;
     estimatedFare?: number;
     distance?: number;
+    contactPhone: string;
 }
 export declare class UpdateBookingStatusDto {
     status: string;

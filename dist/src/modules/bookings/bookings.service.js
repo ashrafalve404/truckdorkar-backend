@@ -13,11 +13,14 @@ exports.BookingsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const client_1 = require("@prisma/client");
+const notifications_service_1 = require("../notifications/notifications.service");
 const uuid_1 = require("uuid");
 let BookingsService = class BookingsService {
     prisma;
-    constructor(prisma) {
+    notifications;
+    constructor(prisma, notifications) {
         this.prisma = prisma;
+        this.notifications = notifications;
     }
     async create(userId, dto) {
         const distanceKm = dto.distance || 0;
@@ -43,6 +46,7 @@ let BookingsService = class BookingsService {
                 specialNote: dto.specialNote,
                 estimatedFare: dto.estimatedFare,
                 distance: dto.distance,
+                contactPhone: dto.contactPhone,
                 statusLogs: {
                     create: { status: client_1.BookingStatus.PENDING, note: 'Booking created' },
                 },
@@ -167,6 +171,7 @@ let BookingsService = class BookingsService {
                 statusLogs: { create: { status: client_1.BookingStatus.ACCEPTED, note: `Driver accepted the booking with truck ${matchingTruck.name}` } },
             },
         });
+        await this.notifications.create(booking.userId, client_1.NotificationType.BOOKING, 'Booking Accepted', `Your booking #${booking.bookingNumber} has been accepted by driver ${driver.id.slice(0, 5)}.`, { bookingId: booking.id });
         return { message: 'Booking accepted', data: updated };
     }
     async updateFare(id, userId, fare) {
@@ -263,6 +268,7 @@ let BookingsService = class BookingsService {
 exports.BookingsService = BookingsService;
 exports.BookingsService = BookingsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notifications_service_1.NotificationsService])
 ], BookingsService);
 //# sourceMappingURL=bookings.service.js.map

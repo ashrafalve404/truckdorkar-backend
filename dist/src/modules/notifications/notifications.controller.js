@@ -52,7 +52,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], NotificationsController.prototype, "markAsRead", null);
 __decorate([
-    (0, common_1.Post)('read-all'),
+    (0, common_1.Patch)('read-all'),
     (0, swagger_1.ApiOperation)({ summary: 'Mark all notifications as read' }),
     __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
     __metadata("design:type", Function),
