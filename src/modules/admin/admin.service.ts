@@ -57,7 +57,17 @@ export class AdminService {
                 skip: (page - 1) * limit,
                 take: limit,
                 orderBy: { createdAt: 'desc' },
-                select: { id: true, name: true, phone: true, email: true, role: true, createdAt: true, isActive: true },
+                select: {
+                    id: true,
+                    name: true,
+                    phone: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                    isActive: true,
+                    driver: { select: { nidNumber: true } },
+                    agent: { select: { nidNumber: true } }
+                },
             }),
             this.prisma.user.count(),
         ]);

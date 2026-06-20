@@ -8,6 +8,7 @@ export declare class AuthService {
     private config;
     private googleClient;
     constructor(prisma: PrismaService, jwtService: JwtService, config: ConfigService);
+    private generateAgentId;
     register(dto: RegisterDto): Promise<{
         message: string;
         data: {

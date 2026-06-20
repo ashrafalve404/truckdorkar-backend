@@ -61,6 +61,10 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         this.config = config;
     }
+    generateAgentId() {
+        const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        return `TDL-AGENT-${random}-${Date.now().toString().slice(-4)}`;
+    }
     async register(dto) {
         const { name, email, phone, password, role, licenseNumber, experience, companyName, agentId, nidNumber, dateOfBirth } = dto;
         if (email) {
@@ -73,6 +77,13 @@ let AuthService = class AuthService {
             throw new common_1.ConflictException('Phone number already registered');
         const safeRole = role === client_1.Role.ADMIN ? client_1.Role.USER : (role ?? client_1.Role.USER);
         const hashed = await bcrypt.hash(password, 12);
+        let isActive = true;
+        let finalAgentId = agentId;
+        const currentCompanyName = "Truck Dorkar Limited";
+        if (safeRole === client_1.Role.AGENT) {
+            isActive = false;
+            finalAgentId = this.generateAgentId();
+        }
         const user = await this.prisma.user.create({
             data: {
                 name,
@@ -80,6 +91,7 @@ let AuthService = class AuthService {
                 phone,
                 password: hashed,
                 role: safeRole,
+                isActive,
                 ...(safeRole === client_1.Role.DRIVER && {
                     driver: {
                         create: {
@@ -91,31 +103,52 @@ let AuthService = class AuthService {
                 ...(safeRole === client_1.Role.AGENT && {
                     agent: {
                         create: {
-                            agentId,
+                            agentId: finalAgentId,
                             nidNumber,
                             dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
                             designation: 'Staff',
-                            department: companyName || 'Operations',
+                            department: currentCompanyName,
                         }
                     },
                 }),
             },
             select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
         });
+        const admins = await this.prisma.user.findMany({ where: { role: client_1.Role.ADMIN } });
+        await Promise.all(admins.map(admin => this.prisma.notification.create({
+            data: {
+                userId: admin.id,
+                type: 'SYSTEM',
+                title: `New ${safeRole === 'AGENT' ? 'Agent' : safeRole === 'DRIVER' ? 'Driver' : 'User'} Registered`,
+                body: `A new ${safeRole.toLowerCase()} ${name || phone} has joined. ${safeRole !== 'USER' ? 'Verification needed.' : ''}`,
+                data: {
+                    userId: user.id,
+                    role: safeRole,
+                    agentId: safeRole === 'AGENT' ? finalAgentId : undefined
+                }
+            }
+        })));
         const tokens = await this.generateTokens(user.id, user.email, user.phone, user.role);
         await this.updateRefreshToken(user.id, tokens.refreshToken);
-        return { message: 'Registration successful', data: { user, ...tokens } };
+        return {
+            message: safeRole === client_1.Role.AGENT ? 'Registration successful. Waiting for admin approval.' : 'Registration successful',
+            data: { user, ...tokens }
+        };
     }
     async login(dto) {
         const { identifier, password } = dto;
         const user = await this.prisma.user.findFirst({
             where: {
                 OR: [{ email: identifier }, { phone: identifier }],
-                isActive: true,
             },
         });
         if (!user || !user.password)
             throw new common_1.UnauthorizedException('Invalid credentials');
+        if (!user.isActive) {
+            throw new common_1.UnauthorizedException(user.role === client_1.Role.AGENT
+                ? 'Your agent account is pending admin approval. Please wait for verification.'
+                : 'Your account is currently inactive. Please contact support.');
+        }
         const passwordValid = await bcrypt.compare(password, user.password);
         if (!passwordValid)
             throw new common_1.UnauthorizedException('Invalid credentials');

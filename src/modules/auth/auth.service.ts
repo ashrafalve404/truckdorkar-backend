@@ -18,6 +18,11 @@ export class AuthService {
         private config: ConfigService,
     ) { }
 
+    private generateAgentId(): string {
+        const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        return `TDL-AGENT-${random}-${Date.now().toString().slice(-4)}`;
+    }
+
     // ─── Register ────────────────────────────────────────────────────────────
 
     async register(dto: RegisterDto) {
@@ -37,6 +42,16 @@ export class AuthService {
 
         const hashed = await bcrypt.hash(password, 12);
 
+        // Preventive settings for roles
+        let isActive = true;
+        let finalAgentId = agentId;
+        const currentCompanyName = "Truck Dorkar Limited";
+
+        if (safeRole === Role.AGENT) {
+            isActive = false; // Require admin approval
+            finalAgentId = this.generateAgentId();
+        }
+
         const user = await this.prisma.user.create({
             data: {
                 name,
@@ -44,6 +59,7 @@ export class AuthService {
                 phone,
                 password: hashed,
                 role: safeRole,
+                isActive,
                 // Auto-create driver profile if role is DRIVER
                 ...(safeRole === Role.DRIVER && {
                     driver: {
@@ -57,11 +73,11 @@ export class AuthService {
                 ...(safeRole === Role.AGENT && {
                     agent: {
                         create: {
-                            agentId,
+                            agentId: finalAgentId,
                             nidNumber,
                             dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
-                            designation: 'Staff', // Default designation
-                            department: companyName || 'Operations',
+                            designation: 'Staff',
+                            department: currentCompanyName,
                         }
                     },
                 }),
@@ -69,10 +85,31 @@ export class AuthService {
             select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
         });
 
+        // Notify Admins for all new registrations
+        const admins = await this.prisma.user.findMany({ where: { role: Role.ADMIN } });
+        await Promise.all(admins.map(admin =>
+            this.prisma.notification.create({
+                data: {
+                    userId: admin.id,
+                    type: 'SYSTEM',
+                    title: `New ${safeRole === 'AGENT' ? 'Agent' : safeRole === 'DRIVER' ? 'Driver' : 'User'} Registered`,
+                    body: `A new ${safeRole.toLowerCase()} ${name || phone} has joined. ${safeRole !== 'USER' ? 'Verification needed.' : ''}`,
+                    data: {
+                        userId: user.id,
+                        role: safeRole,
+                        agentId: safeRole === 'AGENT' ? finalAgentId : undefined
+                    }
+                }
+            })
+        ));
+
         const tokens = await this.generateTokens(user.id, user.email!, user.phone!, user.role);
         await this.updateRefreshToken(user.id, tokens.refreshToken);
 
-        return { message: 'Registration successful', data: { user, ...tokens } };
+        return {
+            message: safeRole === Role.AGENT ? 'Registration successful. Waiting for admin approval.' : 'Registration successful',
+            data: { user, ...tokens }
+        };
     }
 
     // ─── Login ───────────────────────────────────────────────────────────────
@@ -84,11 +121,18 @@ export class AuthService {
         const user = await this.prisma.user.findFirst({
             where: {
                 OR: [{ email: identifier }, { phone: identifier }],
-                isActive: true,
             },
         });
 
         if (!user || !user.password) throw new UnauthorizedException('Invalid credentials');
+
+        if (!user.isActive) {
+            throw new UnauthorizedException(
+                user.role === Role.AGENT
+                    ? 'Your agent account is pending admin approval. Please wait for verification.'
+                    : 'Your account is currently inactive. Please contact support.'
+            );
+        }
 
         const passwordValid = await bcrypt.compare(password, user.password);
         if (!passwordValid) throw new UnauthorizedException('Invalid credentials');

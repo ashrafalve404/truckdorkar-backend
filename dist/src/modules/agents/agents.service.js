@@ -49,7 +49,7 @@ let AgentsService = class AgentsService {
     }
     async findAll() {
         const agents = await this.prisma.agent.findMany({
-            include: { user: { select: { name: true, phone: true, email: true, isActive: true } } },
+            include: { user: { select: { id: true, name: true, phone: true, email: true, isActive: true } } },
         });
         return { message: 'Agents fetched', data: agents };
     }
@@ -94,6 +94,16 @@ let AgentsService = class AgentsService {
                 status: client_1.TruckStatus.PENDING,
             },
         });
+        const admins = await this.prisma.user.findMany({ where: { role: 'ADMIN' } });
+        await Promise.all(admins.map(admin => this.prisma.notification.create({
+            data: {
+                userId: admin.id,
+                type: 'SYSTEM',
+                title: 'New Truck Registered',
+                body: `Agent ${agent.agentId} has registered a new truck (${data.registrationNo}). Approval required.`,
+                data: { truckId: truck.id, agentId: agent.id }
+            }
+        })));
         return {
             message: 'Truck registered and linked to driver',
             data: truck,
@@ -152,7 +162,7 @@ let AgentsService = class AgentsService {
     async getAdminOverview() {
         const agents = await this.prisma.agent.findMany({
             include: {
-                user: { select: { name: true, phone: true, email: true, isActive: true } },
+                user: { select: { id: true, name: true, phone: true, email: true, isActive: true } },
                 trucks: {
                     select: {
                         id: true,
@@ -169,6 +179,8 @@ let AgentsService = class AgentsService {
             id: agt.id,
             agentId: agt.agentId,
             user: agt.user,
+            nidNumber: agt.nidNumber,
+            dateOfBirth: agt.dateOfBirth,
             department: agt.department,
             designation: agt.designation,
             trucksTotal: agt.trucks ? agt.trucks.length : 0,
