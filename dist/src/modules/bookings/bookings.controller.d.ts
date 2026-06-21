@@ -41,6 +41,8 @@ export declare class BookingsController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -101,6 +103,8 @@ export declare class BookingsController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         })[];
     }>;
@@ -265,6 +269,8 @@ export declare class BookingsController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -297,6 +303,8 @@ export declare class BookingsController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -329,6 +337,8 @@ export declare class BookingsController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -361,6 +371,8 @@ export declare class BookingsController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -422,6 +434,8 @@ export declare class BookingsController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -467,6 +481,8 @@ export declare class BookingsController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;

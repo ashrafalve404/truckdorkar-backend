@@ -43,6 +43,8 @@ export declare class BookingsService {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -100,6 +102,8 @@ export declare class BookingsService {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         })[];
     }>;
@@ -261,6 +265,8 @@ export declare class BookingsService {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -293,6 +299,8 @@ export declare class BookingsService {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -325,6 +333,8 @@ export declare class BookingsService {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -357,6 +367,8 @@ export declare class BookingsService {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -418,6 +430,8 @@ export declare class BookingsService {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;
@@ -463,6 +477,8 @@ export declare class BookingsService {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         };
     }>;

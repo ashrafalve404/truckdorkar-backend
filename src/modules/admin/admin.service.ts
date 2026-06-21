@@ -7,7 +7,7 @@ export class AdminService {
     constructor(private prisma: PrismaService) { }
 
     async getDashboardStats() {
-        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, pendingDrivers, pendingTrucks, openTickets] = await Promise.all([
+        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, companyRevenue, pendingDrivers, pendingTrucks, openTickets] = await Promise.all([
             this.prisma.user.count({ where: { role: 'USER' } }),
             this.prisma.driver.count(),
             this.prisma.truck.count(),
@@ -15,6 +15,10 @@ export class AdminService {
             this.prisma.booking.aggregate({
                 where: { status: BookingStatus.COMPLETED },
                 _sum: { finalFare: true },
+            }),
+            (this.prisma.booking as any).aggregate({
+                where: { status: BookingStatus.COMPLETED },
+                _sum: { companyCommission: true },
             }),
             this.prisma.driver.count({ where: { status: DriverStatus.PENDING } }),
             this.prisma.truck.count({ where: { status: 'PENDING' } }),
@@ -41,6 +45,7 @@ export class AdminService {
                     totalTrucks,
                     totalBookings,
                     totalRevenue: revenue._sum.finalFare || 0,
+                    companyRevenue: (companyRevenue as any)._sum?.companyCommission || 0,
                     pendingDrivers,
                     pendingTrucks,
                     openTickets

@@ -213,11 +213,21 @@ export class BookingsService {
         if (booking.driverId !== driver.id) throw new ForbiddenException();
 
         let agentCommission: number | undefined = undefined;
+        let companyCommission: number | undefined = undefined;
+        let driverEarnings: number | undefined = undefined;
+
         if (status === BookingStatus.COMPLETED) {
-            // Calculate 20% commission for agent if the truck was registered by one
+            const fare = booking.finalFare || booking.estimatedFare || 0;
+
+            // Company always takes 10% of the fare as platform fee
+            companyCommission = Math.round(fare * 0.10 * 100) / 100;
+
+            // Driver always gets 90% of the fare (company's 10% cut never affects driver's share)
+            driverEarnings = Math.round((fare - companyCommission) * 100) / 100;
+
+            // Agent gets 20% of the company's 10% cut — ONLY if truck was registered by an agent
             if (booking.truck?.registeredByAgentId) {
-                const fare = booking.finalFare || booking.estimatedFare || 0;
-                agentCommission = fare * 0.20;
+                agentCommission = Math.round(companyCommission * 0.20 * 100) / 100;
             }
         }
 
@@ -227,31 +237,28 @@ export class BookingsService {
                 data: {
                     status,
                     agentCommission,
+                    companyCommission,
+                    driverEarnings,
                     statusLogs: { create: { status, note } },
-                },
+                } as any,
                 include: { truck: true }
             });
 
             if (status === BookingStatus.COMPLETED) {
-                // IMPORTANT: Calculate fare and earnings for the driver
-                const fare = currentBooking.finalFare || currentBooking.estimatedFare || 0;
-                const commissionVal = agentCommission || 0;
-                const driverEarnings = fare - commissionVal;
-
                 // 1. Update Driver Profile (earnings and trip count)
                 await tx.driver.update({
                     where: { id: driver.id },
                     data: {
                         totalTrips: { increment: 1 },
-                        totalEarnings: { increment: driverEarnings }
+                        totalEarnings: { increment: driverEarnings || 0 }
                     }
                 });
 
-                // 2. Update Agent Profile if the truck belongs to an agent
-                if (commissionVal > 0 && currentBooking.truck?.registeredByAgentId) {
+                // 2. Update Agent earnings if the truck belongs to an agent
+                if (agentCommission && agentCommission > 0 && currentBooking.truck?.registeredByAgentId) {
                     await tx.agent.update({
                         where: { id: currentBooking.truck.registeredByAgentId },
-                        data: { totalEarnings: { increment: commissionVal } }
+                        data: { totalEarnings: { increment: agentCommission } }
                     });
                 }
             }

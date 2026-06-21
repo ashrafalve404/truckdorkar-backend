@@ -21,22 +21,22 @@ export declare class AgentsController {
         data: ({
             user: {
                 id: string;
-                name: string | null;
                 email: string | null;
                 phone: string | null;
+                name: string | null;
                 isActive: boolean;
             };
         } & {
             id: string;
-            userId: string;
-            agentId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
             nidNumber: string | null;
+            totalEarnings: number;
+            agentId: string | null;
             dateOfBirth: Date | null;
             department: string | null;
             designation: string | null;
-            totalEarnings: number;
-            createdAt: Date;
-            updatedAt: Date;
+            userId: string;
         })[];
     }>;
     registerTruck(userId: string, body: any, files: {
@@ -48,15 +48,17 @@ export declare class AgentsController {
     }): Promise<{
         message: string;
         data: {
-            registeredByAgentId: string | null;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
+            deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
             driverId: string;
             truckType: string | null;
-            deletedAt: Date | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -69,11 +71,9 @@ export declare class AgentsController {
             lengthFt: number;
             make: string | null;
             model: string | null;
-            year: number | null;
             color: string | null;
-            description: string | null;
-            isAvailable: boolean;
             approvalNote: string | null;
+            registeredByAgentId: string | null;
         };
     }>;
     getMyTrucks(userId: string): Promise<{
@@ -81,19 +81,15 @@ export declare class AgentsController {
         data: ({
             driver: {
                 user: {
-                    name: string | null;
                     phone: string | null;
+                    name: string | null;
                 };
             } & {
                 id: string;
-                userId: string;
-                nidNumber: string | null;
-                totalEarnings: number;
                 createdAt: Date;
                 updatedAt: Date;
-                status: import("@prisma/client").$Enums.DriverStatus;
                 deletedAt: Date | null;
-                isAvailable: boolean;
+                nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
                 licenseNumber: string | null;
@@ -103,9 +99,13 @@ export declare class AgentsController {
                 experience: number | null;
                 totalTrips: number;
                 rating: number;
+                totalEarnings: number;
+                status: import("@prisma/client").$Enums.DriverStatus;
+                isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                userId: string;
             };
             images: {
                 id: string;
@@ -115,15 +115,17 @@ export declare class AgentsController {
                 isPrimary: boolean;
             }[];
         } & {
-            registeredByAgentId: string | null;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
+            deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
             driverId: string;
             truckType: string | null;
-            deletedAt: Date | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -136,11 +138,9 @@ export declare class AgentsController {
             lengthFt: number;
             make: string | null;
             model: string | null;
-            year: number | null;
             color: string | null;
-            description: string | null;
-            isAvailable: boolean;
             approvalNote: string | null;
+            registeredByAgentId: string | null;
         })[];
     }>;
     getEarnings(userId: string): Promise<{
@@ -184,19 +184,15 @@ export declare class AgentsController {
         data: ({
             driver: {
                 user: {
-                    name: string | null;
                     phone: string | null;
+                    name: string | null;
                 };
             } & {
                 id: string;
-                userId: string;
-                nidNumber: string | null;
-                totalEarnings: number;
                 createdAt: Date;
                 updatedAt: Date;
-                status: import("@prisma/client").$Enums.DriverStatus;
                 deletedAt: Date | null;
-                isAvailable: boolean;
+                nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
                 licenseNumber: string | null;
@@ -206,9 +202,13 @@ export declare class AgentsController {
                 experience: number | null;
                 totalTrips: number;
                 rating: number;
+                totalEarnings: number;
+                status: import("@prisma/client").$Enums.DriverStatus;
+                isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                userId: string;
             };
             images: {
                 id: string;
@@ -218,15 +218,17 @@ export declare class AgentsController {
                 isPrimary: boolean;
             }[];
         } & {
-            registeredByAgentId: string | null;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
+            deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
             driverId: string;
             truckType: string | null;
-            deletedAt: Date | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -239,25 +241,25 @@ export declare class AgentsController {
             lengthFt: number;
             make: string | null;
             model: string | null;
-            year: number | null;
             color: string | null;
-            description: string | null;
-            isAvailable: boolean;
             approvalNote: string | null;
+            registeredByAgentId: string | null;
         })[];
     }>;
     approveTruck(truckId: string, status: string, note?: string): Promise<{
         message: string;
         data: {
-            registeredByAgentId: string | null;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
+            deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
+            isAvailable: boolean;
+            description: string | null;
+            year: number | null;
             driverId: string;
             truckType: string | null;
-            deletedAt: Date | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -270,11 +272,9 @@ export declare class AgentsController {
             lengthFt: number;
             make: string | null;
             model: string | null;
-            year: number | null;
             color: string | null;
-            description: string | null;
-            isAvailable: boolean;
             approvalNote: string | null;
+            registeredByAgentId: string | null;
         };
     }>;
     remove(agentId: string): Promise<{

@@ -175,6 +175,8 @@ export declare class DriversController {
             distance: number | null;
             contactPhone: string | null;
             agentCommission: number | null;
+            companyCommission: number | null;
+            driverEarnings: number | null;
             cancelReason: string | null;
         })[];
     }>;

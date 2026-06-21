@@ -301,6 +301,8 @@ model Booking {
   distance        Float?
   contactPhone    String?
   agentCommission Float?
+  companyCommission Float?
+  driverEarnings  Float?
   status          BookingStatus @default(PENDING)
   cancelReason    String?
   createdAt       DateTime      @default(now())

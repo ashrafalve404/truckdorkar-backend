@@ -207,10 +207,14 @@ let BookingsService = class BookingsService {
         if (booking.driverId !== driver.id)
             throw new common_1.ForbiddenException();
         let agentCommission = undefined;
+        let companyCommission = undefined;
+        let driverEarnings = undefined;
         if (status === client_1.BookingStatus.COMPLETED) {
+            const fare = booking.finalFare || booking.estimatedFare || 0;
+            companyCommission = Math.round(fare * 0.10 * 100) / 100;
+            driverEarnings = Math.round((fare - companyCommission) * 100) / 100;
             if (booking.truck?.registeredByAgentId) {
-                const fare = booking.finalFare || booking.estimatedFare || 0;
-                agentCommission = fare * 0.20;
+                agentCommission = Math.round(companyCommission * 0.20 * 100) / 100;
             }
         }
         const updated = await this.prisma.$transaction(async (tx) => {
@@ -219,25 +223,24 @@ let BookingsService = class BookingsService {
                 data: {
                     status,
                     agentCommission,
+                    companyCommission,
+                    driverEarnings,
                     statusLogs: { create: { status, note } },
                 },
                 include: { truck: true }
             });
             if (status === client_1.BookingStatus.COMPLETED) {
-                const fare = currentBooking.finalFare || currentBooking.estimatedFare || 0;
-                const commissionVal = agentCommission || 0;
-                const driverEarnings = fare - commissionVal;
                 await tx.driver.update({
                     where: { id: driver.id },
                     data: {
                         totalTrips: { increment: 1 },
-                        totalEarnings: { increment: driverEarnings }
+                        totalEarnings: { increment: driverEarnings || 0 }
                     }
                 });
-                if (commissionVal > 0 && currentBooking.truck?.registeredByAgentId) {
+                if (agentCommission && agentCommission > 0 && currentBooking.truck?.registeredByAgentId) {
                     await tx.agent.update({
                         where: { id: currentBooking.truck.registeredByAgentId },
-                        data: { totalEarnings: { increment: commissionVal } }
+                        data: { totalEarnings: { increment: agentCommission } }
                     });
                 }
             }
