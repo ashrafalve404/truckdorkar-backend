@@ -103,6 +103,43 @@ let DriversService = class DriversService {
         });
         return { message: 'Driver status updated', data: driver };
     }
+    async submitCommissionPayment(userId, amount, transactionId) {
+        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        if (!driver)
+            throw new common_1.NotFoundException('Driver profile not found');
+        const payment = await this.prisma.commissionPayment.create({
+            data: {
+                driverId: driver.id,
+                amount,
+                transactionId,
+                status: 'PENDING'
+            }
+        });
+        return { message: 'Commission payment submitted for approval', data: payment };
+    }
+    async getMyCommissionPayments(userId) {
+        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        if (!driver)
+            throw new common_1.NotFoundException('Driver profile not found');
+        const payments = await this.prisma.commissionPayment.findMany({
+            where: { driverId: driver.id },
+            orderBy: { createdAt: 'desc' }
+        });
+        const completedTrips = await this.prisma.booking.findMany({
+            where: { driverId: driver.id, status: 'COMPLETED' },
+            select: { companyCommission: true }
+        });
+        const totalDue = completedTrips.reduce((sum, b) => sum + (b.companyCommission || 0), 0);
+        return {
+            message: 'Commission payments fetched',
+            data: {
+                payments,
+                totalDue,
+                paidAlready: driver.paidCommission,
+                currentBalance: totalDue - driver.paidCommission
+            }
+        };
+    }
 };
 exports.DriversService = DriversService;
 exports.DriversService = DriversService = __decorate([

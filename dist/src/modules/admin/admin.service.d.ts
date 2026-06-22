@@ -12,6 +12,7 @@ export declare class AdminService {
                 totalBookings: number;
                 totalRevenue: number;
                 companyRevenue: any;
+                receivedCommission: any;
                 pendingDrivers: number;
                 pendingTrucks: number;
                 openTickets: number;
@@ -140,41 +141,74 @@ export declare class AdminService {
     getAllDrivers(page?: number, limit?: number): Promise<{
         message: string;
         data: {
-            drivers: ({
-                user: {
-                    id: string;
-                    email: string | null;
-                    phone: string | null;
-                    name: string | null;
-                    isActive: boolean;
-                };
-            } & {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                deletedAt: Date | null;
-                nidNumber: string | null;
-                nidFront: string | null;
-                nidBack: string | null;
-                licenseNumber: string | null;
-                licenseFront: string | null;
-                licenseBack: string | null;
-                licenseExpiry: Date | null;
-                experience: number | null;
-                totalTrips: number;
-                rating: number;
-                totalEarnings: number;
-                status: import("@prisma/client").$Enums.DriverStatus;
-                isAvailable: boolean;
-                currentLat: number | null;
-                currentLng: number | null;
-                verificationNote: string | null;
-                userId: string;
-            })[];
+            drivers: any[];
             total: number;
             page: number;
             limit: number;
         };
+    }>;
+    getPendingCommissionPayments(): Promise<({
+        driver: {
+            user: {
+                phone: string | null;
+                name: string | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            nidNumber: string | null;
+            nidFront: string | null;
+            nidBack: string | null;
+            licenseNumber: string | null;
+            licenseFront: string | null;
+            licenseBack: string | null;
+            licenseExpiry: Date | null;
+            experience: number | null;
+            totalTrips: number;
+            rating: number;
+            totalEarnings: number;
+            paidCommission: number;
+            status: import("@prisma/client").$Enums.DriverStatus;
+            isAvailable: boolean;
+            currentLat: number | null;
+            currentLng: number | null;
+            verificationNote: string | null;
+            userId: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.PaymentStatus;
+        driverId: string;
+        amount: number;
+        transactionId: string;
+        method: string;
+        adminNote: string | null;
+    })[]>;
+    approveCommissionPayment(id: string, adminNote?: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.PaymentStatus;
+        driverId: string;
+        amount: number;
+        transactionId: string;
+        method: string;
+        adminNote: string | null;
+    }>;
+    rejectCommissionPayment(id: string, adminNote?: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.PaymentStatus;
+        driverId: string;
+        amount: number;
+        transactionId: string;
+        method: string;
+        adminNote: string | null;
     }>;
     verifyDriver(id: string, status: string, note?: string): Promise<{
         message: string;
@@ -194,6 +228,7 @@ export declare class AdminService {
             totalTrips: number;
             rating: number;
             totalEarnings: number;
+            paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
@@ -235,6 +270,7 @@ export declare class AdminService {
                     totalTrips: number;
                     rating: number;
                     totalEarnings: number;
+                    paidCommission: number;
                     status: import("@prisma/client").$Enums.DriverStatus;
                     isAvailable: boolean;
                     currentLat: number | null;

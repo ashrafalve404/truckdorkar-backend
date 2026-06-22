@@ -65,6 +65,15 @@ let AdminController = class AdminController {
     deleteAgent(id) {
         return this.adminService.deleteAgent(id);
     }
+    getPendingPayments() {
+        return this.adminService.getPendingCommissionPayments();
+    }
+    approvePayment(id, note) {
+        return this.adminService.approveCommissionPayment(id, note);
+    }
+    rejectPayment(id, note) {
+        return this.adminService.rejectCommissionPayment(id, note);
+    }
 };
 exports.AdminController = AdminController;
 __decorate([
@@ -177,6 +186,31 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "deleteAgent", null);
+__decorate([
+    (0, common_1.Get)('commission-payments'),
+    (0, swagger_1.ApiOperation)({ summary: 'List all pending commission payments' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "getPendingPayments", null);
+__decorate([
+    (0, common_1.Patch)('commission-payments/:id/approve'),
+    (0, swagger_1.ApiOperation)({ summary: 'Approve a commission payment' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('adminNote')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "approvePayment", null);
+__decorate([
+    (0, common_1.Patch)('commission-payments/:id/reject'),
+    (0, swagger_1.ApiOperation)({ summary: 'Reject a commission payment' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('adminNote')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "rejectPayment", null);
 exports.AdminController = AdminController = __decorate([
     (0, swagger_1.ApiTags)('admin'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

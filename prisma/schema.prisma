@@ -170,6 +170,7 @@ model Driver {
   totalTrips         Int          @default(0)
   rating             Float        @default(0)
   totalEarnings      Float        @default(0)
+  paidCommission     Float        @default(0)
   status             DriverStatus @default(PENDING)
   isAvailable        Boolean      @default(false)
   currentLat         Float?
@@ -184,9 +185,32 @@ model Driver {
   bookings Booking[]
   quotations Quotation[]
   reviews  Review[]  @relation("DriverReviews")
+  commissionPayments CommissionPayment[]
 
   @@index([status])
   @@map("drivers")
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model CommissionPayment {
+  id              String        @id @default(cuid())
+  driverId        String
+  amount          Float
+  transactionId   String        @unique
+  method          String        @default("bKash")
+  status          PaymentStatus @default(PENDING)
+  adminNote       String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  driver          Driver        @relation(fields: [driverId], references: [id])
+
+  @@map("commission_payments")
 }
 
 // ─── Agent ───────────────────────────────────────────────────────────────

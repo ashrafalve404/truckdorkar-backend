@@ -97,4 +97,22 @@ export class AdminController {
     deleteAgent(@Param('id') id: string) {
         return this.adminService.deleteAgent(id);
     }
+
+    @Get('commission-payments')
+    @ApiOperation({ summary: 'List all pending commission payments' })
+    getPendingPayments() {
+        return this.adminService.getPendingCommissionPayments();
+    }
+
+    @Patch('commission-payments/:id/approve')
+    @ApiOperation({ summary: 'Approve a commission payment' })
+    approvePayment(@Param('id') id: string, @Body('adminNote') note?: string) {
+        return this.adminService.approveCommissionPayment(id, note);
+    }
+
+    @Patch('commission-payments/:id/reject')
+    @ApiOperation({ summary: 'Reject a commission payment' })
+    rejectPayment(@Param('id') id: string, @Body('adminNote') note?: string) {
+        return this.adminService.rejectCommissionPayment(id, note);
+    }
 }

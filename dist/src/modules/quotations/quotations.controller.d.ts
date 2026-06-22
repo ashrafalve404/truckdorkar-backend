@@ -12,8 +12,8 @@ export declare class QuotationsController {
             status: import("@prisma/client").$Enums.QuotationStatus;
             note: string | null;
             driverId: string;
-            bookingId: string;
             amount: number;
+            bookingId: string;
             expiresAt: Date | null;
         };
     }>;
@@ -42,6 +42,7 @@ export declare class QuotationsController {
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
+                paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
@@ -56,8 +57,8 @@ export declare class QuotationsController {
             status: import("@prisma/client").$Enums.QuotationStatus;
             note: string | null;
             driverId: string;
-            bookingId: string;
             amount: number;
+            bookingId: string;
             expiresAt: Date | null;
         })[];
     }>;

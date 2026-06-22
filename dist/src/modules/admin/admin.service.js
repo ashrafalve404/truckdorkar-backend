@@ -19,7 +19,7 @@ let AdminService = class AdminService {
         this.prisma = prisma;
     }
     async getDashboardStats() {
-        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, companyRevenue, pendingDrivers, pendingTrucks, openTickets] = await Promise.all([
+        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, companyRevenue, pendingDrivers, pendingTrucks, openTickets, receivedCommission] = await Promise.all([
             this.prisma.user.count({ where: { role: 'USER' } }),
             this.prisma.driver.count(),
             this.prisma.truck.count(),
@@ -35,6 +35,9 @@ let AdminService = class AdminService {
             this.prisma.driver.count({ where: { status: client_1.DriverStatus.PENDING } }),
             this.prisma.truck.count({ where: { status: 'PENDING' } }),
             this.prisma.supportTicket.count({ where: { status: client_1.TicketStatus.OPEN } }),
+            this.prisma.driver.aggregate({
+                _sum: { paidCommission: true }
+            }),
         ]);
         const bookingStats = await this.prisma.booking.groupBy({
             by: ['status'],
@@ -55,6 +58,7 @@ let AdminService = class AdminService {
                     totalBookings,
                     totalRevenue: revenue._sum.finalFare || 0,
                     companyRevenue: companyRevenue._sum?.companyCommission || 0,
+                    receivedCommission: receivedCommission._sum?.paidCommission || 0,
                     pendingDrivers,
                     pendingTrucks,
                     openTickets
@@ -110,11 +114,57 @@ let AdminService = class AdminService {
             this.prisma.driver.findMany({
                 skip: (page - 1) * limit,
                 take: limit,
-                include: { user: { select: { id: true, name: true, phone: true, email: true, isActive: true } } },
+                include: {
+                    user: { select: { id: true, name: true, phone: true, email: true, isActive: true } },
+                    bookings: {
+                        where: { status: client_1.BookingStatus.COMPLETED },
+                        select: { companyCommission: true }
+                    }
+                },
             }),
             this.prisma.driver.count(),
         ]);
-        return { message: 'Drivers fetched', data: { drivers, total, page, limit } };
+        const driversWithBalance = drivers.map(d => {
+            const totalDue = d.bookings.reduce((sum, b) => sum + (b.companyCommission || 0), 0);
+            return {
+                ...d,
+                totalDue,
+                dueAmount: totalDue - d.paidCommission,
+                bookings: undefined
+            };
+        });
+        return { message: 'Drivers fetched', data: { drivers: driversWithBalance, total, page, limit } };
+    }
+    async getPendingCommissionPayments() {
+        return this.prisma.commissionPayment.findMany({
+            where: { status: 'PENDING' },
+            include: { driver: { include: { user: { select: { name: true, phone: true } } } } },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
+    async approveCommissionPayment(id, adminNote) {
+        return this.prisma.$transaction(async (tx) => {
+            const payment = await tx.commissionPayment.findUnique({ where: { id } });
+            if (!payment)
+                throw new Error('Payment record not found');
+            if (payment.status !== 'PENDING')
+                throw new Error('Payment is already processed');
+            const updatedPayment = await tx.commissionPayment.update({
+                where: { id },
+                data: { status: 'APPROVED', adminNote }
+            });
+            await tx.driver.update({
+                where: { id: payment.driverId },
+                data: { paidCommission: { increment: payment.amount } }
+            });
+            return updatedPayment;
+        });
+    }
+    async rejectCommissionPayment(id, adminNote) {
+        return this.prisma.commissionPayment.update({
+            where: { id },
+            data: { status: 'REJECTED', adminNote }
+        });
     }
     async verifyDriver(id, status, note) {
         const driver = await this.prisma.driver.update({

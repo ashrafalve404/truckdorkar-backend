@@ -68,6 +68,23 @@ export class DriversController {
         return this.driversService.getDriverBookings(userId);
     }
 
+    @Get('commission-payments')
+    @Roles(Role.DRIVER)
+    @ApiOperation({ summary: 'Get driver commission payment history and balance' })
+    getMyCommissionPayments(@CurrentUser('id') userId: string) {
+        return this.driversService.getMyCommissionPayments(userId);
+    }
+
+    @Post('commission-payments')
+    @Roles(Role.DRIVER)
+    @ApiOperation({ summary: 'Submit a commission payment for approval' })
+    submitCommissionPayment(
+        @CurrentUser('id') userId: string,
+        @Body() dto: { amount: number; transactionId: string }
+    ) {
+        return this.driversService.submitCommissionPayment(userId, dto.amount, dto.transactionId);
+    }
+
     // Admin endpoints
     @Get()
     @Roles(Role.ADMIN, Role.AGENT)

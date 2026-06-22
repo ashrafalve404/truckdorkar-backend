@@ -56,6 +56,7 @@ export declare class DriversService {
             totalTrips: number;
             rating: number;
             totalEarnings: number;
+            paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
@@ -82,6 +83,7 @@ export declare class DriversService {
             totalTrips: number;
             rating: number;
             totalEarnings: number;
+            paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
@@ -108,6 +110,7 @@ export declare class DriversService {
             totalTrips: number;
             rating: number;
             totalEarnings: number;
+            paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
@@ -212,6 +215,7 @@ export declare class DriversService {
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
+                paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
@@ -242,12 +246,46 @@ export declare class DriversService {
             totalTrips: number;
             rating: number;
             totalEarnings: number;
+            paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
             userId: string;
+        };
+    }>;
+    submitCommissionPayment(userId: string, amount: number, transactionId: string): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import("@prisma/client").$Enums.PaymentStatus;
+            driverId: string;
+            amount: number;
+            transactionId: string;
+            method: string;
+            adminNote: string | null;
+        };
+    }>;
+    getMyCommissionPayments(userId: string): Promise<{
+        message: string;
+        data: {
+            payments: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                status: import("@prisma/client").$Enums.PaymentStatus;
+                driverId: string;
+                amount: number;
+                transactionId: string;
+                method: string;
+                adminNote: string | null;
+            }[];
+            totalDue: number;
+            paidAlready: number;
+            currentBalance: number;
         };
     }>;
 }

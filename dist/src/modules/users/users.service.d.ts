@@ -32,6 +32,7 @@ export declare class UsersService {
                 totalTrips: number;
                 rating: number;
                 totalEarnings: number;
+                paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;

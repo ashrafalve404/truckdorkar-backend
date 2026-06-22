@@ -50,6 +50,12 @@ let DriversController = class DriversController {
     getBookings(userId) {
         return this.driversService.getDriverBookings(userId);
     }
+    getMyCommissionPayments(userId) {
+        return this.driversService.getMyCommissionPayments(userId);
+    }
+    submitCommissionPayment(userId, dto) {
+        return this.driversService.submitCommissionPayment(userId, dto.amount, dto.transactionId);
+    }
     findAll(query) {
         return this.driversService.findAll(query);
     }
@@ -117,6 +123,25 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DriversController.prototype, "getBookings", null);
+__decorate([
+    (0, common_1.Get)('commission-payments'),
+    (0, roles_decorator_1.Roles)(client_1.Role.DRIVER),
+    (0, swagger_1.ApiOperation)({ summary: 'Get driver commission payment history and balance' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DriversController.prototype, "getMyCommissionPayments", null);
+__decorate([
+    (0, common_1.Post)('commission-payments'),
+    (0, roles_decorator_1.Roles)(client_1.Role.DRIVER),
+    (0, swagger_1.ApiOperation)({ summary: 'Submit a commission payment for approval' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], DriversController.prototype, "submitCommissionPayment", null);
 __decorate([
     (0, common_1.Get)(),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN, client_1.Role.AGENT),
