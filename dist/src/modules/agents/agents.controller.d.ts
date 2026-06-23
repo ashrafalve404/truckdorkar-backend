@@ -33,6 +33,9 @@ export declare class AgentsController {
             nidNumber: string | null;
             totalEarnings: number;
             agentId: string | null;
+            nidFrontUrl: string | null;
+            nidBackUrl: string | null;
+            verificationStatus: string;
             dateOfBirth: Date | null;
             department: string | null;
             designation: string | null;
@@ -170,6 +173,9 @@ export declare class AgentsController {
             agentId: any;
             user: any;
             nidNumber: any;
+            nidFrontUrl: any;
+            nidBackUrl: any;
+            verificationStatus: any;
             dateOfBirth: any;
             department: any;
             designation: any;
@@ -281,5 +287,69 @@ export declare class AgentsController {
     }>;
     remove(agentId: string): Promise<{
         message: string;
+    }>;
+    getProfile(userId: string): Promise<{
+        message: string;
+        data: {
+            user: {
+                email: string | null;
+                phone: string | null;
+                name: string | null;
+                role: import("@prisma/client").$Enums.Role;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nidNumber: string | null;
+            totalEarnings: number;
+            agentId: string | null;
+            nidFrontUrl: string | null;
+            nidBackUrl: string | null;
+            verificationStatus: string;
+            dateOfBirth: Date | null;
+            department: string | null;
+            designation: string | null;
+            userId: string;
+        };
+    }>;
+    uploadNid(userId: string, nidNumber: string, files: {
+        nidFront?: Express.Multer.File[];
+        nidBack?: Express.Multer.File[];
+    }): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nidNumber: string | null;
+            totalEarnings: number;
+            agentId: string | null;
+            nidFrontUrl: string | null;
+            nidBackUrl: string | null;
+            verificationStatus: string;
+            dateOfBirth: Date | null;
+            department: string | null;
+            designation: string | null;
+            userId: string;
+        };
+    }>;
+    verifyAgent(agentId: string, status: 'APPROVED' | 'REJECTED'): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nidNumber: string | null;
+            totalEarnings: number;
+            agentId: string | null;
+            nidFrontUrl: string | null;
+            nidBackUrl: string | null;
+            verificationStatus: string;
+            dateOfBirth: Date | null;
+            department: string | null;
+            designation: string | null;
+            userId: string;
+        };
     }>;
 }

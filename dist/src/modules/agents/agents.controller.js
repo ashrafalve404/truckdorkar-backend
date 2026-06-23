@@ -74,6 +74,23 @@ let AgentsController = class AgentsController {
     remove(agentId) {
         return this.agentsService.remove(agentId);
     }
+    getProfile(userId) {
+        return this.agentsService.getAgentProfile(userId);
+    }
+    async uploadNid(userId, nidNumber, files) {
+        const [nidFrontUrl, nidBackUrl] = await Promise.all([
+            files.nidFront?.[0] ? this.storageService.save(files.nidFront[0], 'agent-docs') : Promise.resolve(undefined),
+            files.nidBack?.[0] ? this.storageService.save(files.nidBack[0], 'agent-docs') : Promise.resolve(undefined),
+        ]);
+        return this.agentsService.updateNid(userId, {
+            nidNumber,
+            nidFrontUrl: nidFrontUrl || '',
+            nidBackUrl: nidBackUrl || ''
+        });
+    }
+    verifyAgent(agentId, status) {
+        return this.agentsService.verifyAgent(agentId, status);
+    }
 };
 exports.AgentsController = AgentsController;
 __decorate([
@@ -167,6 +184,41 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AgentsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)('profile'),
+    (0, roles_decorator_1.Roles)(client_1.Role.AGENT),
+    (0, swagger_1.ApiOperation)({ summary: '[Agent] Get agent profile including verification status' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AgentsController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.Post)('profile/nid'),
+    (0, roles_decorator_1.Roles)(client_1.Role.AGENT),
+    (0, swagger_1.ApiOperation)({ summary: '[Agent] Upload NID images for verification' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'nidFront', maxCount: 1 },
+        { name: 'nidBack', maxCount: 1 },
+    ])),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __param(1, (0, common_1.Body)('nidNumber')),
+    __param(2, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], AgentsController.prototype, "uploadNid", null);
+__decorate([
+    (0, common_1.Patch)('admin/:agentId/verify'),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Approve or Reject agent NID verification' }),
+    __param(0, (0, common_1.Param)('agentId')),
+    __param(1, (0, common_1.Body)('status')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], AgentsController.prototype, "verifyAgent", null);
 exports.AgentsController = AgentsController = __decorate([
     (0, swagger_1.ApiTags)('agents'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

@@ -180,6 +180,9 @@ let AgentsService = class AgentsService {
             agentId: agt.agentId,
             user: agt.user,
             nidNumber: agt.nidNumber,
+            nidFrontUrl: agt.nidFrontUrl,
+            nidBackUrl: agt.nidBackUrl,
+            verificationStatus: agt.verificationStatus,
             dateOfBirth: agt.dateOfBirth,
             department: agt.department,
             designation: agt.designation,
@@ -218,6 +221,61 @@ let AgentsService = class AgentsService {
             data: { isActive: false, deletedAt: new Date() }
         });
         return { message: 'Agent removed successfully' };
+    }
+    async getAgentProfile(userId) {
+        const agent = await this.prisma.agent.findUnique({
+            where: { userId },
+            include: { user: { select: { name: true, phone: true, email: true, role: true } } }
+        });
+        if (!agent)
+            throw new common_1.NotFoundException('Agent profile not found');
+        return { message: 'Agent profile fetched', data: agent };
+    }
+    async updateNid(userId, data) {
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent)
+            throw new common_1.NotFoundException('Agent profile not found');
+        const updated = await this.prisma.agent.update({
+            where: { id: agent.id },
+            data: {
+                nidNumber: data.nidNumber,
+                nidFrontUrl: data.nidFrontUrl,
+                nidBackUrl: data.nidBackUrl,
+                verificationStatus: 'PENDING'
+            }
+        });
+        const admins = await this.prisma.user.findMany({ where: { role: 'ADMIN' } });
+        await Promise.all(admins.map(admin => this.prisma.notification.create({
+            data: {
+                userId: admin.id,
+                type: 'SYSTEM',
+                title: 'Agent Verification Request',
+                body: `Agent ${agent.agentId || agent.nidNumber} has submitted NID documents for verification.`,
+                data: { agentId: agent.id }
+            }
+        })));
+        return { message: 'NID submitted for verification', data: updated };
+    }
+    async verifyAgent(agentId, status) {
+        const agent = await this.prisma.agent.findUnique({ where: { id: agentId } });
+        if (!agent)
+            throw new common_1.NotFoundException('Agent profile not found');
+        const updated = await this.prisma.agent.update({
+            where: { id: agentId },
+            data: { verificationStatus: status }
+        });
+        await this.prisma.notification.create({
+            data: {
+                userId: agent.userId,
+                type: 'SYSTEM',
+                title: status === 'APPROVED' ? 'Verification Successful' : 'Verification Rejected',
+                body: status === 'APPROVED'
+                    ? 'Your NID has been verified. Welcome to our platform!'
+                    : 'Your NID verification was rejected. Please re-upload correct documents.',
+                data: { status }
+            }
+        });
+        return { message: `Agent status updated to ${status}`, data: updated };
     }
 };
 exports.AgentsService = AgentsService;

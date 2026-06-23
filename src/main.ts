@@ -19,7 +19,9 @@ async function bootstrap() {
   const frontendUrl = configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
 
   // Security
-  app.use((helmet as any).default());
+  app.use((helmet as any).default({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }));
   app.use(cookieParser());
 
   // CORS

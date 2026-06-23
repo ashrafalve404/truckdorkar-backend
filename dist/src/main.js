@@ -53,7 +53,9 @@ async function bootstrap() {
     const port = configService.get('PORT', 3001);
     const apiPrefix = configService.get('API_PREFIX', 'api');
     const frontendUrl = configService.get('FRONTEND_URL', 'http://localhost:3000');
-    app.use(helmet.default());
+    app.use(helmet.default({
+        crossOriginResourcePolicy: { policy: 'cross-origin' },
+    }));
     app.use((0, cookie_parser_1.default)());
     app.enableCors({
         origin: [frontendUrl, 'http://localhost:3000', 'http://localhost:3001'],

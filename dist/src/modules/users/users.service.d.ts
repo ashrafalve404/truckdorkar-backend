@@ -47,6 +47,9 @@ export declare class UsersService {
                 nidNumber: string | null;
                 totalEarnings: number;
                 agentId: string | null;
+                nidFrontUrl: string | null;
+                nidBackUrl: string | null;
+                verificationStatus: string;
                 dateOfBirth: Date | null;
                 department: string | null;
                 designation: string | null;

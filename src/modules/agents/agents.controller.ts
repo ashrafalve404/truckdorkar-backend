@@ -129,4 +129,49 @@ export class AgentsController {
     remove(@Param('agentId') agentId: string) {
         return this.agentsService.remove(agentId);
     }
+
+    @Get('profile')
+    @Roles(Role.AGENT)
+    @ApiOperation({ summary: '[Agent] Get agent profile including verification status' })
+    getProfile(@CurrentUser('id') userId: string) {
+        return this.agentsService.getAgentProfile(userId);
+    }
+
+    @Post('profile/nid')
+    @Roles(Role.AGENT)
+    @ApiOperation({ summary: '[Agent] Upload NID images for verification' })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'nidFront', maxCount: 1 },
+        { name: 'nidBack', maxCount: 1 },
+    ]))
+    async uploadNid(
+        @CurrentUser('id') userId: string,
+        @Body('nidNumber') nidNumber: string,
+        @UploadedFiles() files: {
+            nidFront?: Express.Multer.File[];
+            nidBack?: Express.Multer.File[];
+        },
+    ) {
+        const [nidFrontUrl, nidBackUrl] = await Promise.all([
+            files.nidFront?.[0] ? this.storageService.save(files.nidFront[0], 'agent-docs') : Promise.resolve(undefined),
+            files.nidBack?.[0] ? this.storageService.save(files.nidBack[0], 'agent-docs') : Promise.resolve(undefined),
+        ]);
+
+        return this.agentsService.updateNid(userId, {
+            nidNumber,
+            nidFrontUrl: nidFrontUrl || '',
+            nidBackUrl: nidBackUrl || ''
+        });
+    }
+
+    @Patch('admin/:agentId/verify')
+    @Roles(Role.ADMIN)
+    @ApiOperation({ summary: '[Admin] Approve or Reject agent NID verification' })
+    verifyAgent(
+        @Param('agentId') agentId: string,
+        @Body('status') status: 'APPROVED' | 'REJECTED',
+    ) {
+        return this.agentsService.verifyAgent(agentId, status);
+    }
 }

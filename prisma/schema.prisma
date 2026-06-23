@@ -220,6 +220,9 @@ model Agent {
   userId      String   @unique
   agentId     String?  @unique
   nidNumber   String?
+  nidFrontUrl String?
+  nidBackUrl  String?
+  verificationStatus String @default("PENDING") // PENDING, APPROVED, REJECTED
   dateOfBirth DateTime?
   department  String?
   designation String?
