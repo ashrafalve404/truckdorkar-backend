@@ -16,10 +16,12 @@ export declare class TrucksController {
                     };
                 } & {
                     id: string;
+                    userId: string;
+                    nidNumber: string | null;
+                    totalEarnings: number;
                     createdAt: Date;
                     updatedAt: Date;
                     deletedAt: Date | null;
-                    nidNumber: string | null;
                     nidFront: string | null;
                     nidBack: string | null;
                     licenseNumber: string | null;
@@ -29,14 +31,12 @@ export declare class TrucksController {
                     experience: number | null;
                     totalTrips: number;
                     rating: number;
-                    totalEarnings: number;
                     paidCommission: number;
                     status: import("@prisma/client").$Enums.DriverStatus;
                     isAvailable: boolean;
                     currentLat: number | null;
                     currentLng: number | null;
                     verificationNote: string | null;
-                    userId: string;
                 };
                 images: {
                     id: string;
@@ -47,9 +47,9 @@ export declare class TrucksController {
                 }[];
             } & {
                 id: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                name: string;
                 deletedAt: Date | null;
                 status: import("@prisma/client").$Enums.TruckStatus;
                 isAvailable: boolean;
@@ -98,9 +98,9 @@ export declare class TrucksController {
             }[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
@@ -136,10 +136,12 @@ export declare class TrucksController {
                 };
             } & {
                 id: string;
+                userId: string;
+                nidNumber: string | null;
+                totalEarnings: number;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
                 licenseNumber: string | null;
@@ -149,14 +151,12 @@ export declare class TrucksController {
                 experience: number | null;
                 totalTrips: number;
                 rating: number;
-                totalEarnings: number;
                 paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
-                userId: string;
             };
             images: {
                 id: string;
@@ -175,9 +175,9 @@ export declare class TrucksController {
             }[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
@@ -212,9 +212,9 @@ export declare class TrucksController {
         message: string;
         data: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
@@ -243,9 +243,9 @@ export declare class TrucksController {
         message: string;
         data: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
@@ -287,9 +287,9 @@ export declare class TrucksController {
         message: string;
         data: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;

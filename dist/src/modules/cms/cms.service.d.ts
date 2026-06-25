@@ -33,9 +33,9 @@ export declare class CmsService {
         message: string;
         data: {
             id: string;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            isActive: boolean;
             titleEn: string;
             titleBn: string | null;
             imageUrl: string;
@@ -47,9 +47,9 @@ export declare class CmsService {
         message: string;
         data: {
             id: string;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            isActive: boolean;
             titleEn: string;
             titleBn: string | null;
             imageUrl: string;
@@ -61,9 +61,9 @@ export declare class CmsService {
         message: string;
         data: {
             id: string;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            isActive: boolean;
             titleEn: string;
             titleBn: string | null;
             imageUrl: string;

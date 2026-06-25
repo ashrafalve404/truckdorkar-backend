@@ -28,10 +28,12 @@ export declare class QuotationsController {
                 };
             } & {
                 id: string;
+                userId: string;
+                nidNumber: string | null;
+                totalEarnings: number;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
                 licenseNumber: string | null;
@@ -41,14 +43,12 @@ export declare class QuotationsController {
                 experience: number | null;
                 totalTrips: number;
                 rating: number;
-                totalEarnings: number;
                 paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
-                userId: string;
             };
         } & {
             id: string;

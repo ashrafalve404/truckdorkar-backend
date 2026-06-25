@@ -130,8 +130,8 @@ let BookingsService = class BookingsService {
             throw new common_1.NotFoundException('Booking not found');
         if (booking.userId !== userId)
             throw new common_1.ForbiddenException();
-        if ([client_1.BookingStatus.DELIVERED, client_1.BookingStatus.COMPLETED, client_1.BookingStatus.CANCELLED].includes(booking.status)) {
-            throw new common_1.BadRequestException('This booking cannot be cancelled');
+        if (booking.status !== client_1.BookingStatus.PENDING) {
+            throw new common_1.BadRequestException('You can only cancel a booking that has not been accepted by a driver yet.');
         }
         const updated = await this.prisma.booking.update({
             where: { id },

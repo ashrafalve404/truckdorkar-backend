@@ -122,8 +122,8 @@ export class BookingsService {
         const booking = await this.prisma.booking.findUnique({ where: { id } });
         if (!booking) throw new NotFoundException('Booking not found');
         if (booking.userId !== userId) throw new ForbiddenException();
-        if (([BookingStatus.DELIVERED, BookingStatus.COMPLETED, BookingStatus.CANCELLED] as BookingStatus[]).includes(booking.status)) {
-            throw new BadRequestException('This booking cannot be cancelled');
+        if (booking.status !== BookingStatus.PENDING) {
+            throw new BadRequestException('You can only cancel a booking that has not been accepted by a driver yet.');
         }
 
         const updated = await this.prisma.booking.update({

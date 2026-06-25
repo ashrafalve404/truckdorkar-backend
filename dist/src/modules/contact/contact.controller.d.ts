@@ -7,10 +7,10 @@ export declare class ContactController {
         message: string;
         data: {
             id: string;
+            createdAt: Date;
             email: string | null;
             phone: string;
             name: string;
-            createdAt: Date;
             isRead: boolean;
             message: string;
         };
@@ -20,10 +20,10 @@ export declare class ContactController {
         data: {
             messages: {
                 id: string;
+                createdAt: Date;
                 email: string | null;
                 phone: string;
                 name: string;
-                createdAt: Date;
                 isRead: boolean;
                 message: string;
             }[];
@@ -36,10 +36,10 @@ export declare class ContactController {
         message: string;
         data: {
             id: string;
+            createdAt: Date;
             email: string | null;
             phone: string;
             name: string;
-            createdAt: Date;
             isRead: boolean;
             message: string;
         };

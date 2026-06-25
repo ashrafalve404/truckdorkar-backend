@@ -9,7 +9,23 @@ export declare class UsersController {
     getProfile(userId: string): Promise<{
         message: string;
         data: {
+            agent: {
+                id: string;
+                userId: string;
+                agentId: string | null;
+                nidNumber: string | null;
+                nidFrontUrl: string | null;
+                nidBackUrl: string | null;
+                verificationStatus: string;
+                dateOfBirth: Date | null;
+                department: string | null;
+                designation: string | null;
+                totalEarnings: number;
+                createdAt: Date;
+                updatedAt: Date;
+            } | null;
             id: string;
+            createdAt: Date;
             email: string | null;
             phone: string | null;
             name: string | null;
@@ -17,13 +33,14 @@ export declare class UsersController {
             role: import("@prisma/client").$Enums.Role;
             isEmailVerified: boolean;
             isPhoneVerified: boolean;
-            createdAt: Date;
             driver: {
                 id: string;
+                userId: string;
+                nidNumber: string | null;
+                totalEarnings: number;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
                 licenseNumber: string | null;
@@ -33,36 +50,19 @@ export declare class UsersController {
                 experience: number | null;
                 totalTrips: number;
                 rating: number;
-                totalEarnings: number;
                 paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
-                userId: string;
-            } | null;
-            agent: {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                nidNumber: string | null;
-                totalEarnings: number;
-                agentId: string | null;
-                nidFrontUrl: string | null;
-                nidBackUrl: string | null;
-                verificationStatus: string;
-                dateOfBirth: Date | null;
-                department: string | null;
-                designation: string | null;
-                userId: string;
             } | null;
             addresses: {
                 id: string;
+                userId: string;
                 createdAt: Date;
                 updatedAt: Date;
                 address: string;
-                userId: string;
                 label: string;
                 city: string;
                 district: string | null;
@@ -94,10 +94,10 @@ export declare class UsersController {
         message: string;
         data: {
             id: string;
+            userId: string;
             createdAt: Date;
             updatedAt: Date;
             address: string;
-            userId: string;
             label: string;
             city: string;
             district: string | null;
@@ -110,10 +110,10 @@ export declare class UsersController {
         message: string;
         data: {
             id: string;
+            userId: string;
             createdAt: Date;
             updatedAt: Date;
             address: string;
-            userId: string;
             label: string;
             city: string;
             district: string | null;
@@ -126,10 +126,10 @@ export declare class UsersController {
         message: string;
         data: {
             id: string;
+            userId: string;
             createdAt: Date;
             updatedAt: Date;
             address: string;
-            userId: string;
             label: string;
             city: string;
             district: string | null;
@@ -145,8 +145,8 @@ export declare class UsersController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
             userId: string | null;
+            createdAt: Date;
             action: string;
             entity: string | null;
             entityId: string | null;

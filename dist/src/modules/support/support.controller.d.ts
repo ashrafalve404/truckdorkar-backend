@@ -8,11 +8,11 @@ export declare class SupportController {
         message: string;
         data: {
             id: string;
+            userId: string;
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.TicketStatus;
             description: string;
-            userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;
         };
@@ -29,11 +29,11 @@ export declare class SupportController {
             };
         } & {
             id: string;
+            userId: string;
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.TicketStatus;
             description: string;
-            userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;
         })[];
@@ -56,18 +56,18 @@ export declare class SupportController {
                 };
             } & {
                 id: string;
-                createdAt: Date;
                 userId: string;
+                createdAt: Date;
                 message: string;
                 ticketId: string;
             })[];
         } & {
             id: string;
+            userId: string;
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.TicketStatus;
             description: string;
-            userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;
         };
@@ -76,8 +76,8 @@ export declare class SupportController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
             userId: string;
+            createdAt: Date;
             message: string;
             ticketId: string;
         };
@@ -86,11 +86,11 @@ export declare class SupportController {
         message: string;
         data: {
             id: string;
+            userId: string;
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.TicketStatus;
             description: string;
-            userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;
         };

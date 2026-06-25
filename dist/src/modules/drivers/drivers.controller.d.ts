@@ -16,9 +16,9 @@ export declare class DriversController {
             };
             trucks: {
                 id: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                name: string;
                 deletedAt: Date | null;
                 status: import("@prisma/client").$Enums.TruckStatus;
                 isAvailable: boolean;
@@ -44,10 +44,12 @@ export declare class DriversController {
             }[];
         } & {
             id: string;
+            userId: string;
+            nidNumber: string | null;
+            totalEarnings: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
             licenseNumber: string | null;
@@ -57,24 +59,24 @@ export declare class DriversController {
             experience: number | null;
             totalTrips: number;
             rating: number;
-            totalEarnings: number;
             paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
-            userId: string;
         };
     }>;
     updateProfile(userId: string, dto: UpdateDriverProfileDto): Promise<{
         message: string;
         data: {
             id: string;
+            userId: string;
+            nidNumber: string | null;
+            totalEarnings: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
             licenseNumber: string | null;
@@ -84,24 +86,24 @@ export declare class DriversController {
             experience: number | null;
             totalTrips: number;
             rating: number;
-            totalEarnings: number;
             paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
-            userId: string;
         };
     }>;
     uploadDocument(userId: string, file: Express.Multer.File, type: string): Promise<{
         message: string;
         data: {
             id: string;
+            userId: string;
+            nidNumber: string | null;
+            totalEarnings: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
             licenseNumber: string | null;
@@ -111,14 +113,12 @@ export declare class DriversController {
             experience: number | null;
             totalTrips: number;
             rating: number;
-            totalEarnings: number;
             paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
-            userId: string;
         };
     }>;
     setAvailability(userId: string, dto: SetAvailabilityDto): Promise<{
@@ -136,9 +136,9 @@ export declare class DriversController {
                 bookingNumber: string;
                 finalFare: number | null;
             }[];
+            totalEarnings: number;
             totalTrips: number;
             rating: number;
-            totalEarnings: number;
         };
     }>;
     getBookings(userId: string): Promise<{
@@ -153,12 +153,12 @@ export declare class DriversController {
             } | null;
         } & {
             id: string;
+            userId: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            userId: string;
             bookingNumber: string;
             driverId: string | null;
             truckId: string | null;
@@ -239,10 +239,12 @@ export declare class DriversController {
                 }[];
             } & {
                 id: string;
+                userId: string;
+                nidNumber: string | null;
+                totalEarnings: number;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
                 licenseNumber: string | null;
@@ -252,14 +254,12 @@ export declare class DriversController {
                 experience: number | null;
                 totalTrips: number;
                 rating: number;
-                totalEarnings: number;
                 paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
-                userId: string;
             })[];
             total: number;
             page: number;
@@ -270,10 +270,12 @@ export declare class DriversController {
         message: string;
         data: {
             id: string;
+            userId: string;
+            nidNumber: string | null;
+            totalEarnings: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            nidNumber: string | null;
             nidFront: string | null;
             nidBack: string | null;
             licenseNumber: string | null;
@@ -283,14 +285,12 @@ export declare class DriversController {
             experience: number | null;
             totalTrips: number;
             rating: number;
-            totalEarnings: number;
             paidCommission: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
-            userId: string;
         };
     }>;
 }

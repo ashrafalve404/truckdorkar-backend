@@ -28,18 +28,18 @@ export declare class AgentsController {
             };
         } & {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            nidNumber: string | null;
-            totalEarnings: number;
+            userId: string;
             agentId: string | null;
+            nidNumber: string | null;
             nidFrontUrl: string | null;
             nidBackUrl: string | null;
             verificationStatus: string;
             dateOfBirth: Date | null;
             department: string | null;
             designation: string | null;
-            userId: string;
+            totalEarnings: number;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
     }>;
     registerTruck(userId: string, body: any, files: {
@@ -52,9 +52,9 @@ export declare class AgentsController {
         message: string;
         data: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
@@ -89,10 +89,12 @@ export declare class AgentsController {
                 };
             } & {
                 id: string;
+                userId: string;
+                nidNumber: string | null;
+                totalEarnings: number;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
                 licenseNumber: string | null;
@@ -102,14 +104,12 @@ export declare class AgentsController {
                 experience: number | null;
                 totalTrips: number;
                 rating: number;
-                totalEarnings: number;
                 paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
-                userId: string;
             };
             images: {
                 id: string;
@@ -120,9 +120,9 @@ export declare class AgentsController {
             }[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
@@ -196,10 +196,12 @@ export declare class AgentsController {
                 };
             } & {
                 id: string;
+                userId: string;
+                nidNumber: string | null;
+                totalEarnings: number;
                 createdAt: Date;
                 updatedAt: Date;
                 deletedAt: Date | null;
-                nidNumber: string | null;
                 nidFront: string | null;
                 nidBack: string | null;
                 licenseNumber: string | null;
@@ -209,14 +211,12 @@ export declare class AgentsController {
                 experience: number | null;
                 totalTrips: number;
                 rating: number;
-                totalEarnings: number;
                 paidCommission: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
-                userId: string;
             };
             images: {
                 id: string;
@@ -227,9 +227,9 @@ export declare class AgentsController {
             }[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
@@ -258,9 +258,9 @@ export declare class AgentsController {
         message: string;
         data: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.TruckStatus;
             isAvailable: boolean;
@@ -299,18 +299,18 @@ export declare class AgentsController {
             };
         } & {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            nidNumber: string | null;
-            totalEarnings: number;
+            userId: string;
             agentId: string | null;
+            nidNumber: string | null;
             nidFrontUrl: string | null;
             nidBackUrl: string | null;
             verificationStatus: string;
             dateOfBirth: Date | null;
             department: string | null;
             designation: string | null;
-            userId: string;
+            totalEarnings: number;
+            createdAt: Date;
+            updatedAt: Date;
         };
     }>;
     uploadNid(userId: string, nidNumber: string, files: {
@@ -320,36 +320,36 @@ export declare class AgentsController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            nidNumber: string | null;
-            totalEarnings: number;
+            userId: string;
             agentId: string | null;
+            nidNumber: string | null;
             nidFrontUrl: string | null;
             nidBackUrl: string | null;
             verificationStatus: string;
             dateOfBirth: Date | null;
             department: string | null;
             designation: string | null;
-            userId: string;
+            totalEarnings: number;
+            createdAt: Date;
+            updatedAt: Date;
         };
     }>;
     verifyAgent(agentId: string, status: 'APPROVED' | 'REJECTED'): Promise<{
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            nidNumber: string | null;
-            totalEarnings: number;
+            userId: string;
             agentId: string | null;
+            nidNumber: string | null;
             nidFrontUrl: string | null;
             nidBackUrl: string | null;
             verificationStatus: string;
             dateOfBirth: Date | null;
             department: string | null;
             designation: string | null;
-            userId: string;
+            totalEarnings: number;
+            createdAt: Date;
+            updatedAt: Date;
         };
     }>;
 }
