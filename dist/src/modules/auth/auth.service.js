@@ -75,15 +75,11 @@ let AuthService = class AuthService {
         const phoneExists = await this.prisma.user.findUnique({ where: { phone } });
         if (phoneExists)
             throw new common_1.ConflictException('Phone number already registered');
-        const safeRole = role === client_1.Role.ADMIN ? client_1.Role.USER : (role ?? client_1.Role.USER);
+        const safeRole = (role === client_1.Role.ADMIN || role === client_1.Role.AGENT) ? client_1.Role.USER : (role ?? client_1.Role.USER);
         const hashed = await bcrypt.hash(password, 12);
         let isActive = true;
         let finalAgentId = agentId;
         const currentCompanyName = "Truck Dorkar Limited";
-        if (safeRole === client_1.Role.AGENT) {
-            isActive = false;
-            finalAgentId = this.generateAgentId();
-        }
         const user = await this.prisma.user.create({
             data: {
                 name,
@@ -100,17 +96,6 @@ let AuthService = class AuthService {
                         }
                     },
                 }),
-                ...(safeRole === client_1.Role.AGENT && {
-                    agent: {
-                        create: {
-                            agentId: finalAgentId,
-                            nidNumber,
-                            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
-                            designation: 'Staff',
-                            department: currentCompanyName,
-                        }
-                    },
-                }),
             },
             select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
         });
@@ -119,19 +104,18 @@ let AuthService = class AuthService {
             data: {
                 userId: admin.id,
                 type: 'SYSTEM',
-                title: `New ${safeRole === 'AGENT' ? 'Agent' : safeRole === 'DRIVER' ? 'Driver' : 'User'} Registered`,
+                title: `New ${safeRole === 'DRIVER' ? 'Driver' : 'User'} Registered`,
                 body: `A new ${safeRole.toLowerCase()} ${name || phone} has joined. ${safeRole !== 'USER' ? 'Verification needed.' : ''}`,
                 data: {
                     userId: user.id,
                     role: safeRole,
-                    agentId: safeRole === 'AGENT' ? finalAgentId : undefined
                 }
             }
         })));
         const tokens = await this.generateTokens(user.id, user.email, user.phone, user.role);
         await this.updateRefreshToken(user.id, tokens.refreshToken);
         return {
-            message: safeRole === client_1.Role.AGENT ? 'Registration successful. Waiting for admin approval.' : 'Registration successful',
+            message: 'Registration successful',
             data: { user, ...tokens }
         };
     }

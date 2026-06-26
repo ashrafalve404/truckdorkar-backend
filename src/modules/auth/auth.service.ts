@@ -37,8 +37,8 @@ export class AuthService {
         const phoneExists = await this.prisma.user.findUnique({ where: { phone } });
         if (phoneExists) throw new ConflictException('Phone number already registered');
 
-        // Prevent direct ADMIN registration
-        const safeRole = role === Role.ADMIN ? Role.USER : (role ?? Role.USER);
+        // Prevent direct ADMIN and AGENT registration
+        const safeRole = (role === Role.ADMIN || role === Role.AGENT) ? Role.USER : (role ?? Role.USER);
 
         const hashed = await bcrypt.hash(password, 12);
 
@@ -47,10 +47,6 @@ export class AuthService {
         let finalAgentId = agentId;
         const currentCompanyName = "Truck Dorkar Limited";
 
-        if (safeRole === Role.AGENT) {
-            isActive = false; // Require admin approval
-            finalAgentId = this.generateAgentId();
-        }
 
         const user = await this.prisma.user.create({
             data: {
@@ -69,18 +65,6 @@ export class AuthService {
                         }
                     },
                 }),
-                // Auto-create agent profile if role is AGENT
-                ...(safeRole === Role.AGENT && {
-                    agent: {
-                        create: {
-                            agentId: finalAgentId,
-                            nidNumber,
-                            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
-                            designation: 'Staff',
-                            department: currentCompanyName,
-                        }
-                    },
-                }),
             },
             select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
         });
@@ -92,12 +76,11 @@ export class AuthService {
                 data: {
                     userId: admin.id,
                     type: 'SYSTEM',
-                    title: `New ${safeRole === 'AGENT' ? 'Agent' : safeRole === 'DRIVER' ? 'Driver' : 'User'} Registered`,
+                    title: `New ${safeRole === 'DRIVER' ? 'Driver' : 'User'} Registered`,
                     body: `A new ${safeRole.toLowerCase()} ${name || phone} has joined. ${safeRole !== 'USER' ? 'Verification needed.' : ''}`,
                     data: {
                         userId: user.id,
                         role: safeRole,
-                        agentId: safeRole === 'AGENT' ? finalAgentId : undefined
                     }
                 }
             })
@@ -107,7 +90,7 @@ export class AuthService {
         await this.updateRefreshToken(user.id, tokens.refreshToken);
 
         return {
-            message: safeRole === Role.AGENT ? 'Registration successful. Waiting for admin approval.' : 'Registration successful',
+            message: 'Registration successful',
             data: { user, ...tokens }
         };
     }

@@ -91,6 +91,9 @@ let AgentsController = class AgentsController {
     verifyAgent(agentId, status) {
         return this.agentsService.verifyAgent(agentId, status);
     }
+    createAgent(body) {
+        return this.agentsService.createAgent(body);
+    }
 };
 exports.AgentsController = AgentsController;
 __decorate([
@@ -219,6 +222,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], AgentsController.prototype, "verifyAgent", null);
+__decorate([
+    (0, common_1.Post)('admin/register'),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Register a new agent manually' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AgentsController.prototype, "createAgent", null);
 exports.AgentsController = AgentsController = __decorate([
     (0, swagger_1.ApiTags)('agents'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

@@ -18,7 +18,9 @@ export declare class UsersService {
                 dateOfBirth: Date | null;
                 department: string | null;
                 designation: string | null;
+                walletBalance: number;
                 totalEarnings: number;
+                lastDailyBonusAt: Date | null;
                 createdAt: Date;
                 updatedAt: Date;
             } | null;

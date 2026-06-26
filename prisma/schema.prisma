@@ -226,7 +226,9 @@ model Agent {
   dateOfBirth DateTime?
   department  String?
   designation String?
+  walletBalance Float    @default(0)
   totalEarnings Float    @default(0)
+  lastDailyBonusAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

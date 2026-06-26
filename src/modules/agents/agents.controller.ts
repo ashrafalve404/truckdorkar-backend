@@ -174,4 +174,11 @@ export class AgentsController {
     ) {
         return this.agentsService.verifyAgent(agentId, status);
     }
+
+    @Post('admin/register')
+    @Roles(Role.ADMIN)
+    @ApiOperation({ summary: '[Admin] Register a new agent manually' })
+    createAgent(@Body() body: any) {
+        return this.agentsService.createAgent(body);
+    }
 }

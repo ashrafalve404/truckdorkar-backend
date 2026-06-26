@@ -1,14 +1,38 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BookingStatus, TicketStatus, TruckStatus, DriverStatus } from '@prisma/client';
+import { BookingStatus, TicketStatus, TruckStatus, DriverStatus, Role } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AgentsService {
     constructor(private prisma: PrismaService) { }
 
     async getDashboard(userId: string) {
-        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        let agent = await this.prisma.agent.findUnique({ where: { userId } });
         if (!agent) throw new NotFoundException('Agent profile not found');
+
+        // ── Daily Bonus Logic ──
+        const now = new Date();
+        const lastBonus = agent.lastDailyBonusAt;
+        const isToday = (date: Date) => {
+            const today = new Date();
+            return (
+                date.getDate() === today.getDate() &&
+                date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear()
+            );
+        };
+
+        if (!lastBonus || !isToday(lastBonus)) {
+            agent = await this.prisma.agent.update({
+                where: { id: agent.id },
+                data: {
+                    walletBalance: { increment: 25 },
+                    totalEarnings: { increment: 25 },
+                    lastDailyBonusAt: now,
+                }
+            });
+        }
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -23,7 +47,7 @@ export class AgentsService {
             this.prisma.booking.count({ where: { createdAt: { gte: today } } }),
         ]);
 
-        const totalCommission = completedBookings.reduce((sum, b) => sum + (b.agentCommission || 0), 0);
+        const tripCommission = completedBookings.reduce((sum, b) => sum + (b.agentCommission || 0), 0);
 
         return {
             message: 'Agent dashboard summary',
@@ -31,9 +55,11 @@ export class AgentsService {
                 counts: {
                     myTrucksCount,
                     pendingTrucks,
-                    totalCommission,
                     todayBookings,
                     totalTrips: completedBookings.length,
+                    walletBalance: agent.walletBalance,
+                    tripCommission: tripCommission,
+                    totalEarnings: agent.totalEarnings,
                 },
             },
         };
@@ -310,5 +336,34 @@ export class AgentsService {
         });
 
         return { message: `Agent status updated to ${status}`, data: updated };
+    }
+
+    async createAgent(data: any) {
+        const hashedPassword = await bcrypt.hash(data.password || 'TDAGENT123', 12);
+        const agentId = `TDL-AG-${Math.floor(1000 + Math.random() * 9000)}`;
+
+        const user = await this.prisma.user.create({
+            data: {
+                name: data.name,
+                phone: data.phone,
+                email: data.email,
+                password: hashedPassword,
+                role: Role.AGENT,
+                isActive: true,
+                agent: {
+                    create: {
+                        agentId: agentId,
+                        designation: data.designation || 'Staff',
+                        department: data.department || 'Truck Dorkar Limited',
+                        nidNumber: data.nidNumber,
+                        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+                        verificationStatus: 'APPROVED'
+                    }
+                }
+            },
+            include: { agent: true }
+        });
+
+        return { message: 'Agent created successfully', data: user };
     }
 }
