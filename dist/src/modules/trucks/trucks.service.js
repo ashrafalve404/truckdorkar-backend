@@ -13,6 +13,26 @@ exports.TrucksService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const client_1 = require("@prisma/client");
+function getEnumCategory(categoryStr) {
+    const upper = (categoryStr || '').toUpperCase();
+    if (Object.values(client_1.TruckCategory).includes(upper)) {
+        return upper;
+    }
+    if (upper.includes('COVER')) {
+        if (upper.includes('1.5') || upper.includes('1_5'))
+            return client_1.TruckCategory.T1_5_COVER_10_12FT;
+        if (upper.includes('3') || upper.includes('3TON'))
+            return client_1.TruckCategory.T3_COVER_16_14FT;
+        return client_1.TruckCategory.T1_COVER_7_9FT;
+    }
+    else {
+        if (upper.includes('1.5') || upper.includes('1_5'))
+            return client_1.TruckCategory.T1_5_OPEN_10_12FT;
+        if (upper.includes('3') || upper.includes('3TON'))
+            return client_1.TruckCategory.T3_OPEN_16_14FT;
+        return client_1.TruckCategory.T1_OPEN_7_9FT;
+    }
+}
 let TrucksService = class TrucksService {
     prisma;
     constructor(prisma) {
@@ -22,12 +42,13 @@ let TrucksService = class TrucksService {
         const driver = await this.prisma.driver.findUnique({ where: { userId } });
         if (!driver)
             throw new common_1.NotFoundException('Driver profile not found');
+        const resolvedCategory = getEnumCategory(data.category);
         const truck = await this.prisma.truck.create({
             data: {
                 driverId: driver.id,
                 name: data.name,
                 registrationNo: data.registrationNo,
-                category: data.category,
+                category: resolvedCategory,
                 capacityTon: Number(data.capacityTon),
                 lengthFt: Number(data.lengthFt),
                 make: data.make,

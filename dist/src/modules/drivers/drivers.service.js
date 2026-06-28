@@ -27,9 +27,19 @@ let DriversService = class DriversService {
         return { message: 'Driver profile fetched', data: driver };
     }
     async updateProfile(userId, dto) {
+        const { name, email, ...driverData } = dto;
         const driver = await this.prisma.driver.update({
             where: { userId },
-            data: dto,
+            data: {
+                ...driverData,
+                user: {
+                    update: {
+                        name,
+                        email,
+                    }
+                }
+            },
+            include: { user: { select: { name: true, phone: true, email: true, avatar: true } } },
         });
         return { message: 'Driver profile updated', data: driver };
     }
@@ -38,13 +48,13 @@ let DriversService = class DriversService {
         if (!driver)
             throw new common_1.NotFoundException('Driver not found');
         const data = {};
-        if (type === 'nid_front')
+        if (type === 'nid_front' || type === 'nidFront')
             data.nidFront = url;
-        else if (type === 'nid_back')
+        else if (type === 'nid_back' || type === 'nidBack')
             data.nidBack = url;
-        else if (type === 'license_front')
+        else if (type === 'license_front' || type === 'licenseFront')
             data.licenseFront = url;
-        else if (type === 'license_back')
+        else if (type === 'license_back' || type === 'licenseBack')
             data.licenseBack = url;
         const updated = await this.prisma.driver.update({ where: { userId }, data });
         return { message: 'Document uploaded', data: updated };

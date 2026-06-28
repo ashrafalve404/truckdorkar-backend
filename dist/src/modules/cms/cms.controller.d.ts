@@ -6,14 +6,36 @@ export declare class CmsController {
     getContent(key: string): Promise<{
         message: string;
         data: {
+            id: string | undefined;
+            key: string;
+            metaJson: {
+                [x: string]: any;
+            };
+            titleEn: string;
+            titleBn: string | null | undefined;
+            updatedAt: Date | undefined;
+        };
+    } | {
+        message: string;
+        data: {
+            key: string;
+            metaJson: {};
+            id?: undefined;
+            titleEn?: undefined;
+            titleBn?: undefined;
+            updatedAt?: undefined;
+        };
+    } | {
+        message: string;
+        data: {
             id: string;
             updatedAt: Date;
+            key: string;
             titleEn: string | null;
             titleBn: string | null;
             bodyEn: string | null;
             bodyBn: string | null;
             metaJson: import("@prisma/client/runtime/library").JsonValue | null;
-            key: string;
         };
     }>;
     updateContent(key: string, dto: UpdateCmsContentDto): Promise<{
@@ -21,12 +43,12 @@ export declare class CmsController {
         data: {
             id: string;
             updatedAt: Date;
+            key: string;
             titleEn: string | null;
             titleBn: string | null;
             bodyEn: string | null;
             bodyBn: string | null;
             metaJson: import("@prisma/client/runtime/library").JsonValue | null;
-            key: string;
         };
     }>;
     getBanners(): Promise<{

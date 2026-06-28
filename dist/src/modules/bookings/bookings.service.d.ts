@@ -6,6 +6,7 @@ export declare class BookingsService {
     private prisma;
     private notifications;
     constructor(prisma: PrismaService, notifications: NotificationsService);
+    calculateMinFare(truckType: string | null | undefined, distanceKm: number): Promise<number>;
     create(userId: string, dto: CreateBookingDto): Promise<{
         message: string;
         data: {

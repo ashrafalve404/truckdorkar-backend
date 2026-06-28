@@ -173,23 +173,6 @@ let AdminService = class AdminService {
         });
         return { message: 'Driver status updated', data: driver };
     }
-    async getSettings() {
-        const settings = await this.prisma.cmsContent.findUnique({
-            where: { key: 'SYSTEM_SETTINGS' }
-        });
-        const defaultSettings = {
-            platformName: 'TruckDorkar',
-            adminEmail: 'admin@truckdorkar.com',
-            baseFarePerKm: 500
-        };
-        const stored = settings?.metaJson && typeof settings.metaJson === 'object'
-            ? settings.metaJson
-            : {};
-        return {
-            message: 'Settings fetched',
-            data: { ...defaultSettings, ...stored }
-        };
-    }
     async getAllTrucks(page = 1, limit = 20, status) {
         const where = { deletedAt: null };
         if (status)
@@ -237,6 +220,32 @@ let AdminService = class AdminService {
     async deleteTruck(id) {
         await this.prisma.truck.delete({ where: { id } });
         return { message: 'Truck permanently deleted' };
+    }
+    async getSettings() {
+        const record = await this.prisma.cmsContent.findUnique({
+            where: { key: 'SYSTEM_SETTINGS' }
+        });
+        const meta = record?.metaJson && typeof record.metaJson === 'object'
+            ? record.metaJson
+            : {};
+        const defaultFares = [
+            { id: "T1_OPEN_7_9FT", nameEn: "1 Ton Open 7/9 Ft Truck", nameBn: "১ টন খোলা ৭/৯ ফিট ট্রাক", minFare10km: 1000, capacityTon: 1.0, lengthFt: 9.0, farePerKm: 50, isActive: true },
+            { id: "T1_COVER_7_9FT", nameEn: "1 Ton Cover 7/9 Ft Truck", nameBn: "১ টন কাভার ৭/৯ ফিট ট্রাক", minFare10km: 1000, capacityTon: 1.0, lengthFt: 9.0, farePerKm: 50, isActive: true },
+            { id: "T1_5_OPEN_10_12FT", nameEn: "1.5 Ton Open 10/12 Ft Truck", nameBn: "১.৫ টন খোলা ১০/১২ ফিট ট্রাক", minFare10km: 1500, capacityTon: 1.5, lengthFt: 12.0, farePerKm: 60, isActive: true },
+            { id: "T1_5_COVER_10_12FT", nameEn: "1.5 Ton Cover 10/12 Ft Truck", nameBn: "১.৫ টন কাভার ১০/১২ ফিট ট্রাক", minFare10km: 1500, capacityTon: 1.5, lengthFt: 12.0, farePerKm: 60, isActive: true },
+            { id: "T3_OPEN_16_14FT", nameEn: "3 Ton Open 14/16 Ft Truck", nameBn: "৩ টন খোলা ১৪/১৬ ফিট ট্রাক", minFare10km: 3000, capacityTon: 3.0, lengthFt: 16.0, farePerKm: 75, isActive: true },
+            { id: "T3_COVER_16_14FT", nameEn: "3 Ton Cover 14/16 Ft Truck", nameBn: "৩ টন কাভার ১৪/১৬ ফিট ট্রাক", minFare10km: 3000, capacityTon: 3.0, lengthFt: 16.0, farePerKm: 75, isActive: true }
+        ];
+        const fares = (meta.truckFares && Array.isArray(meta.truckFares)) ? meta.truckFares : defaultFares;
+        return {
+            message: 'Settings fetched',
+            data: {
+                platformName: meta.platformName || 'TruckDorkar',
+                adminEmail: meta.adminEmail || 'admin@truckdorkar.com',
+                baseFarePerKm: meta.baseFarePerKm || 500,
+                truckFares: fares,
+            }
+        };
     }
     async updateSettings(settingsData) {
         const plainData = { ...settingsData };

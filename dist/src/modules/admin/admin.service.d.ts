@@ -237,14 +237,6 @@ export declare class AdminService {
             verificationNote: string | null;
         };
     }>;
-    getSettings(): Promise<{
-        message: string;
-        data: {
-            platformName: string;
-            adminEmail: string;
-            baseFarePerKm: number;
-        };
-    }>;
     getAllTrucks(page?: number, limit?: number, status?: string): Promise<{
         message: string;
         data: {
@@ -350,6 +342,15 @@ export declare class AdminService {
     }>;
     deleteTruck(id: string): Promise<{
         message: string;
+    }>;
+    getSettings(): Promise<{
+        message: string;
+        data: {
+            platformName: any;
+            adminEmail: any;
+            baseFarePerKm: any;
+            truckFares: any[];
+        };
     }>;
     updateSettings(settingsData: any): Promise<{
         message: string;

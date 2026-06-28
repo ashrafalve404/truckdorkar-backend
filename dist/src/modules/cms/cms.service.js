@@ -19,8 +19,36 @@ let CmsService = class CmsService {
     }
     async getContent(key) {
         const content = await this.prisma.cmsContent.findUnique({ where: { key } });
-        if (!content)
-            throw new common_1.NotFoundException('Content not found');
+        if (key === 'SYSTEM_SETTINGS') {
+            const defaultFares = [
+                { id: "T1_OPEN_7_9FT", nameEn: "1 Ton Open 7/9 Ft Truck", nameBn: "১ টন খোলা ৭/৯ ফিট ট্রাক", minFare10km: 1000, capacityTon: 1.0, lengthFt: 9.0, farePerKm: 50, isActive: true },
+                { id: "T1_COVER_7_9FT", nameEn: "1 Ton Cover 7/9 Ft Truck", nameBn: "১ টন কাভার ৭/৯ ফিট ট্রাক", minFare10km: 1000, capacityTon: 1.0, lengthFt: 9.0, farePerKm: 50, isActive: true },
+                { id: "T1_5_OPEN_10_12FT", nameEn: "1.5 Ton Open 10/12 Ft Truck", nameBn: "১.৫ টন খোলা ১০/১২ ফিট ট্রাক", minFare10km: 1500, capacityTon: 1.5, lengthFt: 12.0, farePerKm: 60, isActive: true },
+                { id: "T1_5_COVER_10_12FT", nameEn: "1.5 Ton Cover 10/12 Ft Truck", nameBn: "১.৫ টন কাভার ১০/১২ ফিট ট্রাক", minFare10km: 1500, capacityTon: 1.5, lengthFt: 12.0, farePerKm: 60, isActive: true },
+                { id: "T3_OPEN_16_14FT", nameEn: "3 Ton Open 14/16 Ft Truck", nameBn: "৩ টন খোলা ১৪/১৬ ফিট ট্রাক", minFare10km: 3000, capacityTon: 3.0, lengthFt: 16.0, farePerKm: 75, isActive: true },
+                { id: "T3_COVER_16_14FT", nameEn: "3 Ton Cover 14/16 Ft Truck", nameBn: "৩ টন কাভার ১৪/১৬ ফিট ট্রাক", minFare10km: 3000, capacityTon: 3.0, lengthFt: 16.0, farePerKm: 75, isActive: true }
+            ];
+            const meta = content?.metaJson && typeof content.metaJson === 'object'
+                ? { ...content.metaJson }
+                : {};
+            if (!meta.truckFares || !Array.isArray(meta.truckFares)) {
+                meta.truckFares = defaultFares;
+            }
+            return {
+                message: 'Content fetched',
+                data: {
+                    id: content?.id,
+                    key: 'SYSTEM_SETTINGS',
+                    metaJson: meta,
+                    titleEn: content?.titleEn || 'System Settings',
+                    titleBn: content?.titleBn,
+                    updatedAt: content?.updatedAt
+                }
+            };
+        }
+        if (!content) {
+            return { message: 'Content not found, using defaults', data: { key, metaJson: {} } };
+        }
         return { message: 'Content fetched', data: content };
     }
     async updateContent(key, dto) {

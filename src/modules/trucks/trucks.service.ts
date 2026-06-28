@@ -1,7 +1,23 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTruckDto, UpdateTruckDto } from './dto/truck.dto';
-import { Role } from '@prisma/client';
+import { Role, TruckCategory } from '@prisma/client';
+
+function getEnumCategory(categoryStr: string): TruckCategory {
+    const upper = (categoryStr || '').toUpperCase();
+    if (Object.values(TruckCategory).includes(upper as TruckCategory)) {
+        return upper as TruckCategory;
+    }
+    if (upper.includes('COVER')) {
+        if (upper.includes('1.5') || upper.includes('1_5')) return TruckCategory.T1_5_COVER_10_12FT;
+        if (upper.includes('3') || upper.includes('3TON')) return TruckCategory.T3_COVER_16_14FT;
+        return TruckCategory.T1_COVER_7_9FT;
+    } else {
+        if (upper.includes('1.5') || upper.includes('1_5')) return TruckCategory.T1_5_OPEN_10_12FT;
+        if (upper.includes('3') || upper.includes('3TON')) return TruckCategory.T3_OPEN_16_14FT;
+        return TruckCategory.T1_OPEN_7_9FT;
+    }
+}
 
 @Injectable()
 export class TrucksService {
@@ -11,12 +27,14 @@ export class TrucksService {
         const driver = await this.prisma.driver.findUnique({ where: { userId } });
         if (!driver) throw new NotFoundException('Driver profile not found');
 
+        const resolvedCategory = getEnumCategory(data.category);
+
         const truck = await this.prisma.truck.create({
             data: {
                 driverId: driver.id,
                 name: data.name,
                 registrationNo: data.registrationNo,
-                category: data.category,
+                category: resolvedCategory,
                 capacityTon: Number(data.capacityTon),
                 lengthFt: Number(data.lengthFt),
                 make: data.make,

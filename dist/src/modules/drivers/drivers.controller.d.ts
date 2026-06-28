@@ -70,6 +70,13 @@ export declare class DriversController {
     updateProfile(userId: string, dto: UpdateDriverProfileDto): Promise<{
         message: string;
         data: {
+            user: {
+                email: string | null;
+                phone: string | null;
+                name: string | null;
+                avatar: string | null;
+            };
+        } & {
             id: string;
             userId: string;
             nidNumber: string | null;

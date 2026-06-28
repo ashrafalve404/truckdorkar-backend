@@ -13,12 +13,26 @@ exports.VerifyDriverDto = exports.SetAvailabilityDto = exports.UpdateDriverProfi
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 class UpdateDriverProfileDto {
+    name;
+    email;
     nidNumber;
     licenseNumber;
     licenseExpiry;
     experience;
 }
 exports.UpdateDriverProfileDto = UpdateDriverProfileDto;
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateDriverProfileDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateDriverProfileDto.prototype, "email", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsOptional)(),

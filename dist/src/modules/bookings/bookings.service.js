@@ -22,11 +22,56 @@ let BookingsService = class BookingsService {
         this.prisma = prisma;
         this.notifications = notifications;
     }
+    async calculateMinFare(truckType, distanceKm) {
+        const fallbacks = [
+            { id: "T1_OPEN_7_9FT", minFare10km: 1000, farePerKm: 50 },
+            { id: "T1_COVER_7_9FT", minFare10km: 1000, farePerKm: 50 },
+            { id: "T1_5_OPEN_10_12FT", minFare10km: 1500, farePerKm: 60 },
+            { id: "T1_5_COVER_10_12FT", minFare10km: 1500, farePerKm: 60 },
+            { id: "T3_OPEN_16_14FT", minFare10km: 3000, farePerKm: 75 },
+            { id: "T3_COVER_16_14FT", minFare10km: 3000, farePerKm: 75 }
+        ];
+        const settings = await this.prisma.cmsContent.findUnique({
+            where: { key: 'SYSTEM_SETTINGS' }
+        });
+        const meta = settings?.metaJson && typeof settings.metaJson === 'object'
+            ? settings.metaJson
+            : {};
+        const dbTruckFares = Array.isArray(meta.truckFares) ? meta.truckFares : [];
+        const typeStr = truckType || "";
+        let matched = dbTruckFares.find(tf => tf.id === typeStr);
+        if (!matched) {
+            matched = fallbacks.find(f => f.id === typeStr);
+        }
+        let minFare10km = 1000;
+        let farePerKm = 50;
+        if (matched) {
+            minFare10km = matched.minFare10km;
+            farePerKm = matched.farePerKm || Math.ceil(minFare10km * 0.05);
+        }
+        else {
+            if (typeStr.startsWith('T1_5')) {
+                minFare10km = 1500;
+                farePerKm = 60;
+            }
+            else if (typeStr.startsWith('T3')) {
+                minFare10km = 3000;
+                farePerKm = 75;
+            }
+            else {
+                minFare10km = 1000;
+                farePerKm = 50;
+            }
+        }
+        const baseFare = minFare10km;
+        const extraPerKm = farePerKm;
+        return distanceKm <= 10 ? baseFare : baseFare + Math.ceil(distanceKm - 10) * extraPerKm;
+    }
     async create(userId, dto) {
         const distanceKm = dto.distance || 0;
-        const minFare = distanceKm <= 10 ? 1000 : 1000 + Math.ceil(distanceKm - 10) * 50;
+        const minFare = await this.calculateMinFare(dto.truckType, distanceKm);
         if ((dto.estimatedFare || 0) < minFare) {
-            throw new common_1.BadRequestException(`Minimum fare for this trip distance is ${minFare} TK`);
+            throw new common_1.BadRequestException(`Minimum fare for this trip distance and truck type is ${minFare} TK`);
         }
         const booking = await this.prisma.booking.create({
             data: {
@@ -182,8 +227,10 @@ let BookingsService = class BookingsService {
             throw new common_1.ForbiddenException();
         if (booking.status !== client_1.BookingStatus.PENDING)
             throw new common_1.BadRequestException('Fare can only be updated for pending bookings');
-        if (booking.distance !== null && booking.distance <= 10 && fare < 1000) {
-            throw new common_1.BadRequestException('Minimum fare for trips up to 10km is 1000 TK');
+        const distanceKm = booking.distance || 0;
+        const minFare = await this.calculateMinFare(booking.truckType, distanceKm);
+        if (fare < minFare) {
+            throw new common_1.BadRequestException(`Minimum fare for this trip is ${minFare} TK`);
         }
         const updated = await this.prisma.booking.update({
             where: { id },

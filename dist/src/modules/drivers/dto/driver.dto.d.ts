@@ -1,4 +1,6 @@
 export declare class UpdateDriverProfileDto {
+    name?: string;
+    email?: string;
     nidNumber?: string;
     licenseNumber?: string;
     licenseExpiry?: string;

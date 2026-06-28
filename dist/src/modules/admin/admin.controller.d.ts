@@ -272,9 +272,10 @@ export declare class AdminController {
     getSettings(): Promise<{
         message: string;
         data: {
-            platformName: string;
-            adminEmail: string;
-            baseFarePerKm: number;
+            platformName: any;
+            adminEmail: any;
+            baseFarePerKm: any;
+            truckFares: any[];
         };
     }>;
     updateSettings(dto: UpdateSettingsDto): Promise<{

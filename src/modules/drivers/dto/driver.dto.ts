@@ -2,6 +2,8 @@ import { IsOptional, IsString, IsInt, IsDateString, IsNumber } from 'class-valid
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateDriverProfileDto {
+    @ApiPropertyOptional() @IsOptional() @IsString() name?: string;
+    @ApiPropertyOptional() @IsOptional() @IsString() email?: string;
     @ApiPropertyOptional() @IsOptional() @IsString() nidNumber?: string;
     @ApiPropertyOptional() @IsOptional() @IsString() licenseNumber?: string;
     @ApiPropertyOptional() @IsOptional() @IsDateString() licenseExpiry?: string;
