@@ -356,4 +356,18 @@ export declare class AdminService {
         message: string;
         data: import("@prisma/client/runtime/library").JsonValue;
     }>;
+    createAdmin(dto: any): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            email: string | null;
+            phone: string | null;
+            name: string | null;
+            role: import("@prisma/client").$Enums.Role;
+        };
+    }>;
+    changeAdminPassword(adminId: string, dto: any): Promise<{
+        message: string;
+    }>;
 }

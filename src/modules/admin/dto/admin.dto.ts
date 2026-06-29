@@ -54,3 +54,31 @@ export class UpdateSettingsDto {
     @IsOptional()
     truckFares?: TruckFareDto[];
 }
+
+export class CreateAdminDto {
+    @ApiProperty({ example: 'Admin Name' })
+    @IsString()
+    name: string;
+
+    @ApiProperty({ example: '01700000000' })
+    @IsString()
+    phone: string;
+
+    @ApiProperty({ example: 'newadmin@truckdorkar.com' })
+    @IsEmail()
+    email: string;
+
+    @ApiProperty({ example: 'password123' })
+    @IsString()
+    password: string;
+}
+
+export class AdminChangePasswordDto {
+    @ApiProperty({ example: 'oldpassword123' })
+    @IsString()
+    currentPassword: string;
+
+    @ApiProperty({ example: 'newpassword123' })
+    @IsString()
+    newPassword: string;
+}

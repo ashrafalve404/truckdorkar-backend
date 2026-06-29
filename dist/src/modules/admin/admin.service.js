@@ -1,10 +1,43 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
@@ -13,6 +46,7 @@ exports.AdminService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const client_1 = require("@prisma/client");
+const bcrypt = __importStar(require("bcryptjs"));
 let AdminService = class AdminService {
     prisma;
     constructor(prisma) {
@@ -266,6 +300,56 @@ let AdminService = class AdminService {
             }
         });
         return { message: 'Settings updated', data: settings.metaJson };
+    }
+    async createAdmin(dto) {
+        const { name, email, phone, password } = dto;
+        const emailExists = await this.prisma.user.findFirst({
+            where: { email: email.toLowerCase() }
+        });
+        if (emailExists)
+            throw new common_1.ConflictException('Email already registered');
+        const phoneExists = await this.prisma.user.findUnique({
+            where: { phone }
+        });
+        if (phoneExists)
+            throw new common_1.ConflictException('Phone number already registered');
+        const hashed = await bcrypt.hash(password, 12);
+        const newAdmin = await this.prisma.user.create({
+            data: {
+                name,
+                email: email.toLowerCase(),
+                phone,
+                password: hashed,
+                role: client_1.Role.ADMIN,
+                isActive: true
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                role: true,
+                createdAt: true
+            }
+        });
+        return { message: 'Admin created successfully', data: newAdmin };
+    }
+    async changeAdminPassword(adminId, dto) {
+        const user = await this.prisma.user.findUnique({ where: { id: adminId } });
+        if (!user || user.role !== client_1.Role.ADMIN)
+            throw new common_1.NotFoundException('Admin user not found');
+        const passwordMatches = await bcrypt.compare(dto.currentPassword, user.password || '');
+        if (!passwordMatches)
+            throw new common_1.BadRequestException('Current password is incorrect');
+        const hashed = await bcrypt.hash(dto.newPassword, 12);
+        await this.prisma.user.update({
+            where: { id: adminId },
+            data: {
+                password: hashed,
+                refreshToken: null
+            }
+        });
+        return { message: 'Admin password changed successfully' };
     }
 };
 exports.AdminService = AdminService;

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateSettingsDto = exports.TruckFareDto = void 0;
+exports.AdminChangePasswordDto = exports.CreateAdminDto = exports.UpdateSettingsDto = exports.TruckFareDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
@@ -92,4 +92,46 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
 ], UpdateSettingsDto.prototype, "truckFares", void 0);
+class CreateAdminDto {
+    name;
+    phone;
+    email;
+    password;
+}
+exports.CreateAdminDto = CreateAdminDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin Name' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAdminDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '01700000000' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAdminDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'newadmin@truckdorkar.com' }),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], CreateAdminDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'password123' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAdminDto.prototype, "password", void 0);
+class AdminChangePasswordDto {
+    currentPassword;
+    newPassword;
+}
+exports.AdminChangePasswordDto = AdminChangePasswordDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'oldpassword123' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], AdminChangePasswordDto.prototype, "currentPassword", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'newpassword123' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], AdminChangePasswordDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=admin.dto.js.map

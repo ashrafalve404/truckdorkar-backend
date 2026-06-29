@@ -21,6 +21,7 @@ const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const admin_service_1 = require("./admin.service");
 const client_1 = require("@prisma/client");
 const admin_dto_1 = require("./dto/admin.dto");
+const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 let AdminController = class AdminController {
     adminService;
     constructor(adminService) {
@@ -73,6 +74,12 @@ let AdminController = class AdminController {
     }
     rejectPayment(id, note) {
         return this.adminService.rejectCommissionPayment(id, note);
+    }
+    createAdmin(dto) {
+        return this.adminService.createAdmin(dto);
+    }
+    changePassword(adminId, dto) {
+        return this.adminService.changeAdminPassword(adminId, dto);
     }
 };
 exports.AdminController = AdminController;
@@ -211,6 +218,23 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "rejectPayment", null);
+__decorate([
+    (0, common_1.Post)('create-admin'),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new admin user' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [admin_dto_1.CreateAdminDto]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "createAdmin", null);
+__decorate([
+    (0, common_1.Patch)('change-password'),
+    (0, swagger_1.ApiOperation)({ summary: 'Change password for currently logged-in admin' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, admin_dto_1.AdminChangePasswordDto]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "changePassword", null);
 exports.AdminController = AdminController = __decorate([
     (0, swagger_1.ApiTags)('admin'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

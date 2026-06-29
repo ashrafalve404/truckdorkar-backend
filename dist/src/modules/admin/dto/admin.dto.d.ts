@@ -14,3 +14,13 @@ export declare class UpdateSettingsDto {
     baseFarePerKm?: number;
     truckFares?: TruckFareDto[];
 }
+export declare class CreateAdminDto {
+    name: string;
+    phone: string;
+    email: string;
+    password: string;
+}
+export declare class AdminChangePasswordDto {
+    currentPassword: string;
+    newPassword: string;
+}

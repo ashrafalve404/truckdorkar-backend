@@ -5,8 +5,8 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { AdminService } from './admin.service';
 import { Role } from '@prisma/client';
-
-import { UpdateSettingsDto } from './dto/admin.dto';
+import { UpdateSettingsDto, CreateAdminDto, AdminChangePasswordDto } from './dto/admin.dto';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('admin')
 @ApiBearerAuth('access-token')
@@ -114,5 +114,17 @@ export class AdminController {
     @ApiOperation({ summary: 'Reject a commission payment' })
     rejectPayment(@Param('id') id: string, @Body('adminNote') note?: string) {
         return this.adminService.rejectCommissionPayment(id, note);
+    }
+
+    @Post('create-admin')
+    @ApiOperation({ summary: 'Create a new admin user' })
+    createAdmin(@Body() dto: CreateAdminDto) {
+        return this.adminService.createAdmin(dto);
+    }
+
+    @Patch('change-password')
+    @ApiOperation({ summary: 'Change password for currently logged-in admin' })
+    changePassword(@CurrentUser('id') adminId: string, @Body() dto: AdminChangePasswordDto) {
+        return this.adminService.changeAdminPassword(adminId, dto);
     }
 }

@@ -1,5 +1,5 @@
 import { AdminService } from './admin.service';
-import { UpdateSettingsDto } from './dto/admin.dto';
+import { UpdateSettingsDto, CreateAdminDto, AdminChangePasswordDto } from './dto/admin.dto';
 export declare class AdminController {
     private readonly adminService;
     constructor(adminService: AdminService);
@@ -356,5 +356,19 @@ export declare class AdminController {
         transactionId: string;
         method: string;
         adminNote: string | null;
+    }>;
+    createAdmin(dto: CreateAdminDto): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            email: string | null;
+            phone: string | null;
+            name: string | null;
+            role: import("@prisma/client").$Enums.Role;
+        };
+    }>;
+    changePassword(adminId: string, dto: AdminChangePasswordDto): Promise<{
+        message: string;
     }>;
 }

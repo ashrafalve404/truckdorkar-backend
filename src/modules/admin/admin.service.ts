@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BookingStatus, DriverStatus, TicketStatus } from '@prisma/client';
+import { BookingStatus, DriverStatus, TicketStatus, Role } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AdminService {
@@ -286,5 +287,62 @@ export class AdminService {
             }
         });
         return { message: 'Settings updated', data: settings.metaJson };
+    }
+
+    async createAdmin(dto: any) {
+        const { name, email, phone, password } = dto;
+
+        const emailExists = await this.prisma.user.findFirst({
+            where: { email: email.toLowerCase() }
+        });
+        if (emailExists) throw new ConflictException('Email already registered');
+
+        const phoneExists = await this.prisma.user.findUnique({
+            where: { phone }
+        });
+        if (phoneExists) throw new ConflictException('Phone number already registered');
+
+        const hashed = await bcrypt.hash(password, 12);
+
+        const newAdmin = await this.prisma.user.create({
+            data: {
+                name,
+                email: email.toLowerCase(),
+                phone,
+                password: hashed,
+                role: Role.ADMIN,
+                isActive: true
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                role: true,
+                createdAt: true
+            }
+        });
+
+        return { message: 'Admin created successfully', data: newAdmin };
+    }
+
+    async changeAdminPassword(adminId: string, dto: any) {
+        const user = await this.prisma.user.findUnique({ where: { id: adminId } });
+        if (!user || user.role !== Role.ADMIN) throw new NotFoundException('Admin user not found');
+
+        const passwordMatches = await bcrypt.compare(dto.currentPassword, user.password || '');
+        if (!passwordMatches) throw new BadRequestException('Current password is incorrect');
+
+        const hashed = await bcrypt.hash(dto.newPassword, 12);
+
+        await this.prisma.user.update({
+            where: { id: adminId },
+            data: {
+                password: hashed,
+                refreshToken: null
+            }
+        });
+
+        return { message: 'Admin password changed successfully' };
     }
 }
