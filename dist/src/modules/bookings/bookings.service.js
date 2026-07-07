@@ -192,6 +192,15 @@ let BookingsService = class BookingsService {
         const driver = await this.prisma.driver.findUnique({ where: { userId } });
         if (!driver)
             throw new common_1.BadRequestException('Driver profile not found');
+        const completedTrips = await this.prisma.booking.findMany({
+            where: { driverId: driver.id, status: client_1.BookingStatus.COMPLETED },
+            select: { companyCommission: true },
+        });
+        const totalDue = completedTrips.reduce((sum, b) => sum + (b.companyCommission || 0), 0);
+        const currentBalance = totalDue - driver.paidCommission;
+        if (currentBalance > 0) {
+            throw new common_1.ForbiddenException(`You have an unpaid commission balance of ৳${currentBalance.toFixed(2)}. Please pay your commission and wait for admin approval before accepting new trips.`);
+        }
         const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } });
         if (!booking)
             throw new common_1.NotFoundException('Booking not found');

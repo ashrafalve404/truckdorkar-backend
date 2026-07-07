@@ -10,6 +10,21 @@ export class QuotationsService {
     async submit(userId: string, dto: CreateQuotationDto) {
         const driver = await this.prisma.driver.findUnique({ where: { userId } });
         if (!driver) throw new NotFoundException('Driver not found');
+
+        // ── Commission check ──────────────────────────────────────────────────
+        const completedTrips = await this.prisma.booking.findMany({
+            where: { driverId: driver.id, status: 'COMPLETED' },
+            select: { companyCommission: true },
+        });
+        const totalDue = completedTrips.reduce((sum: number, b: { companyCommission: number | null }) => sum + (b.companyCommission || 0), 0);
+        const currentBalance = totalDue - driver.paidCommission;
+        if (currentBalance > 0) {
+            throw new ForbiddenException(
+                `You have an unpaid commission balance of ৳${currentBalance.toFixed(2)}. Please pay your commission and wait for admin approval before bidding on trips.`
+            );
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         const booking = await this.prisma.booking.findUnique({ where: { id: dto.bookingId } });
         if (!booking) throw new NotFoundException('Booking not found');
         const existing = await this.prisma.quotation.findFirst({ where: { bookingId: dto.bookingId, driverId: driver.id } });
