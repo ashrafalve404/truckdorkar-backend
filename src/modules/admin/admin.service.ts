@@ -73,6 +73,7 @@ export class AdminService {
                     name: true,
                     phone: true,
                     email: true,
+                    avatar: true,
                     role: true,
                     createdAt: true,
                     isActive: true,

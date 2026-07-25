@@ -205,7 +205,7 @@ export class AgentsService {
     async getAdminOverview() {
         const agents = await this.prisma.agent.findMany({
             include: {
-                user: { select: { id: true, name: true, phone: true, email: true, isActive: true } },
+                user: { select: { id: true, name: true, phone: true, email: true, avatar: true, isActive: true } },
                 trucks: {
                     select: {
                         id: true,

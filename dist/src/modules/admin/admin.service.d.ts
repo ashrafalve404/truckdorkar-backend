@@ -77,6 +77,7 @@ export declare class AdminService {
                 email: string | null;
                 phone: string | null;
                 name: string | null;
+                avatar: string | null;
                 role: import("@prisma/client").$Enums.Role;
                 isActive: boolean;
                 driver: {
