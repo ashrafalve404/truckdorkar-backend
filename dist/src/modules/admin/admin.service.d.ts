@@ -9,9 +9,10 @@ export declare class AdminService {
                 totalUsers: number;
                 totalDrivers: number;
                 totalTrucks: number;
+                totalAgents: number;
                 totalBookings: number;
                 totalRevenue: number;
-                companyRevenue: any;
+                companyRevenue: number;
                 receivedCommission: any;
                 pendingDrivers: number;
                 pendingTrucks: number;

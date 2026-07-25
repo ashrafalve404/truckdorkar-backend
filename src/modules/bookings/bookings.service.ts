@@ -186,7 +186,10 @@ export class BookingsService {
     }
 
     async driverAccept(bookingId: string, userId: string) {
-        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        const driver = await this.prisma.driver.findUnique({
+            where: { userId },
+            include: { user: { select: { name: true } } }
+        });
         if (!driver) throw new BadRequestException('Driver profile not found');
 
         // ── Commission check ──────────────────────────────────────────────────
@@ -237,7 +240,7 @@ export class BookingsService {
             booking.userId,
             NotificationType.BOOKING,
             'Booking Accepted',
-            `Your booking #${booking.bookingNumber} has been accepted by driver ${driver.id.slice(0, 5)}.`,
+            `Your booking #${booking.bookingNumber} has been accepted by driver ${driver.user?.name || 'Driver'}.`,
             { bookingId: booking.id }
         );
 

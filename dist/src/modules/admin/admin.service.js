@@ -53,26 +53,25 @@ let AdminService = class AdminService {
         this.prisma = prisma;
     }
     async getDashboardStats() {
-        const [totalUsers, totalDrivers, totalTrucks, totalBookings, revenue, companyRevenue, pendingDrivers, pendingTrucks, openTickets, receivedCommission] = await Promise.all([
+        const [totalUsers, totalDrivers, totalTrucks, totalAgents, totalBookings, pendingDrivers, pendingTrucks, openTickets, receivedCommission, completedBookings] = await Promise.all([
             this.prisma.user.count({ where: { role: 'USER' } }),
             this.prisma.driver.count(),
             this.prisma.truck.count(),
+            this.prisma.user.count({ where: { role: 'AGENT' } }),
             this.prisma.booking.count(),
-            this.prisma.booking.aggregate({
-                where: { status: client_1.BookingStatus.COMPLETED },
-                _sum: { finalFare: true },
-            }),
-            this.prisma.booking.aggregate({
-                where: { status: client_1.BookingStatus.COMPLETED },
-                _sum: { companyCommission: true },
-            }),
             this.prisma.driver.count({ where: { status: client_1.DriverStatus.PENDING } }),
             this.prisma.truck.count({ where: { status: 'PENDING' } }),
             this.prisma.supportTicket.count({ where: { status: client_1.TicketStatus.OPEN } }),
             this.prisma.driver.aggregate({
                 _sum: { paidCommission: true }
             }),
+            this.prisma.booking.findMany({
+                where: { status: client_1.BookingStatus.COMPLETED },
+                select: { finalFare: true, estimatedFare: true, companyCommission: true },
+            }),
         ]);
+        const totalRevenue = completedBookings.reduce((sum, b) => sum + (b.finalFare || b.estimatedFare || 0), 0);
+        const companyRevenue = completedBookings.reduce((sum, b) => sum + (b.companyCommission || 0), 0);
         const bookingStats = await this.prisma.booking.groupBy({
             by: ['status'],
             _count: { _all: true },
@@ -89,9 +88,10 @@ let AdminService = class AdminService {
                     totalUsers,
                     totalDrivers,
                     totalTrucks,
+                    totalAgents,
                     totalBookings,
-                    totalRevenue: revenue._sum.finalFare || 0,
-                    companyRevenue: companyRevenue._sum?.companyCommission || 0,
+                    totalRevenue,
+                    companyRevenue,
                     receivedCommission: receivedCommission._sum?.paidCommission || 0,
                     pendingDrivers,
                     pendingTrucks,

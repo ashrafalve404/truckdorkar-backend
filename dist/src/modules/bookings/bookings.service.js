@@ -189,7 +189,10 @@ let BookingsService = class BookingsService {
         return { message: 'Booking cancelled', data: updated };
     }
     async driverAccept(bookingId, userId) {
-        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        const driver = await this.prisma.driver.findUnique({
+            where: { userId },
+            include: { user: { select: { name: true } } }
+        });
         if (!driver)
             throw new common_1.BadRequestException('Driver profile not found');
         const completedTrips = await this.prisma.booking.findMany({
@@ -225,7 +228,7 @@ let BookingsService = class BookingsService {
                 statusLogs: { create: { status: client_1.BookingStatus.ACCEPTED, note: `Driver accepted the booking with truck ${matchingTruck.name}` } },
             },
         });
-        await this.notifications.create(booking.userId, client_1.NotificationType.BOOKING, 'Booking Accepted', `Your booking #${booking.bookingNumber} has been accepted by driver ${driver.id.slice(0, 5)}.`, { bookingId: booking.id });
+        await this.notifications.create(booking.userId, client_1.NotificationType.BOOKING, 'Booking Accepted', `Your booking #${booking.bookingNumber} has been accepted by driver ${driver.user?.name || 'Driver'}.`, { bookingId: booking.id });
         return { message: 'Booking accepted', data: updated };
     }
     async updateFare(id, userId, fare) {
