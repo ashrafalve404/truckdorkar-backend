@@ -94,6 +94,52 @@ export class BookingsService {
             },
             include: { statusLogs: true },
         });
+
+        // ── Notify drivers who have an approved truck matching this truckType ──────
+        try {
+            const matchingDrivers = await this.prisma.driver.findMany({
+                where: {
+                    trucks: {
+                        some: {
+                            truckType: dto.truckType,
+                            status: TruckStatus.APPROVED,
+                        }
+                    }
+                },
+                include: {
+                    user: { select: { id: true } },
+                    bookings: {
+                        where: { status: BookingStatus.COMPLETED },
+                        select: { companyCommission: true }
+                    }
+                }
+            });
+
+            for (const driver of matchingDrivers) {
+                if (!driver.user?.id) continue;
+
+                const totalDue = driver.bookings.reduce((sum, b) => sum + (b.companyCommission || 0), 0);
+                const unpaidCommission = totalDue - driver.paidCommission;
+
+                let title = 'New Trip Available!';
+                let body = `A new trip #${booking.bookingNumber} is available for your truck (${dto.truckType || 'Truck'}). Pickup: ${dto.pickupAddress}. Estimated Fare: ৳${dto.estimatedFare || minFare}.`;
+
+                if (unpaidCommission > 0) {
+                    body += ` Note: You have ৳${unpaidCommission.toFixed(2)} unpaid commission. Please clear your payment to accept this trip.`;
+                }
+
+                await this.notifications.create(
+                    driver.user.id,
+                    NotificationType.BOOKING,
+                    title,
+                    body,
+                    { bookingId: booking.id, bookingNumber: booking.bookingNumber, unpaidCommission }
+                );
+            }
+        } catch (err) {
+            console.error("Failed to send new booking notifications to drivers:", err);
+        }
+
         return { message: 'Booking created successfully', data: booking };
     }
 
