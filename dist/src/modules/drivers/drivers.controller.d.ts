@@ -141,7 +141,9 @@ export declare class DriversController {
                 id: string;
                 createdAt: Date;
                 bookingNumber: string;
+                estimatedFare: number | null;
                 finalFare: number | null;
+                distance: number | null;
             }[];
             totalEarnings: number;
             totalTrips: number;

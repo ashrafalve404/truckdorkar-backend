@@ -45,12 +45,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AgentsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const notifications_service_1 = require("../notifications/notifications.service");
 const client_1 = require("@prisma/client");
 const bcrypt = __importStar(require("bcryptjs"));
 let AgentsService = class AgentsService {
     prisma;
-    constructor(prisma) {
+    notificationsService;
+    constructor(prisma, notificationsService) {
         this.prisma = prisma;
+        this.notificationsService = notificationsService;
     }
     async getDashboard(userId) {
         let agent = await this.prisma.agent.findUnique({ where: { userId } });
@@ -213,6 +216,45 @@ let AgentsService = class AgentsService {
             }
         };
     }
+    async requestWithdrawal(userId, amount, bkashNumber) {
+        if (!amount || amount < 5000) {
+            throw new common_1.BadRequestException('Minimum withdrawal amount is ৳5,000');
+        }
+        if (!bkashNumber || bkashNumber.trim().length < 11) {
+            throw new common_1.BadRequestException('Please provide a valid 11-digit bKash number');
+        }
+        const agent = await this.prisma.agent.findUnique({
+            where: { userId },
+            include: { user: { select: { name: true, phone: true } } }
+        });
+        if (!agent)
+            throw new common_1.NotFoundException('Agent profile not found');
+        const availableEarnings = agent.totalEarnings || 0;
+        if (amount > availableEarnings) {
+            throw new common_1.BadRequestException(`Insufficient total earnings. Available total earnings: ৳${availableEarnings.toLocaleString()}`);
+        }
+        const withdrawal = await this.prisma.agentWithdrawal.create({
+            data: {
+                agentId: agent.id,
+                amount,
+                bkashNumber: bkashNumber.trim(),
+                method: 'bKash',
+                status: 'PENDING'
+            }
+        });
+        await this.notificationsService.notifyAdmins(client_1.NotificationType.PAYMENT, 'New Agent Money Withdrawal Request 💸', `Agent ${agent.user?.name || 'Agent'} (${agent.user?.phone}) requested a withdrawal of ৳${amount.toLocaleString()} to bKash (${bkashNumber}).`, { withdrawalId: withdrawal.id, agentId: agent.id, amount, bkashNumber });
+        return { message: 'Withdrawal request submitted successfully', data: withdrawal };
+    }
+    async getMyWithdrawals(userId) {
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent)
+            throw new common_1.NotFoundException('Agent profile not found');
+        const withdrawals = await this.prisma.agentWithdrawal.findMany({
+            where: { agentId: agent.id },
+            orderBy: { createdAt: 'desc' }
+        });
+        return { message: 'Withdrawal history fetched', data: withdrawals };
+    }
     async getAdminOverview() {
         const agents = await this.prisma.agent.findMany({
             include: {
@@ -339,6 +381,7 @@ let AgentsService = class AgentsService {
                 name: data.name,
                 phone: data.phone,
                 email: data.email,
+                avatar: data.avatar || undefined,
                 password: hashedPassword,
                 role: client_1.Role.AGENT,
                 isActive: true,
@@ -348,6 +391,8 @@ let AgentsService = class AgentsService {
                         designation: data.designation || 'Staff',
                         department: data.department || 'Truck Dorkar Limited',
                         nidNumber: data.nidNumber,
+                        nidFrontUrl: data.nidFrontUrl || undefined,
+                        nidBackUrl: data.nidBackUrl || undefined,
                         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
                         verificationStatus: 'APPROVED'
                     }
@@ -361,6 +406,7 @@ let AgentsService = class AgentsService {
 exports.AgentsService = AgentsService;
 exports.AgentsService = AgentsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notifications_service_1.NotificationsService])
 ], AgentsService);
 //# sourceMappingURL=agents.service.js.map

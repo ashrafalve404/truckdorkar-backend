@@ -12,10 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DriversService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const notifications_service_1 = require("../notifications/notifications.service");
+const client_1 = require("@prisma/client");
 let DriversService = class DriversService {
     prisma;
-    constructor(prisma) {
+    notificationsService;
+    constructor(prisma, notificationsService) {
         this.prisma = prisma;
+        this.notificationsService = notificationsService;
     }
     async getProfile(userId) {
         const driver = await this.prisma.driver.findUnique({
@@ -72,8 +76,8 @@ let DriversService = class DriversService {
             throw new common_1.NotFoundException('Driver not found');
         const recentBookings = await this.prisma.booking.findMany({
             where: { driver: { userId }, status: 'COMPLETED' },
-            select: { id: true, bookingNumber: true, finalFare: true, createdAt: true },
-            take: 10,
+            select: { id: true, bookingNumber: true, finalFare: true, estimatedFare: true, distance: true, createdAt: true },
+            take: 50,
             orderBy: { createdAt: 'desc' },
         });
         return { message: 'Earnings fetched', data: { ...driver, recentBookings } };
@@ -114,7 +118,10 @@ let DriversService = class DriversService {
         return { message: 'Driver status updated', data: driver };
     }
     async submitCommissionPayment(userId, amount, transactionId) {
-        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        const driver = await this.prisma.driver.findUnique({
+            where: { userId },
+            include: { user: { select: { name: true, phone: true } } }
+        });
         if (!driver)
             throw new common_1.NotFoundException('Driver profile not found');
         const payment = await this.prisma.commissionPayment.create({
@@ -125,6 +132,7 @@ let DriversService = class DriversService {
                 status: 'PENDING'
             }
         });
+        await this.notificationsService.notifyAdmins(client_1.NotificationType.SYSTEM, 'New Commission Payment Submitted 💳', `Driver ${driver.user?.name || 'Driver'} (${driver.user?.phone || ''}) submitted a commission payment request of ৳${amount.toLocaleString()} (TrxID: ${transactionId}).`, { paymentId: payment.id, driverId: driver.id, amount, transactionId });
         return { message: 'Commission payment submitted for approval', data: payment };
     }
     async getMyCommissionPayments(userId) {
@@ -154,6 +162,7 @@ let DriversService = class DriversService {
 exports.DriversService = DriversService;
 exports.DriversService = DriversService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notifications_service_1.NotificationsService])
 ], DriversService);
 //# sourceMappingURL=drivers.service.js.map

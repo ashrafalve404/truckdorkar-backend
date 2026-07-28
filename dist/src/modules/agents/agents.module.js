@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const agents_controller_1 = require("./agents.controller");
 const agents_service_1 = require("./agents.service");
 const storage_module_1 = require("../storage/storage.module");
+const notifications_module_1 = require("../notifications/notifications.module");
 let AgentsModule = class AgentsModule {
 };
 exports.AgentsModule = AgentsModule;
 exports.AgentsModule = AgentsModule = __decorate([
     (0, common_1.Module)({
-        imports: [storage_module_1.StorageModule],
+        imports: [storage_module_1.StorageModule, notifications_module_1.NotificationsModule],
         controllers: [agents_controller_1.AgentsController],
         providers: [agents_service_1.AgentsService],
         exports: [agents_service_1.AgentsService],

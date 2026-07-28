@@ -11,10 +11,11 @@ const common_1 = require("@nestjs/common");
 const drivers_controller_1 = require("./drivers.controller");
 const drivers_service_1 = require("./drivers.service");
 const storage_module_1 = require("../storage/storage.module");
+const notifications_module_1 = require("../notifications/notifications.module");
 let DriversModule = class DriversModule {
 };
 exports.DriversModule = DriversModule;
 exports.DriversModule = DriversModule = __decorate([
-    (0, common_1.Module)({ imports: [storage_module_1.StorageModule], controllers: [drivers_controller_1.DriversController], providers: [drivers_service_1.DriversService], exports: [drivers_service_1.DriversService] })
+    (0, common_1.Module)({ imports: [storage_module_1.StorageModule, notifications_module_1.NotificationsModule], controllers: [drivers_controller_1.DriversController], providers: [drivers_service_1.DriversService], exports: [drivers_service_1.DriversService] })
 ], DriversModule);
 //# sourceMappingURL=drivers.module.js.map

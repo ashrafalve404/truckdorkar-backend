@@ -23,6 +23,23 @@ let NotificationsService = class NotificationsService {
         });
         return notification;
     }
+    async notifyAdmins(type, title, body, data) {
+        const admins = await this.prisma.user.findMany({
+            where: { role: 'ADMIN' },
+            select: { id: true }
+        });
+        if (admins.length > 0) {
+            await this.prisma.notification.createMany({
+                data: admins.map((admin) => ({
+                    userId: admin.id,
+                    type,
+                    title,
+                    body,
+                    data
+                }))
+            });
+        }
+    }
     async findAll(userId) {
         return this.prisma.notification.findMany({
             where: { userId },

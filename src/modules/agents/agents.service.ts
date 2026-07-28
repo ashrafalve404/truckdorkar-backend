@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BookingStatus, TicketStatus, TruckStatus, DriverStatus, Role } from '@prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
+import { BookingStatus, TicketStatus, TruckStatus, DriverStatus, Role, NotificationType } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AgentsService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private notificationsService: NotificationsService
+    ) { }
 
     async getDashboard(userId: string) {
         let agent = await this.prisma.agent.findUnique({ where: { userId } });
@@ -200,6 +204,61 @@ export class AgentsService {
         };
     }
 
+    // ── Agent Withdrawal Requests ───────────────────────────────────────────
+
+    async requestWithdrawal(userId: string, amount: number, bkashNumber: string) {
+        if (!amount || amount < 5000) {
+            throw new BadRequestException('Minimum withdrawal amount is ৳5,000');
+        }
+
+        if (!bkashNumber || bkashNumber.trim().length < 11) {
+            throw new BadRequestException('Please provide a valid 11-digit bKash number');
+        }
+
+        const agent = await this.prisma.agent.findUnique({
+            where: { userId },
+            include: { user: { select: { name: true, phone: true } } }
+        });
+        if (!agent) throw new NotFoundException('Agent profile not found');
+
+        const availableEarnings = agent.totalEarnings || 0;
+        if (amount > availableEarnings) {
+            throw new BadRequestException(`Insufficient total earnings. Available total earnings: ৳${availableEarnings.toLocaleString()}`);
+        }
+
+        const withdrawal = await this.prisma.agentWithdrawal.create({
+            data: {
+                agentId: agent.id,
+                amount,
+                bkashNumber: bkashNumber.trim(),
+                method: 'bKash',
+                status: 'PENDING'
+            }
+        });
+
+        // Notify All Admins about the New Agent Withdrawal Request
+        await this.notificationsService.notifyAdmins(
+            NotificationType.PAYMENT,
+            'New Agent Money Withdrawal Request 💸',
+            `Agent ${agent.user?.name || 'Agent'} (${agent.user?.phone}) requested a withdrawal of ৳${amount.toLocaleString()} to bKash (${bkashNumber}).`,
+            { withdrawalId: withdrawal.id, agentId: agent.id, amount, bkashNumber }
+        );
+
+        return { message: 'Withdrawal request submitted successfully', data: withdrawal };
+    }
+
+    async getMyWithdrawals(userId: string) {
+        const agent = await this.prisma.agent.findUnique({ where: { userId } });
+        if (!agent) throw new NotFoundException('Agent profile not found');
+
+        const withdrawals = await this.prisma.agentWithdrawal.findMany({
+            where: { agentId: agent.id },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        return { message: 'Withdrawal history fetched', data: withdrawals };
+    }
+
     // ── Admin Operations ──────────────────────────────────────────────────
 
     async getAdminOverview() {
@@ -347,6 +406,7 @@ export class AgentsService {
                 name: data.name,
                 phone: data.phone,
                 email: data.email,
+                avatar: data.avatar || undefined,
                 password: hashedPassword,
                 role: Role.AGENT,
                 isActive: true,
@@ -356,6 +416,8 @@ export class AgentsService {
                         designation: data.designation || 'Staff',
                         department: data.department || 'Truck Dorkar Limited',
                         nidNumber: data.nidNumber,
+                        nidFrontUrl: data.nidFrontUrl || undefined,
+                        nidBackUrl: data.nidBackUrl || undefined,
                         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
                         verificationStatus: 'APPROVED'
                     }

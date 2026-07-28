@@ -1,8 +1,10 @@
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { UpdateDriverProfileDto } from './dto/driver.dto';
 export declare class DriversService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private notificationsService;
+    constructor(prisma: PrismaService, notificationsService: NotificationsService);
     getProfile(userId: string): Promise<{
         message: string;
         data: {
@@ -139,7 +141,9 @@ export declare class DriversService {
                 id: string;
                 createdAt: Date;
                 bookingNumber: string;
+                estimatedFare: number | null;
                 finalFare: number | null;
+                distance: number | null;
             }[];
             totalEarnings: number;
             totalTrips: number;

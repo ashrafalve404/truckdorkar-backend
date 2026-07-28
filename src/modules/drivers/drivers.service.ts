@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '@prisma/client';
 import { UpdateDriverProfileDto } from './dto/driver.dto';
 
 @Injectable()
 export class DriversService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private notificationsService: NotificationsService
+    ) { }
 
     async getProfile(userId: string) {
         const driver = await this.prisma.driver.findUnique({
@@ -58,8 +63,8 @@ export class DriversService {
         if (!driver) throw new NotFoundException('Driver not found');
         const recentBookings = await this.prisma.booking.findMany({
             where: { driver: { userId }, status: 'COMPLETED' },
-            select: { id: true, bookingNumber: true, finalFare: true, createdAt: true },
-            take: 10,
+            select: { id: true, bookingNumber: true, finalFare: true, estimatedFare: true, distance: true, createdAt: true },
+            take: 50,
             orderBy: { createdAt: 'desc' },
         });
         return { message: 'Earnings fetched', data: { ...driver, recentBookings } };
@@ -103,7 +108,10 @@ export class DriversService {
     }
 
     async submitCommissionPayment(userId: string, amount: number, transactionId: string) {
-        const driver = await this.prisma.driver.findUnique({ where: { userId } });
+        const driver = await this.prisma.driver.findUnique({
+            where: { userId },
+            include: { user: { select: { name: true, phone: true } } }
+        });
         if (!driver) throw new NotFoundException('Driver profile not found');
 
         const payment = await this.prisma.commissionPayment.create({
@@ -114,6 +122,15 @@ export class DriversService {
                 status: 'PENDING'
             }
         });
+
+        // Notify Admins about the new Commission Payment Request
+        await this.notificationsService.notifyAdmins(
+            NotificationType.SYSTEM,
+            'New Commission Payment Submitted 💳',
+            `Driver ${driver.user?.name || 'Driver'} (${driver.user?.phone || ''}) submitted a commission payment request of ৳${amount.toLocaleString()} (TrxID: ${transactionId}).`,
+            { paymentId: payment.id, driverId: driver.id, amount, transactionId }
+        );
+
         return { message: 'Commission payment submitted for approval', data: payment };
     }
 

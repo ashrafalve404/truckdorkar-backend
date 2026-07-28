@@ -1,7 +1,9 @@
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 export declare class AdminService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private notificationsService;
+    constructor(prisma: PrismaService, notificationsService: NotificationsService);
     getDashboardStats(): Promise<{
         message: string;
         data: {
@@ -371,5 +373,71 @@ export declare class AdminService {
     }>;
     changeAdminPassword(adminId: string, dto: any): Promise<{
         message: string;
+    }>;
+    getAgentWithdrawals(status?: string): Promise<{
+        message: string;
+        data: ({
+            agent: {
+                user: {
+                    email: string | null;
+                    phone: string | null;
+                    name: string | null;
+                };
+            } & {
+                id: string;
+                userId: string;
+                agentId: string | null;
+                nidNumber: string | null;
+                nidFrontUrl: string | null;
+                nidBackUrl: string | null;
+                verificationStatus: string;
+                dateOfBirth: Date | null;
+                department: string | null;
+                designation: string | null;
+                walletBalance: number;
+                totalEarnings: number;
+                lastDailyBonusAt: Date | null;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+        } & {
+            id: string;
+            agentId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import("@prisma/client").$Enums.PaymentStatus;
+            amount: number;
+            method: string;
+            adminNote: string | null;
+            bkashNumber: string;
+        })[];
+    }>;
+    approveAgentWithdrawal(id: string, adminNote?: string): Promise<{
+        message: string;
+        data: {
+            id: string;
+            agentId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import("@prisma/client").$Enums.PaymentStatus;
+            amount: number;
+            method: string;
+            adminNote: string | null;
+            bkashNumber: string;
+        };
+    }>;
+    rejectAgentWithdrawal(id: string, adminNote?: string): Promise<{
+        message: string;
+        data: {
+            id: string;
+            agentId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import("@prisma/client").$Enums.PaymentStatus;
+            amount: number;
+            method: string;
+            adminNote: string | null;
+            bkashNumber: string;
+        };
     }>;
 }

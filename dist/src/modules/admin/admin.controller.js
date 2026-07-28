@@ -81,6 +81,15 @@ let AdminController = class AdminController {
     changePassword(adminId, dto) {
         return this.adminService.changeAdminPassword(adminId, dto);
     }
+    getAgentWithdrawals(status) {
+        return this.adminService.getAgentWithdrawals(status);
+    }
+    approveAgentWithdrawal(id, adminNote) {
+        return this.adminService.approveAgentWithdrawal(id, adminNote);
+    }
+    rejectAgentWithdrawal(id, adminNote) {
+        return this.adminService.rejectAgentWithdrawal(id, adminNote);
+    }
 };
 exports.AdminController = AdminController;
 __decorate([
@@ -235,6 +244,32 @@ __decorate([
     __metadata("design:paramtypes", [String, admin_dto_1.AdminChangePasswordDto]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Get)('agent-withdrawals'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Get all agent money withdrawal requests' }),
+    __param(0, (0, common_1.Query)('status')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "getAgentWithdrawals", null);
+__decorate([
+    (0, common_1.Patch)('agent-withdrawals/:id/approve'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Approve agent money withdrawal request' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('adminNote')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "approveAgentWithdrawal", null);
+__decorate([
+    (0, common_1.Patch)('agent-withdrawals/:id/reject'),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Reject agent money withdrawal request' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('adminNote')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "rejectAgentWithdrawal", null);
 exports.AdminController = AdminController = __decorate([
     (0, swagger_1.ApiTags)('admin'),
     (0, swagger_1.ApiBearerAuth)('access-token'),

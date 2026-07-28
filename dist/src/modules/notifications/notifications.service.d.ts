@@ -13,6 +13,7 @@ export declare class NotificationsService {
         body: string;
         isRead: boolean;
     }>;
+    notifyAdmins(type: NotificationType, title: string, body: string, data?: any): Promise<void>;
     findAll(userId: string): Promise<{
         id: string;
         userId: string;

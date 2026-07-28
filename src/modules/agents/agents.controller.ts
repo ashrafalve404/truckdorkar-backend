@@ -96,6 +96,24 @@ export class AgentsController {
         return this.agentsService.getAgentEarnings(userId);
     }
 
+    @Post('withdraw')
+    @Roles(Role.AGENT)
+    @ApiOperation({ summary: '[Agent] Request money withdrawal' })
+    requestWithdrawal(
+        @CurrentUser('id') userId: string,
+        @Body('amount') amount: number,
+        @Body('bkashNumber') bkashNumber: string,
+    ) {
+        return this.agentsService.requestWithdrawal(userId, Number(amount), bkashNumber);
+    }
+
+    @Get('withdrawals')
+    @Roles(Role.AGENT)
+    @ApiOperation({ summary: '[Agent] Get withdrawal history' })
+    getMyWithdrawals(@CurrentUser('id') userId: string) {
+        return this.agentsService.getMyWithdrawals(userId);
+    }
+
     // ── Admin: Agent Overview ────────────────────────────────────────────
 
     @Get('admin/overview')

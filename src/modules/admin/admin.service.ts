@@ -1,11 +1,15 @@
 import { Injectable, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BookingStatus, DriverStatus, TicketStatus, Role } from '@prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
+import { BookingStatus, DriverStatus, TicketStatus, Role, NotificationType } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AdminService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private notificationsService: NotificationsService
+    ) { }
 
     async getDashboardStats() {
         const [totalUsers, totalDrivers, totalTrucks, totalAgents, totalBookings, pendingDrivers, pendingTrucks, openTickets, receivedCommission, completedBookings] = await Promise.all([
@@ -112,11 +116,23 @@ export class AdminService {
             this.prisma.driver.findMany({
                 skip: (page - 1) * limit,
                 take: limit,
+                orderBy: { createdAt: 'desc' },
                 include: {
-                    user: { select: { id: true, name: true, phone: true, email: true, isActive: true } },
+                    user: { select: { id: true, name: true, phone: true, email: true, avatar: true, isActive: true } },
+                    trucks: { select: { id: true, name: true, registrationNo: true, category: true, status: true, capacityTon: true, lengthFt: true } },
                     bookings: {
-                        where: { status: BookingStatus.COMPLETED },
-                        select: { companyCommission: true }
+                        select: {
+                            id: true,
+                            bookingNumber: true,
+                            pickupAddress: true,
+                            dropAddress: true,
+                            estimatedFare: true,
+                            finalFare: true,
+                            companyCommission: true,
+                            status: true,
+                            createdAt: true
+                        },
+                        orderBy: { createdAt: 'desc' }
                     }
                 },
             }),
@@ -124,12 +140,12 @@ export class AdminService {
         ]);
 
         const driversWithBalance = (drivers as any[]).map(d => {
-            const totalDue = d.bookings.reduce((sum: number, b: any) => sum + (b.companyCommission || 0), 0);
+            const completedBookings = (d.bookings || []).filter((b: any) => b.status === BookingStatus.COMPLETED);
+            const totalDue = completedBookings.reduce((sum: number, b: any) => sum + (b.companyCommission || 0), 0);
             return {
                 ...d,
                 totalDue,
                 dueAmount: totalDue - d.paidCommission,
-                bookings: undefined
             };
         });
 
@@ -145,8 +161,11 @@ export class AdminService {
     }
 
     async approveCommissionPayment(id: string, adminNote?: string) {
-        return this.prisma.$transaction(async (tx) => {
-            const payment = await tx.commissionPayment.findUnique({ where: { id } });
+        const result = await this.prisma.$transaction(async (tx) => {
+            const payment = await tx.commissionPayment.findUnique({
+                where: { id },
+                include: { driver: true }
+            });
             if (!payment) throw new Error('Payment record not found');
             if (payment.status !== 'PENDING') throw new Error('Payment is already processed');
 
@@ -160,15 +179,47 @@ export class AdminService {
                 data: { paidCommission: { increment: payment.amount } }
             });
 
-            return updatedPayment;
+            return { updatedPayment, driverUserId: payment.driver.userId, amount: payment.amount, trxId: payment.transactionId };
         });
+
+        // Notify Driver that their commission payment was approved
+        if (result.driverUserId) {
+            await this.notificationsService.create(
+                result.driverUserId,
+                NotificationType.SYSTEM,
+                'Commission Payment Approved! 💰',
+                `Your commission payment of ৳${result.amount.toLocaleString()} (TrxID: ${result.trxId}) has been approved by Admin.`,
+                { paymentId: id, amount: result.amount }
+            );
+        }
+
+        return result.updatedPayment;
     }
 
     async rejectCommissionPayment(id: string, adminNote?: string) {
-        return this.prisma.commissionPayment.update({
+        const payment = await this.prisma.commissionPayment.findUnique({
+            where: { id },
+            include: { driver: true }
+        });
+        if (!payment) throw new NotFoundException('Payment record not found');
+
+        const updatedPayment = await this.prisma.commissionPayment.update({
             where: { id },
             data: { status: 'REJECTED', adminNote }
         });
+
+        // Notify Driver that their commission payment was rejected
+        if (payment.driver?.userId) {
+            await this.notificationsService.create(
+                payment.driver.userId,
+                NotificationType.SYSTEM,
+                'Commission Payment Rejected ❌',
+                `Your commission payment request of ৳${payment.amount.toLocaleString()} (TrxID: ${payment.transactionId}) was rejected. ${adminNote ? `Note: ${adminNote}` : ''}`,
+                { paymentId: id, amount: payment.amount }
+            );
+        }
+
+        return updatedPayment;
     }
 
     async verifyDriver(id: string, status: string, note?: string) {
@@ -346,5 +397,92 @@ export class AdminService {
         });
 
         return { message: 'Admin password changed successfully' };
+    }
+
+    // ── Admin Agent Withdrawal Operations ──────────────────────────────────
+
+    async getAgentWithdrawals(status?: string) {
+        const where: any = {};
+        if (status) where.status = status;
+
+        const withdrawals = await this.prisma.agentWithdrawal.findMany({
+            where,
+            include: {
+                agent: {
+                    include: {
+                        user: { select: { name: true, phone: true, email: true } }
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        return { message: 'Agent withdrawals fetched', data: withdrawals };
+    }
+
+    async approveAgentWithdrawal(id: string, adminNote?: string) {
+        return this.prisma.$transaction(async (tx) => {
+            const withdrawal = await tx.agentWithdrawal.findUnique({
+                where: { id },
+                include: { agent: true }
+            });
+            if (!withdrawal) throw new NotFoundException('Withdrawal request not found');
+            if (withdrawal.status !== 'PENDING') throw new BadRequestException('Withdrawal request has already been processed');
+
+            if ((withdrawal.agent.totalEarnings || 0) < withdrawal.amount) {
+                throw new BadRequestException('Agent does not have sufficient total earnings');
+            }
+
+            // Deduct amount from agent's total earnings
+            await tx.agent.update({
+                where: { id: withdrawal.agentId },
+                data: { totalEarnings: { decrement: withdrawal.amount } }
+            });
+
+            // Mark withdrawal status as APPROVED
+            const updated = await tx.agentWithdrawal.update({
+                where: { id },
+                data: { status: 'APPROVED', adminNote }
+            });
+
+            // Send Notification to Agent
+            await tx.notification.create({
+                data: {
+                    userId: withdrawal.agent.userId,
+                    type: 'SYSTEM',
+                    title: 'Money Withdrawal Request Approved! 💸',
+                    body: `Your withdrawal request of ৳${withdrawal.amount.toLocaleString()} to bKash (${withdrawal.bkashNumber}) has been approved and disbursed.`,
+                    data: { withdrawalId: id, amount: withdrawal.amount, bkashNumber: withdrawal.bkashNumber }
+                }
+            });
+
+            return { message: 'Withdrawal request approved successfully', data: updated };
+        });
+    }
+
+    async rejectAgentWithdrawal(id: string, adminNote?: string) {
+        const withdrawal = await this.prisma.agentWithdrawal.findUnique({
+            where: { id },
+            include: { agent: true }
+        });
+        if (!withdrawal) throw new NotFoundException('Withdrawal request not found');
+
+        const updated = await this.prisma.agentWithdrawal.update({
+            where: { id },
+            data: { status: 'REJECTED', adminNote }
+        });
+
+        // Send Notification to Agent
+        await this.prisma.notification.create({
+            data: {
+                userId: withdrawal.agent.userId,
+                type: 'SYSTEM',
+                title: 'Money Withdrawal Request Rejected ❌',
+                body: `Your withdrawal request of ৳${withdrawal.amount.toLocaleString()} to bKash (${withdrawal.bkashNumber}) was rejected. ${adminNote ? `Note: ${adminNote}` : ''}`,
+                data: { withdrawalId: id, amount: withdrawal.amount }
+            }
+        });
+
+        return { message: 'Withdrawal request rejected', data: updated };
     }
 }

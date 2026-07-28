@@ -127,4 +127,24 @@ export class AdminController {
     changePassword(@CurrentUser('id') adminId: string, @Body() dto: AdminChangePasswordDto) {
         return this.adminService.changeAdminPassword(adminId, dto);
     }
+
+    // ── Admin Agent Withdrawals ──────────────────────────────────────────
+
+    @Get('agent-withdrawals')
+    @ApiOperation({ summary: '[Admin] Get all agent money withdrawal requests' })
+    getAgentWithdrawals(@Query('status') status?: string) {
+        return this.adminService.getAgentWithdrawals(status);
+    }
+
+    @Patch('agent-withdrawals/:id/approve')
+    @ApiOperation({ summary: '[Admin] Approve agent money withdrawal request' })
+    approveAgentWithdrawal(@Param('id') id: string, @Body('adminNote') adminNote?: string) {
+        return this.adminService.approveAgentWithdrawal(id, adminNote);
+    }
+
+    @Patch('agent-withdrawals/:id/reject')
+    @ApiOperation({ summary: '[Admin] Reject agent money withdrawal request' })
+    rejectAgentWithdrawal(@Param('id') id: string, @Body('adminNote') adminNote?: string) {
+        return this.adminService.rejectAgentWithdrawal(id, adminNote);
+    }
 }

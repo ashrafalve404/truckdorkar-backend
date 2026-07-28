@@ -62,6 +62,12 @@ let AgentsController = class AgentsController {
     getEarnings(userId) {
         return this.agentsService.getAgentEarnings(userId);
     }
+    requestWithdrawal(userId, amount, bkashNumber) {
+        return this.agentsService.requestWithdrawal(userId, Number(amount), bkashNumber);
+    }
+    getMyWithdrawals(userId) {
+        return this.agentsService.getMyWithdrawals(userId);
+    }
     getAdminOverview() {
         return this.agentsService.getAdminOverview();
     }
@@ -150,6 +156,26 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AgentsController.prototype, "getEarnings", null);
+__decorate([
+    (0, common_1.Post)('withdraw'),
+    (0, roles_decorator_1.Roles)(client_1.Role.AGENT),
+    (0, swagger_1.ApiOperation)({ summary: '[Agent] Request money withdrawal' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __param(1, (0, common_1.Body)('amount')),
+    __param(2, (0, common_1.Body)('bkashNumber')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number, String]),
+    __metadata("design:returntype", void 0)
+], AgentsController.prototype, "requestWithdrawal", null);
+__decorate([
+    (0, common_1.Get)('withdrawals'),
+    (0, roles_decorator_1.Roles)(client_1.Role.AGENT),
+    (0, swagger_1.ApiOperation)({ summary: '[Agent] Get withdrawal history' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AgentsController.prototype, "getMyWithdrawals", null);
 __decorate([
     (0, common_1.Get)('admin/overview'),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),

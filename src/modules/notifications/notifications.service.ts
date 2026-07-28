@@ -10,8 +10,25 @@ export class NotificationsService {
         const notification = await this.prisma.notification.create({
             data: { userId, type, title, body, data },
         });
-        // Here logic to push to Socket.io or FCM would be called
         return notification;
+    }
+
+    async notifyAdmins(type: NotificationType, title: string, body: string, data?: any) {
+        const admins = await this.prisma.user.findMany({
+            where: { role: 'ADMIN' },
+            select: { id: true }
+        });
+        if (admins.length > 0) {
+            await this.prisma.notification.createMany({
+                data: admins.map((admin) => ({
+                    userId: admin.id,
+                    type,
+                    title,
+                    body,
+                    data
+                }))
+            });
+        }
     }
 
     async findAll(userId: string) {
