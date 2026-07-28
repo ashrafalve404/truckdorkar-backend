@@ -282,11 +282,13 @@ let AgentsService = class AgentsService {
             dateOfBirth: agt.dateOfBirth,
             department: agt.department,
             designation: agt.designation,
+            totalEarnings: agt.totalEarnings || 0,
+            walletBalance: agt.walletBalance || 0,
             trucksTotal: agt.trucks ? agt.trucks.length : 0,
             trucksPending: agt.trucks ? agt.trucks.filter((t) => t.status === 'PENDING').length : 0,
             trucksApproved: agt.trucks ? agt.trucks.filter((t) => t.status === 'APPROVED').length : 0,
             trucksRejected: agt.trucks ? agt.trucks.filter((t) => t.status === 'REJECTED').length : 0,
-            recentTrucks: agt.trucks ? agt.trucks.slice(0, 3) : [],
+            recentTrucks: agt.trucks ? agt.trucks.slice(0, 5) : [],
         }));
         return { message: 'Admin agent overview fetched', data: overview };
     }

@@ -211,6 +211,8 @@ export declare class AgentsController {
             dateOfBirth: any;
             department: any;
             designation: any;
+            totalEarnings: any;
+            walletBalance: any;
             trucksTotal: any;
             trucksPending: any;
             trucksApproved: any;
