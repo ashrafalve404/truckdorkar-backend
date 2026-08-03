@@ -1,6 +1,7 @@
 import { IsString, IsNumber, IsEmail, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 
 export class TruckFareDto {
     @IsString()
@@ -81,4 +82,27 @@ export class AdminChangePasswordDto {
     @ApiProperty({ example: 'newpassword123' })
     @IsString()
     newPassword: string;
+}
+
+export class CreateUserByAdminDto {
+    @ApiProperty({ example: 'Rahim Uddin' })
+    @IsString()
+    name: string;
+
+    @ApiProperty({ example: '01826110036' })
+    @IsString()
+    phone: string;
+
+    @ApiProperty({ example: 'user@example.com', required: false })
+    @IsOptional()
+    @IsEmail()
+    email?: string;
+
+    @ApiProperty({ example: 'Password123' })
+    @IsString()
+    password: string;
+
+    @ApiProperty({ example: 'USER', description: 'USER, DRIVER, AGENT, ADMIN' })
+    @IsString()
+    role: Role;
 }

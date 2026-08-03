@@ -1,22 +1,50 @@
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, RefreshTokenDto, SocialLoginDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, RefreshTokenDto, SocialLoginDto, VerifyPhoneOtpDto, ResendPhoneOtpDto, ForgotPasswordPhoneDto, ResetPasswordPhoneDto } from './dto/auth.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
     register(dto: RegisterDto): Promise<{
         message: string;
         data: {
+            requiresOtp: boolean;
+            phone: string;
+            role: "USER" | "DRIVER";
+            signupToken: string;
+        };
+    }>;
+    verifyPhoneOtp(dto: VerifyPhoneOtpDto): Promise<{
+        message: string;
+        data: {
             accessToken: string;
             refreshToken: string;
             user: {
                 id: string;
-                createdAt: Date;
                 email: string | null;
                 phone: string | null;
                 name: string | null;
                 role: import("@prisma/client").$Enums.Role;
+                isPhoneVerified: boolean;
             };
         };
+    }>;
+    resendRegistrationOtp(dto: ResendPhoneOtpDto): Promise<{
+        message: string;
+        data: {
+            signupToken: string;
+            phone: any;
+        };
+    } | {
+        message: string;
+        data?: undefined;
+    }>;
+    forgotPasswordPhone(dto: ForgotPasswordPhoneDto): Promise<{
+        message: string;
+        data: {
+            phone: string;
+        };
+    }>;
+    resetPasswordPhone(dto: ResetPasswordPhoneDto): Promise<{
+        message: string;
     }>;
     login(dto: LoginDto): Promise<{
         message: string;

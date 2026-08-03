@@ -33,6 +33,9 @@ let AdminController = class AdminController {
     getAllUsers(page, limit) {
         return this.adminService.getAllUsers(page, limit);
     }
+    createUser(dto) {
+        return this.adminService.createUser(dto);
+    }
     toggleUser(id, isActive) {
         return this.adminService.toggleUserStatus(id, isActive);
     }
@@ -108,6 +111,14 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "getAllUsers", null);
+__decorate([
+    (0, common_1.Post)('users'),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new user directly from Admin Panel (No OTP required)' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [admin_dto_1.CreateUserByAdminDto]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "createUser", null);
 __decorate([
     (0, common_1.Patch)('users/:id/status'),
     (0, swagger_1.ApiOperation)({ summary: 'Activate or deactivate a user' }),

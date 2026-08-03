@@ -81,6 +81,7 @@ export declare class AdminService {
                 name: string | null;
                 avatar: string | null;
                 role: import("@prisma/client").$Enums.Role;
+                isPhoneVerified: boolean;
                 isActive: boolean;
                 driver: {
                     nidNumber: string | null;
@@ -89,6 +90,18 @@ export declare class AdminService {
             total: number;
             page: number;
             limit: number;
+        };
+    }>;
+    createUser(dto: any): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            email: string | null;
+            phone: string | null;
+            name: string | null;
+            role: import("@prisma/client").$Enums.Role;
+            isPhoneVerified: boolean;
         };
     }>;
     toggleUserStatus(id: string, isActive: boolean): Promise<{
@@ -186,10 +199,10 @@ export declare class AdminService {
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.PaymentStatus;
+        method: string;
         driverId: string;
         amount: number;
         transactionId: string;
-        method: string;
         adminNote: string | null;
     })[]>;
     approveCommissionPayment(id: string, adminNote?: string): Promise<{
@@ -197,10 +210,10 @@ export declare class AdminService {
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.PaymentStatus;
+        method: string;
         driverId: string;
         amount: number;
         transactionId: string;
-        method: string;
         adminNote: string | null;
     }>;
     rejectCommissionPayment(id: string, adminNote?: string): Promise<{
@@ -208,10 +221,10 @@ export declare class AdminService {
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.PaymentStatus;
+        method: string;
         driverId: string;
         amount: number;
         transactionId: string;
-        method: string;
         adminNote: string | null;
     }>;
     verifyDriver(id: string, status: string, note?: string): Promise<{
@@ -406,8 +419,8 @@ export declare class AdminService {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
-            amount: number;
             method: string;
+            amount: number;
             adminNote: string | null;
             bkashNumber: string;
         })[];
@@ -420,8 +433,8 @@ export declare class AdminService {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
-            amount: number;
             method: string;
+            amount: number;
             adminNote: string | null;
             bkashNumber: string;
         };
@@ -434,8 +447,8 @@ export declare class AdminService {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
-            amount: number;
             method: string;
+            amount: number;
             adminNote: string | null;
             bkashNumber: string;
         };

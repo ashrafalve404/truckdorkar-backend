@@ -1,5 +1,5 @@
 import { AdminService } from './admin.service';
-import { UpdateSettingsDto, CreateAdminDto, AdminChangePasswordDto } from './dto/admin.dto';
+import { UpdateSettingsDto, CreateAdminDto, AdminChangePasswordDto, CreateUserByAdminDto } from './dto/admin.dto';
 export declare class AdminController {
     private readonly adminService;
     constructor(adminService: AdminService);
@@ -80,6 +80,7 @@ export declare class AdminController {
                 name: string | null;
                 avatar: string | null;
                 role: import("@prisma/client").$Enums.Role;
+                isPhoneVerified: boolean;
                 isActive: boolean;
                 driver: {
                     nidNumber: string | null;
@@ -88,6 +89,18 @@ export declare class AdminController {
             total: number;
             page: number;
             limit: number;
+        };
+    }>;
+    createUser(dto: CreateUserByAdminDto): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            email: string | null;
+            phone: string | null;
+            name: string | null;
+            role: import("@prisma/client").$Enums.Role;
+            isPhoneVerified: boolean;
         };
     }>;
     toggleUser(id: string, isActive: boolean): Promise<{
@@ -331,10 +344,10 @@ export declare class AdminController {
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.PaymentStatus;
+        method: string;
         driverId: string;
         amount: number;
         transactionId: string;
-        method: string;
         adminNote: string | null;
     })[]>;
     approvePayment(id: string, note?: string): Promise<{
@@ -342,10 +355,10 @@ export declare class AdminController {
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.PaymentStatus;
+        method: string;
         driverId: string;
         amount: number;
         transactionId: string;
-        method: string;
         adminNote: string | null;
     }>;
     rejectPayment(id: string, note?: string): Promise<{
@@ -353,10 +366,10 @@ export declare class AdminController {
         createdAt: Date;
         updatedAt: Date;
         status: import("@prisma/client").$Enums.PaymentStatus;
+        method: string;
         driverId: string;
         amount: number;
         transactionId: string;
-        method: string;
         adminNote: string | null;
     }>;
     createAdmin(dto: CreateAdminDto): Promise<{
@@ -405,8 +418,8 @@ export declare class AdminController {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
-            amount: number;
             method: string;
+            amount: number;
             adminNote: string | null;
             bkashNumber: string;
         })[];
@@ -419,8 +432,8 @@ export declare class AdminController {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
-            amount: number;
             method: string;
+            amount: number;
             adminNote: string | null;
             bkashNumber: string;
         };
@@ -433,8 +446,8 @@ export declare class AdminController {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
-            amount: number;
             method: string;
+            amount: number;
             adminNote: string | null;
             bkashNumber: string;
         };

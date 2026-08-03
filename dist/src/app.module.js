@@ -27,6 +27,7 @@ const agents_module_1 = require("./modules/agents/agents.module");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
 const storage_module_1 = require("./modules/storage/storage.module");
+const sms_module_1 = require("./modules/sms/sms.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -41,6 +42,7 @@ exports.AppModule = AppModule = __decorate([
             throttler_1.ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
             prisma_module_1.PrismaModule,
             storage_module_1.StorageModule,
+            sms_module_1.SmsModule,
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
             drivers_module_1.DriversModule,

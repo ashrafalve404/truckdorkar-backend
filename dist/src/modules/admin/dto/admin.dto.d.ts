@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client';
 export declare class TruckFareDto {
     id: string;
     nameEn: string;
@@ -23,4 +24,11 @@ export declare class CreateAdminDto {
 export declare class AdminChangePasswordDto {
     currentPassword: string;
     newPassword: string;
+}
+export declare class CreateUserByAdminDto {
+    name: string;
+    phone: string;
+    email?: string;
+    password: string;
+    role: Role;
 }

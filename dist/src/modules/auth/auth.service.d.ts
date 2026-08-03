@@ -1,28 +1,51 @@
+import { OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, SocialLoginDto } from './dto/auth.dto';
-export declare class AuthService {
+import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, SocialLoginDto, VerifyPhoneOtpDto, ResendPhoneOtpDto, ForgotPasswordPhoneDto, ResetPasswordPhoneDto } from './dto/auth.dto';
+import { SmsService } from '../sms/sms.service';
+export declare class AuthService implements OnModuleInit {
     private prisma;
     private jwtService;
     private config;
+    private smsService;
     private googleClient;
-    constructor(prisma: PrismaService, jwtService: JwtService, config: ConfigService);
+    constructor(prisma: PrismaService, jwtService: JwtService, config: ConfigService, smsService: SmsService);
+    onModuleInit(): Promise<void>;
     private generateAgentId;
     register(dto: RegisterDto): Promise<{
+        message: string;
+        data: {
+            requiresOtp: boolean;
+            phone: string;
+            role: "USER" | "DRIVER";
+            signupToken: string;
+        };
+    }>;
+    verifyPhoneOtp(dto: VerifyPhoneOtpDto): Promise<{
         message: string;
         data: {
             accessToken: string;
             refreshToken: string;
             user: {
                 id: string;
-                createdAt: Date;
                 email: string | null;
                 phone: string | null;
                 name: string | null;
                 role: import("@prisma/client").$Enums.Role;
+                isPhoneVerified: boolean;
             };
         };
+    }>;
+    resendPhoneOtp(dto: ResendPhoneOtpDto): Promise<{
+        message: string;
+        data: {
+            signupToken: string;
+            phone: any;
+        };
+    } | {
+        message: string;
+        data?: undefined;
     }>;
     login(dto: LoginDto): Promise<{
         message: string;
@@ -88,6 +111,15 @@ export declare class AuthService {
         message: string;
     }>;
     resetPassword(dto: ResetPasswordDto): Promise<{
+        message: string;
+    }>;
+    forgotPasswordPhone(dto: ForgotPasswordPhoneDto): Promise<{
+        message: string;
+        data: {
+            phone: string;
+        };
+    }>;
+    resetPasswordPhone(dto: ResetPasswordPhoneDto): Promise<{
         message: string;
     }>;
     changePassword(userId: string, dto: ChangePasswordDto): Promise<{

@@ -51,73 +51,162 @@ const bcrypt = __importStar(require("bcryptjs"));
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const google_auth_library_1 = require("google-auth-library");
+const sms_service_1 = require("../sms/sms.service");
 let AuthService = class AuthService {
     prisma;
     jwtService;
     config;
+    smsService;
     googleClient = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-    constructor(prisma, jwtService, config) {
+    constructor(prisma, jwtService, config, smsService) {
         this.prisma = prisma;
         this.jwtService = jwtService;
         this.config = config;
+        this.smsService = smsService;
+    }
+    async onModuleInit() {
+        try {
+            await this.prisma.user.updateMany({
+                where: { isPhoneVerified: false },
+                data: { isPhoneVerified: true }
+            });
+        }
+        catch (e) {
+            console.error('AuthService onModuleInit warning:', e);
+        }
     }
     generateAgentId() {
         const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
         return `TDL-AGENT-${random}-${Date.now().toString().slice(-4)}`;
     }
     async register(dto) {
-        const { name, email, phone, password, role, licenseNumber, experience, companyName, agentId, nidNumber, dateOfBirth } = dto;
-        if (email) {
+        const { name, email, phone, password, role, licenseNumber, experience } = dto;
+        if (email && email.trim() !== '') {
             const emailExists = await this.prisma.user.findUnique({ where: { email } });
             if (emailExists)
-                throw new common_1.ConflictException('Email already registered');
+                throw new common_1.ConflictException('Email is already registered.');
         }
         const phoneExists = await this.prisma.user.findUnique({ where: { phone } });
         if (phoneExists)
-            throw new common_1.ConflictException('Phone number already registered');
+            throw new common_1.ConflictException('Phone number is already registered.');
         const safeRole = (role === client_1.Role.ADMIN || role === client_1.Role.AGENT) ? client_1.Role.USER : (role ?? client_1.Role.USER);
-        const hashed = await bcrypt.hash(password, 12);
-        let isActive = true;
-        let finalAgentId = agentId;
-        const currentCompanyName = "Truck Dorkar Limited";
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const signupToken = this.jwtService.sign({
+            name,
+            email: (email && email.trim() !== '') ? email : null,
+            phone,
+            hashedPassword,
+            role: safeRole,
+            licenseNumber,
+            experience: experience ? Number(experience) : undefined,
+            otp,
+        }, {
+            secret: this.config.get('JWT_ACCESS_SECRET'),
+            expiresIn: '10m',
+        });
+        await this.smsService.sendOtp(phone, otp);
+        return {
+            message: 'OTP sent to your phone number. Please enter the OTP to complete registration.',
+            data: { requiresOtp: true, phone, role: safeRole, signupToken }
+        };
+    }
+    async verifyPhoneOtp(dto) {
+        let payload;
+        if (dto.signupToken) {
+            try {
+                payload = await this.jwtService.verifyAsync(dto.signupToken, {
+                    secret: this.config.get('JWT_ACCESS_SECRET'),
+                });
+            }
+            catch (e) {
+                throw new common_1.BadRequestException('Registration session expired. Please register again.');
+            }
+        }
+        if (!payload || payload.otp !== dto.otp) {
+            const existingUser = await this.prisma.user.findFirst({ where: { phone: dto.phone } });
+            if (existingUser && !existingUser.isPhoneVerified && existingUser.phoneOtp === dto.otp && existingUser.phoneOtpExpiry && existingUser.phoneOtpExpiry > new Date()) {
+                const updatedUser = await this.prisma.user.update({
+                    where: { id: existingUser.id },
+                    data: { isPhoneVerified: true, phoneOtp: null, phoneOtpExpiry: null },
+                    select: { id: true, name: true, email: true, phone: true, role: true, isPhoneVerified: true }
+                });
+                const tokens = await this.generateTokens(updatedUser.id, updatedUser.email || '', updatedUser.phone || '', updatedUser.role);
+                await this.updateRefreshToken(updatedUser.id, tokens.refreshToken);
+                return { message: 'Phone number verified successfully.', data: { user: updatedUser, ...tokens } };
+            }
+            throw new common_1.BadRequestException('Invalid OTP code. Please check and try again.');
+        }
+        const phoneExists = await this.prisma.user.findUnique({ where: { phone: payload.phone } });
+        if (phoneExists)
+            throw new common_1.ConflictException('Phone number is already registered.');
         const user = await this.prisma.user.create({
             data: {
-                name,
-                email,
-                phone,
-                password: hashed,
-                role: safeRole,
-                isActive,
-                ...(safeRole === client_1.Role.DRIVER && {
+                name: payload.name,
+                email: payload.email,
+                phone: payload.phone,
+                password: payload.hashedPassword,
+                role: payload.role,
+                isPhoneVerified: true,
+                isActive: true,
+                ...(payload.role === client_1.Role.DRIVER && {
                     driver: {
                         create: {
-                            licenseNumber,
-                            experience: experience ? Number(experience) : undefined,
+                            licenseNumber: payload.licenseNumber,
+                            experience: payload.experience,
                         }
-                    },
-                }),
+                    }
+                })
             },
-            select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
+            select: { id: true, name: true, email: true, phone: true, role: true, isPhoneVerified: true }
         });
         const admins = await this.prisma.user.findMany({ where: { role: client_1.Role.ADMIN } });
         await Promise.all(admins.map(admin => this.prisma.notification.create({
             data: {
                 userId: admin.id,
                 type: 'SYSTEM',
-                title: `New ${safeRole === 'DRIVER' ? 'Driver' : 'User'} Registered`,
-                body: `A new ${safeRole.toLowerCase()} ${name || phone} has joined. ${safeRole !== 'USER' ? 'Verification needed.' : ''}`,
+                title: `New Verified ${user.role === 'DRIVER' ? 'Driver' : 'User'} Registered`,
+                body: `A new ${user.role.toLowerCase()} ${user.name || user.phone} has registered and verified phone number.`,
                 data: {
                     userId: user.id,
-                    role: safeRole,
+                    role: user.role,
                 }
             }
         })));
-        const tokens = await this.generateTokens(user.id, user.email, user.phone, user.role);
+        const tokens = await this.generateTokens(user.id, user.email || '', user.phone || '', user.role);
         await this.updateRefreshToken(user.id, tokens.refreshToken);
         return {
-            message: 'Registration successful',
+            message: 'Phone number verified successfully. Welcome to TruckDorkar!',
             data: { user, ...tokens }
         };
+    }
+    async resendPhoneOtp(dto) {
+        if (dto.signupToken) {
+            try {
+                const payload = this.jwtService.decode(dto.signupToken);
+                if (payload && payload.phone) {
+                    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                    const newSignupToken = this.jwtService.sign({ ...payload, otp: newOtp }, { secret: this.config.get('JWT_ACCESS_SECRET'), expiresIn: '10m' });
+                    await this.smsService.sendOtp(payload.phone, newOtp);
+                    return {
+                        message: 'New OTP sent to your phone number.',
+                        data: { signupToken: newSignupToken, phone: payload.phone }
+                    };
+                }
+            }
+            catch (e) { }
+        }
+        const user = await this.prisma.user.findFirst({ where: { phone: dto.phone } });
+        if (user && !user.isPhoneVerified) {
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            await this.prisma.user.update({
+                where: { id: user.id },
+                data: { phoneOtp: otp, phoneOtpExpiry: new Date(Date.now() + 5 * 60 * 1000) }
+            });
+            await this.smsService.sendOtp(dto.phone, otp);
+            return { message: 'A new OTP has been sent to your phone.' };
+        }
+        throw new common_1.BadRequestException('Could not resend OTP. Please start registration again.');
     }
     async login(dto) {
         const { identifier, password } = dto;
@@ -243,6 +332,52 @@ let AuthService = class AuthService {
         });
         return { message: 'Password reset successful. Please login again.' };
     }
+    async forgotPasswordPhone(dto) {
+        const user = await this.prisma.user.findFirst({
+            where: { phone: dto.phone }
+        });
+        if (!user) {
+            throw new common_1.NotFoundException('No account found with this phone number.');
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                phoneOtp: otp,
+                phoneOtpExpiry: otpExpiry,
+            }
+        });
+        await this.smsService.sendOtp(dto.phone, otp);
+        return {
+            message: 'OTP has been sent to your phone number via SMS.',
+            data: { phone: dto.phone }
+        };
+    }
+    async resetPasswordPhone(dto) {
+        const user = await this.prisma.user.findFirst({
+            where: { phone: dto.phone }
+        });
+        if (!user)
+            throw new common_1.NotFoundException('No account found with this phone number.');
+        if (!user.phoneOtp || user.phoneOtp !== dto.otp) {
+            throw new common_1.BadRequestException('Invalid OTP code. Please check and try again.');
+        }
+        if (!user.phoneOtpExpiry || user.phoneOtpExpiry < new Date()) {
+            throw new common_1.BadRequestException('OTP code has expired. Please request a new OTP.');
+        }
+        const hashed = await bcrypt.hash(dto.newPassword, 12);
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashed,
+                phoneOtp: null,
+                phoneOtpExpiry: null,
+                refreshToken: null,
+            }
+        });
+        return { message: 'Password reset successful! Please login with your new password.' };
+    }
     async changePassword(userId, dto) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!user?.password)
@@ -307,6 +442,7 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         jwt_1.JwtService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        sms_service_1.SmsService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

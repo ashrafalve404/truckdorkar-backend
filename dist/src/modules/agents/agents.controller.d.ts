@@ -178,8 +178,8 @@ export declare class AgentsController {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
-            amount: number;
             method: string;
+            amount: number;
             adminNote: string | null;
             bkashNumber: string;
         };
@@ -192,8 +192,8 @@ export declare class AgentsController {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
-            amount: number;
             method: string;
+            amount: number;
             adminNote: string | null;
             bkashNumber: string;
         }[];

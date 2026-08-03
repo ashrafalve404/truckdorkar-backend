@@ -200,10 +200,10 @@ export declare class DriversController {
                 createdAt: Date;
                 updatedAt: Date;
                 status: import("@prisma/client").$Enums.PaymentStatus;
+                method: string;
                 driverId: string;
                 amount: number;
                 transactionId: string;
-                method: string;
                 adminNote: string | null;
             }[];
             totalDue: number;
@@ -221,10 +221,10 @@ export declare class DriversController {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
+            method: string;
             driverId: string;
             amount: number;
             transactionId: string;
-            method: string;
             adminNote: string | null;
         };
     }>;

@@ -81,6 +81,7 @@ export class AdminService {
                     role: true,
                     createdAt: true,
                     isActive: true,
+                    isPhoneVerified: true,
                     driver: { select: { nidNumber: true } },
                     agent: { select: { nidNumber: true } }
                 },
@@ -88,6 +89,58 @@ export class AdminService {
             this.prisma.user.count(),
         ]);
         return { message: 'Users fetched', data: { users, total, page, limit } };
+    }
+
+    async createUser(dto: any) {
+        const { name, phone, email, password, role } = dto;
+
+        const phoneExists = await this.prisma.user.findUnique({ where: { phone } });
+        if (phoneExists) throw new ConflictException('Phone number is already registered.');
+
+        if (email && email.trim() !== '') {
+            const emailExists = await this.prisma.user.findUnique({ where: { email } });
+            if (emailExists) throw new ConflictException('Email is already registered.');
+        }
+
+        const hashed = await bcrypt.hash(password, 12);
+        const targetRole = (role as Role) || Role.USER;
+
+        const user = await this.prisma.user.create({
+            data: {
+                name,
+                phone,
+                email: (email && email.trim() !== '') ? email : null,
+                password: hashed,
+                role: targetRole,
+                isPhoneVerified: true, // Direct creation by Admin: NO OTP NEEDED!
+                isActive: true,
+                ...(targetRole === Role.DRIVER && {
+                    driver: {
+                        create: {
+                            status: DriverStatus.VERIFIED,
+                        }
+                    }
+                }),
+                ...(targetRole === Role.AGENT && {
+                    agent: {
+                        create: {
+                            agentId: `TDL-AGENT-${Math.floor(1000 + Math.random() * 9000)}-${Date.now().toString().slice(-4)}`
+                        }
+                    }
+                })
+            },
+            select: {
+                id: true,
+                name: true,
+                phone: true,
+                email: true,
+                role: true,
+                isPhoneVerified: true,
+                createdAt: true,
+            }
+        });
+
+        return { message: 'User created successfully from Admin Panel', data: user };
     }
 
     async toggleUserStatus(id: string, isActive: boolean) {

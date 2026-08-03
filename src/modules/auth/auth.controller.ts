@@ -3,7 +3,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, RefreshTokenDto, SocialLoginDto } from './dto/auth.dto';
+import {
+    RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto, RefreshTokenDto, SocialLoginDto,
+    VerifyPhoneOtpDto, ResendPhoneOtpDto, ForgotPasswordPhoneDto, ResetPasswordPhoneDto
+} from './dto/auth.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -21,6 +24,38 @@ export class AuthController {
     @ApiResponse({ status: 409, description: 'Email or phone already registered' })
     register(@Body() dto: RegisterDto) {
         return this.authService.register(dto);
+    }
+
+    @Public()
+    @Post('verify-phone-otp')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Verify registration OTP code' })
+    verifyPhoneOtp(@Body() dto: VerifyPhoneOtpDto) {
+        return this.authService.verifyPhoneOtp(dto);
+    }
+
+    @Public()
+    @Post('resend-registration-otp')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Resend registration OTP code via SMS' })
+    resendRegistrationOtp(@Body() dto: ResendPhoneOtpDto) {
+        return this.authService.resendPhoneOtp(dto);
+    }
+
+    @Public()
+    @Post('forgot-password-phone')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Request password reset OTP via SMS' })
+    forgotPasswordPhone(@Body() dto: ForgotPasswordPhoneDto) {
+        return this.authService.forgotPasswordPhone(dto);
+    }
+
+    @Public()
+    @Post('reset-password-phone')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Reset password using SMS OTP code' })
+    resetPasswordPhone(@Body() dto: ResetPasswordPhoneDto) {
+        return this.authService.resetPasswordPhone(dto);
     }
 
     @Public()

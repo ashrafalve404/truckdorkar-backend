@@ -33,3 +33,20 @@ export declare class RefreshTokenDto {
 export declare class SocialLoginDto {
     token: string;
 }
+export declare class VerifyPhoneOtpDto {
+    phone: string;
+    otp: string;
+    signupToken?: string;
+}
+export declare class ResendPhoneOtpDto {
+    phone: string;
+    signupToken?: string;
+}
+export declare class ForgotPasswordPhoneDto {
+    phone: string;
+}
+export declare class ResetPasswordPhoneDto {
+    phone: string;
+    otp: string;
+    newPassword: string;
+}

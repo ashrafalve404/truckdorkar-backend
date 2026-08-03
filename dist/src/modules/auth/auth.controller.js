@@ -28,6 +28,18 @@ let AuthController = class AuthController {
     register(dto) {
         return this.authService.register(dto);
     }
+    verifyPhoneOtp(dto) {
+        return this.authService.verifyPhoneOtp(dto);
+    }
+    resendRegistrationOtp(dto) {
+        return this.authService.resendPhoneOtp(dto);
+    }
+    forgotPasswordPhone(dto) {
+        return this.authService.forgotPasswordPhone(dto);
+    }
+    resetPasswordPhone(dto) {
+        return this.authService.resetPasswordPhone(dto);
+    }
     login(dto) {
         return this.authService.login(dto);
     }
@@ -65,6 +77,46 @@ __decorate([
     __metadata("design:paramtypes", [auth_dto_1.RegisterDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('verify-phone-otp'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Verify registration OTP code' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_dto_1.VerifyPhoneOtpDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "verifyPhoneOtp", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('resend-registration-otp'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Resend registration OTP code via SMS' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_dto_1.ResendPhoneOtpDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "resendRegistrationOtp", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('forgot-password-phone'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Request password reset OTP via SMS' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_dto_1.ForgotPasswordPhoneDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "forgotPasswordPhone", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('reset-password-phone'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Reset password using SMS OTP code' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_dto_1.ResetPasswordPhoneDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "resetPasswordPhone", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)('login'),

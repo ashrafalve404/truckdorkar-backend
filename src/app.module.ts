@@ -18,6 +18,7 @@ import { AgentsModule } from './modules/agents/agents.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StorageModule } from './modules/storage/storage.module';
+import { SmsModule } from './modules/sms/sms.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { StorageModule } from './modules/storage/storage.module';
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     PrismaModule,
     StorageModule,
+    SmsModule,
     AuthModule,
     UsersModule,
     DriversModule,

@@ -120,6 +120,7 @@ let AdminService = class AdminService {
                     role: true,
                     createdAt: true,
                     isActive: true,
+                    isPhoneVerified: true,
                     driver: { select: { nidNumber: true } },
                     agent: { select: { nidNumber: true } }
                 },
@@ -127,6 +128,54 @@ let AdminService = class AdminService {
             this.prisma.user.count(),
         ]);
         return { message: 'Users fetched', data: { users, total, page, limit } };
+    }
+    async createUser(dto) {
+        const { name, phone, email, password, role } = dto;
+        const phoneExists = await this.prisma.user.findUnique({ where: { phone } });
+        if (phoneExists)
+            throw new common_1.ConflictException('Phone number is already registered.');
+        if (email && email.trim() !== '') {
+            const emailExists = await this.prisma.user.findUnique({ where: { email } });
+            if (emailExists)
+                throw new common_1.ConflictException('Email is already registered.');
+        }
+        const hashed = await bcrypt.hash(password, 12);
+        const targetRole = role || client_1.Role.USER;
+        const user = await this.prisma.user.create({
+            data: {
+                name,
+                phone,
+                email: (email && email.trim() !== '') ? email : null,
+                password: hashed,
+                role: targetRole,
+                isPhoneVerified: true,
+                isActive: true,
+                ...(targetRole === client_1.Role.DRIVER && {
+                    driver: {
+                        create: {
+                            status: client_1.DriverStatus.VERIFIED,
+                        }
+                    }
+                }),
+                ...(targetRole === client_1.Role.AGENT && {
+                    agent: {
+                        create: {
+                            agentId: `TDL-AGENT-${Math.floor(1000 + Math.random() * 9000)}-${Date.now().toString().slice(-4)}`
+                        }
+                    }
+                })
+            },
+            select: {
+                id: true,
+                name: true,
+                phone: true,
+                email: true,
+                role: true,
+                isPhoneVerified: true,
+                createdAt: true,
+            }
+        });
+        return { message: 'User created successfully from Admin Panel', data: user };
     }
     async toggleUserStatus(id, isActive) {
         const user = await this.prisma.user.update({

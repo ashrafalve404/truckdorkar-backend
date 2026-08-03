@@ -11,8 +11,8 @@ export declare class ContactController {
             email: string | null;
             phone: string;
             name: string;
-            isRead: boolean;
             message: string;
+            isRead: boolean;
         };
     }>;
     findAll(page?: number, limit?: number): Promise<{
@@ -24,8 +24,8 @@ export declare class ContactController {
                 email: string | null;
                 phone: string;
                 name: string;
-                isRead: boolean;
                 message: string;
+                isRead: boolean;
             }[];
             total: number;
             page: number;
@@ -40,8 +40,8 @@ export declare class ContactController {
             email: string | null;
             phone: string;
             name: string;
-            isRead: boolean;
             message: string;
+            isRead: boolean;
         };
     }>;
 }

@@ -9,10 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminChangePasswordDto = exports.CreateAdminDto = exports.UpdateSettingsDto = exports.TruckFareDto = void 0;
+exports.CreateUserByAdminDto = exports.AdminChangePasswordDto = exports.CreateAdminDto = exports.UpdateSettingsDto = exports.TruckFareDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
+const client_1 = require("@prisma/client");
 class TruckFareDto {
     id;
     nameEn;
@@ -134,4 +135,38 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], AdminChangePasswordDto.prototype, "newPassword", void 0);
+class CreateUserByAdminDto {
+    name;
+    phone;
+    email;
+    password;
+    role;
+}
+exports.CreateUserByAdminDto = CreateUserByAdminDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Rahim Uddin' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserByAdminDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '01826110036' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserByAdminDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'user@example.com', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], CreateUserByAdminDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Password123' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserByAdminDto.prototype, "password", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'USER', description: 'USER, DRIVER, AGENT, ADMIN' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserByAdminDto.prototype, "role", void 0);
 //# sourceMappingURL=admin.dto.js.map

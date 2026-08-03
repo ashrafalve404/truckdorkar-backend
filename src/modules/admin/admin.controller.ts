@@ -5,7 +5,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { AdminService } from './admin.service';
 import { Role } from '@prisma/client';
-import { UpdateSettingsDto, CreateAdminDto, AdminChangePasswordDto } from './dto/admin.dto';
+import { UpdateSettingsDto, CreateAdminDto, AdminChangePasswordDto, CreateUserByAdminDto } from './dto/admin.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('admin')
@@ -26,6 +26,12 @@ export class AdminController {
     @ApiOperation({ summary: 'List all users in the system' })
     getAllUsers(@Query('page') page?: number, @Query('limit') limit?: number) {
         return this.adminService.getAllUsers(page, limit);
+    }
+
+    @Post('users')
+    @ApiOperation({ summary: 'Create a new user directly from Admin Panel (No OTP required)' })
+    createUser(@Body() dto: CreateUserByAdminDto) {
+        return this.adminService.createUser(dto);
     }
 
     @Patch('users/:id/status')

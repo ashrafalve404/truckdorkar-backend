@@ -107,3 +107,50 @@ export class SocialLoginDto {
     @IsString()
     token: string;
 }
+
+export class VerifyPhoneOtpDto {
+    @ApiProperty({ example: '01826110036' })
+    @IsString()
+    phone: string;
+
+    @ApiProperty({ example: '123456' })
+    @IsString()
+    otp: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    signupToken?: string;
+}
+
+export class ResendPhoneOtpDto {
+    @ApiProperty({ example: '01826110036' })
+    @IsString()
+    phone: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    signupToken?: string;
+}
+
+export class ForgotPasswordPhoneDto {
+    @ApiProperty({ example: '01826110036' })
+    @IsString()
+    phone: string;
+}
+
+export class ResetPasswordPhoneDto {
+    @ApiProperty({ example: '01826110036' })
+    @IsString()
+    phone: string;
+
+    @ApiProperty({ example: '123456' })
+    @IsString()
+    otp: string;
+
+    @ApiProperty({ minLength: 6 })
+    @IsString()
+    @MinLength(6)
+    newPassword: string;
+}

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SocialLoginDto = exports.RefreshTokenDto = exports.ChangePasswordDto = exports.ResetPasswordDto = exports.ForgotPasswordDto = exports.LoginDto = exports.RegisterDto = void 0;
+exports.ResetPasswordPhoneDto = exports.ForgotPasswordPhoneDto = exports.ResendPhoneOtpDto = exports.VerifyPhoneOtpDto = exports.SocialLoginDto = exports.RefreshTokenDto = exports.ChangePasswordDto = exports.ResetPasswordDto = exports.ForgotPasswordDto = exports.LoginDto = exports.RegisterDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 const client_1 = require("@prisma/client");
@@ -165,4 +165,73 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SocialLoginDto.prototype, "token", void 0);
+class VerifyPhoneOtpDto {
+    phone;
+    otp;
+    signupToken;
+}
+exports.VerifyPhoneOtpDto = VerifyPhoneOtpDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '01826110036' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], VerifyPhoneOtpDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123456' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], VerifyPhoneOtpDto.prototype, "otp", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], VerifyPhoneOtpDto.prototype, "signupToken", void 0);
+class ResendPhoneOtpDto {
+    phone;
+    signupToken;
+}
+exports.ResendPhoneOtpDto = ResendPhoneOtpDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '01826110036' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ResendPhoneOtpDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ResendPhoneOtpDto.prototype, "signupToken", void 0);
+class ForgotPasswordPhoneDto {
+    phone;
+}
+exports.ForgotPasswordPhoneDto = ForgotPasswordPhoneDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '01826110036' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ForgotPasswordPhoneDto.prototype, "phone", void 0);
+class ResetPasswordPhoneDto {
+    phone;
+    otp;
+    newPassword;
+}
+exports.ResetPasswordPhoneDto = ResetPasswordPhoneDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '01826110036' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ResetPasswordPhoneDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123456' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ResetPasswordPhoneDto.prototype, "otp", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ minLength: 6 }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(6),
+    __metadata("design:type", String)
+], ResetPasswordPhoneDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=auth.dto.js.map
