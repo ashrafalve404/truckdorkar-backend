@@ -71,8 +71,8 @@ let AgentsService = class AgentsService {
             agent = await this.prisma.agent.update({
                 where: { id: agent.id },
                 data: {
-                    walletBalance: { increment: 25 },
-                    totalEarnings: { increment: 25 },
+                    walletBalance: { increment: 200 },
+                    totalEarnings: { increment: 200 },
                     lastDailyBonusAt: now,
                 }
             });
