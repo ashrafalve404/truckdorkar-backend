@@ -28,5 +28,5 @@ COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 3001
 
-# Sync DB schema and start server
-CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/src/main"]
+# Sync DB schema with --accept-data-loss flag and start server
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss --skip-generate && node dist/src/main"]

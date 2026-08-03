@@ -13,12 +13,12 @@ export class BookingsService {
     ) { }
     async calculateMinFare(truckType: string | null | undefined, distanceKm: number): Promise<number> {
         const fallbacks = [
-            { id: "T1_OPEN_7_9FT", minFare10km: 1000, farePerKm: 50 },
-            { id: "T1_COVER_7_9FT", minFare10km: 1000, farePerKm: 50 },
-            { id: "T1_5_OPEN_10_12FT", minFare10km: 1500, farePerKm: 60 },
-            { id: "T1_5_COVER_10_12FT", minFare10km: 1500, farePerKm: 60 },
-            { id: "T3_OPEN_16_14FT", minFare10km: 3000, farePerKm: 75 },
-            { id: "T3_COVER_16_14FT", minFare10km: 3000, farePerKm: 75 }
+            { id: "T1_OPEN_7FT", minFare10km: 1000, farePerKm: 50 },
+            { id: "T1_COVER_7FT", minFare10km: 1000, farePerKm: 50 },
+            { id: "T1_OPEN_9FT", minFare10km: 1200, farePerKm: 55 },
+            { id: "T1_COVER_9FT", minFare10km: 1200, farePerKm: 55 },
+            { id: "T1_5_OPEN_12FT", minFare10km: 1500, farePerKm: 60 },
+            { id: "T1_5_COVER_12FT", minFare10km: 1500, farePerKm: 60 }
         ];
 
         const settings = await this.prisma.cmsContent.findUnique({

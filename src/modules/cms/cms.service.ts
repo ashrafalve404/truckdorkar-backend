@@ -10,18 +10,27 @@ export class CmsService {
         const content = await this.prisma.cmsContent.findUnique({ where: { key } });
         if (key === 'SYSTEM_SETTINGS') {
             const defaultFares = [
-                { id: "T1_OPEN_7_9FT", nameEn: "1 Ton Open 7/9 Ft Truck", nameBn: "১ টন খোলা ৭/৯ ফিট ট্রাক", minFare10km: 1000, capacityTon: 1.0, lengthFt: 9.0, farePerKm: 50, isActive: true },
-                { id: "T1_COVER_7_9FT", nameEn: "1 Ton Cover 7/9 Ft Truck", nameBn: "১ টন কাভার ৭/৯ ফিট ট্রাক", minFare10km: 1000, capacityTon: 1.0, lengthFt: 9.0, farePerKm: 50, isActive: true },
-                { id: "T1_5_OPEN_10_12FT", nameEn: "1.5 Ton Open 10/12 Ft Truck", nameBn: "১.৫ টন খোলা ১০/১২ ফিট ট্রাক", minFare10km: 1500, capacityTon: 1.5, lengthFt: 12.0, farePerKm: 60, isActive: true },
-                { id: "T1_5_COVER_10_12FT", nameEn: "1.5 Ton Cover 10/12 Ft Truck", nameBn: "১.৫ টন কাভার ১০/১২ ফিট ট্রাক", minFare10km: 1500, capacityTon: 1.5, lengthFt: 12.0, farePerKm: 60, isActive: true },
-                { id: "T3_OPEN_16_14FT", nameEn: "3 Ton Open 14/16 Ft Truck", nameBn: "৩ টন খোলা ১৪/১৬ ফিট ট্রাক", minFare10km: 3000, capacityTon: 3.0, lengthFt: 16.0, farePerKm: 75, isActive: true },
-                { id: "T3_COVER_16_14FT", nameEn: "3 Ton Cover 14/16 Ft Truck", nameBn: "৩ টন কাভার ১৪/১৬ ফিট ট্রাক", minFare10km: 3000, capacityTon: 3.0, lengthFt: 16.0, farePerKm: 75, isActive: true }
+                { id: "T1_OPEN_7FT", nameEn: "1 Ton Open 7 Ft Truck", nameBn: "১ টন খোলা ৭ ফিট ট্রাক", minFare10km: 1000, capacityTon: 1.0, lengthFt: 7.0, farePerKm: 50, isActive: true },
+                { id: "T1_COVER_7FT", nameEn: "1 Ton Cover 7 Ft Truck", nameBn: "১ টন কাভার ৭ ফিট ট্রাক", minFare10km: 1000, capacityTon: 1.0, lengthFt: 7.0, farePerKm: 50, isActive: true },
+                { id: "T1_OPEN_9FT", nameEn: "1 Ton Open 9 Ft Truck", nameBn: "১ টন খোলা ৯ ফিট ট্রাক", minFare10km: 1200, capacityTon: 1.0, lengthFt: 9.0, farePerKm: 55, isActive: true },
+                { id: "T1_COVER_9FT", nameEn: "1 Ton Cover 9 Ft Truck", nameBn: "১ টন কাভার ৯ ফিট ট্রাক", minFare10km: 1200, capacityTon: 1.0, lengthFt: 9.0, farePerKm: 55, isActive: true },
+                { id: "T1_5_OPEN_12FT", nameEn: "1.5 Ton Open 12 Ft Truck", nameBn: "১.৫ টন খোলা ১২ ফিট ট্রাক", minFare10km: 1500, capacityTon: 1.5, lengthFt: 12.0, farePerKm: 60, isActive: true },
+                { id: "T1_5_COVER_12FT", nameEn: "1.5 Ton Cover 12 Ft Truck", nameBn: "১.৫ টন কাভার ১২ ফিট ট্রাক", minFare10km: 1500, capacityTon: 1.5, lengthFt: 12.0, farePerKm: 60, isActive: true }
             ];
             const meta = content?.metaJson && typeof content.metaJson === 'object'
                 ? { ...(content.metaJson as Record<string, any>) }
                 : {};
-            if (!meta.truckFares || !Array.isArray(meta.truckFares)) {
+            const hasLegacyId = Array.isArray(meta.truckFares) && meta.truckFares.some((f: any) =>
+                f.id.includes('7_9FT') || f.id.includes('16_14FT') || f.id.includes('10_12FT') || f.nameEn?.includes('7/9') || f.nameEn?.includes('14/16')
+            );
+            if (!meta.truckFares || !Array.isArray(meta.truckFares) || hasLegacyId) {
                 meta.truckFares = defaultFares;
+                // Auto update DB so old settings are cleared
+                await this.prisma.cmsContent.upsert({
+                    where: { key: 'SYSTEM_SETTINGS' },
+                    update: { metaJson: meta },
+                    create: { key: 'SYSTEM_SETTINGS', metaJson: meta, titleEn: 'System Settings' }
+                });
             }
             return {
                 message: 'Content fetched',

@@ -35,6 +35,12 @@ enum BookingType {
 }
 
 enum TruckCategory {
+  T1_OPEN_7FT
+  T1_COVER_7FT
+  T1_OPEN_9FT
+  T1_COVER_9FT
+  T1_5_OPEN_12FT
+  T1_5_COVER_12FT
   T1_OPEN_7_9FT
   T1_COVER_7_9FT
   T1_5_OPEN_10_12FT

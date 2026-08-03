@@ -20,17 +20,17 @@ function getEnumCategory(categoryStr) {
     }
     if (upper.includes('COVER')) {
         if (upper.includes('1.5') || upper.includes('1_5'))
-            return client_1.TruckCategory.T1_5_COVER_10_12FT;
-        if (upper.includes('3') || upper.includes('3TON'))
-            return client_1.TruckCategory.T3_COVER_16_14FT;
-        return client_1.TruckCategory.T1_COVER_7_9FT;
+            return client_1.TruckCategory.T1_5_COVER_12FT;
+        if (upper.includes('9'))
+            return client_1.TruckCategory.T1_COVER_9FT;
+        return client_1.TruckCategory.T1_COVER_7FT;
     }
     else {
         if (upper.includes('1.5') || upper.includes('1_5'))
-            return client_1.TruckCategory.T1_5_OPEN_10_12FT;
-        if (upper.includes('3') || upper.includes('3TON'))
-            return client_1.TruckCategory.T3_OPEN_16_14FT;
-        return client_1.TruckCategory.T1_OPEN_7_9FT;
+            return client_1.TruckCategory.T1_5_OPEN_12FT;
+        if (upper.includes('9'))
+            return client_1.TruckCategory.T1_OPEN_9FT;
+        return client_1.TruckCategory.T1_OPEN_7FT;
     }
 }
 let TrucksService = class TrucksService {

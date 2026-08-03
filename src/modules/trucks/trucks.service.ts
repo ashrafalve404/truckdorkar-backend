@@ -9,13 +9,13 @@ function getEnumCategory(categoryStr: string): TruckCategory {
         return upper as TruckCategory;
     }
     if (upper.includes('COVER')) {
-        if (upper.includes('1.5') || upper.includes('1_5')) return TruckCategory.T1_5_COVER_10_12FT;
-        if (upper.includes('3') || upper.includes('3TON')) return TruckCategory.T3_COVER_16_14FT;
-        return TruckCategory.T1_COVER_7_9FT;
+        if (upper.includes('1.5') || upper.includes('1_5')) return TruckCategory.T1_5_COVER_12FT;
+        if (upper.includes('9')) return TruckCategory.T1_COVER_9FT;
+        return TruckCategory.T1_COVER_7FT;
     } else {
-        if (upper.includes('1.5') || upper.includes('1_5')) return TruckCategory.T1_5_OPEN_10_12FT;
-        if (upper.includes('3') || upper.includes('3TON')) return TruckCategory.T3_OPEN_16_14FT;
-        return TruckCategory.T1_OPEN_7_9FT;
+        if (upper.includes('1.5') || upper.includes('1_5')) return TruckCategory.T1_5_OPEN_12FT;
+        if (upper.includes('9')) return TruckCategory.T1_OPEN_9FT;
+        return TruckCategory.T1_OPEN_7FT;
     }
 }
 
