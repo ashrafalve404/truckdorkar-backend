@@ -18,6 +18,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install OpenSSL for Prisma engine in Alpine
+RUN apk add --no-cache openssl
+
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
@@ -25,5 +28,5 @@ COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 3001
 
-# Run prisma migration and then start the server
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main"]
+# Sync DB schema and start server
+CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/src/main"]
