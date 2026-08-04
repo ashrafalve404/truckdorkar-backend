@@ -25,20 +25,15 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // CORS configuration
-  const allowedOrigins = [
-    frontendUrl,
-    'https://truckdorkar.com',
-    'https://www.truckdorkar.com',
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-  ];
-
   app.enableCors({
-    origin: true,
+    origin: [
+      'https://truckdorkar.com',
+      'https://www.truckdorkar.com',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
+    ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'Access-Control-Allow-Origin'],
   });
 
   // Global prefix
