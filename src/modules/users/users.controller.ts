@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Post, Delete, Body, Param, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Delete, Body, Param, UseGuards, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -35,6 +35,9 @@ export class UsersController {
     @ApiConsumes('multipart/form-data')
     @UseInterceptors(FileInterceptor('avatar'))
     async uploadAvatar(@CurrentUser('id') userId: string, @UploadedFile() file: Express.Multer.File) {
+        if (!file) {
+            throw new BadRequestException('Please select an image file to upload.');
+        }
         const url = await this.storageService.save(file, 'avatars');
         return this.usersService.updateAvatar(userId, url);
     }
