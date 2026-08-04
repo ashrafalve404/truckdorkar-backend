@@ -1,18 +1,32 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: truckdorkar-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: truckuser
+      POSTGRES_PASSWORD: truckpassword123
+      POSTGRES_DB: truckdorkardb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   api:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: truckdorkar-api
     ports:
-      - "3001:3001"
+      - "3002:3001"
     env_file:
       - .env
     environment:
       - NODE_ENV=production
+    depends_on:
+      - postgres
     volumes:
       - uploads_data:/app/uploads
     restart: always
 
 volumes:
+  postgres_data:
   uploads_data:
