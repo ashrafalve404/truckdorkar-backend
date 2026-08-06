@@ -82,8 +82,53 @@ export class AdminService {
                     createdAt: true,
                     isActive: true,
                     isPhoneVerified: true,
-                    driver: { select: { nidNumber: true } },
-                    agent: { select: { nidNumber: true } }
+                    driver: {
+                        select: {
+                            id: true,
+                            nidNumber: true,
+                            nidFront: true,
+                            nidBack: true,
+                            licenseNumber: true,
+                            licenseFront: true,
+                            licenseBack: true,
+                            licenseExpiry: true,
+                            experience: true,
+                            totalTrips: true,
+                            rating: true,
+                            totalEarnings: true,
+                            paidCommission: true,
+                            status: true,
+                            isAvailable: true,
+                            trucks: { select: { id: true, registrationNo: true, category: true, capacityTon: true, status: true } }
+                        }
+                    },
+                    agent: {
+                        select: {
+                            id: true,
+                            agentId: true,
+                            nidNumber: true,
+                            nidFrontUrl: true,
+                            nidBackUrl: true,
+                            verificationStatus: true,
+                            department: true,
+                            designation: true,
+                            walletBalance: true,
+                            totalEarnings: true
+                        }
+                    },
+                    bookings: {
+                        take: 10,
+                        orderBy: { createdAt: 'desc' },
+                        select: {
+                            id: true,
+                            bookingNumber: true,
+                            pickupAddress: true,
+                            dropAddress: true,
+                            status: true,
+                            estimatedFare: true,
+                            createdAt: true
+                        }
+                    }
                 },
             }),
             this.prisma.user.count(),
