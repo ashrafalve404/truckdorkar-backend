@@ -37,6 +37,7 @@ let SmsService = SmsService_1 = class SmsService {
         const message = `Your TruckDorkar OTP code is ${otp}. Valid for 5 minutes. Do not share it with anyone.`;
         try {
             this.logger.log(`Sending SMS OTP to ${formattedPhone} via BulkSMS BD...`);
+            this.logger.log(`🔑 [DEV MODE OTP CODE]: ${otp} (for ${formattedPhone})`);
             const url = new URL(baseUrl);
             url.searchParams.append('api_key', apiKey);
             url.searchParams.append('type', 'text');

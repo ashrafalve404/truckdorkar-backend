@@ -61,6 +61,13 @@ export class DriversController {
         return this.driversService.getEarnings(userId);
     }
 
+    @Get('referral-stats')
+    @Roles(Role.DRIVER)
+    @ApiOperation({ summary: 'Get driver referral statistics and 5% commission logs' })
+    getReferralStats(@CurrentUser('id') userId: string) {
+        return this.driversService.getReferralStats(userId);
+    }
+
     @Get('bookings')
     @Roles(Role.DRIVER)
     @ApiOperation({ summary: "Get driver's bookings" })

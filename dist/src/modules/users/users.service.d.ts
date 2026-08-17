@@ -51,11 +51,14 @@ export declare class UsersService {
                 totalTrips: number;
                 rating: number;
                 paidCommission: number;
+                referralCode: string | null;
+                referralEarnings: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                referredById: string | null;
             } | null;
             addresses: {
                 id: string;

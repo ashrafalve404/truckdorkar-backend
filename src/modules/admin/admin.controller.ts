@@ -52,6 +52,16 @@ export class AdminController {
         return this.adminService.getAllDrivers(page, limit);
     }
 
+    @Get('referrals')
+    @ApiOperation({ summary: 'Get platform-wide driver referral analytics & 5% payout logs' })
+    getReferralAnalytics(
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+        @Query('search') search?: string
+    ) {
+        return this.adminService.getReferralAnalytics(page ? Number(page) : 1, limit ? Number(limit) : 20, search);
+    }
+
     @Patch('drivers/:id/verify')
     @ApiOperation({ summary: 'Verify or reject a driver' })
     verifyDriver(@Param('id') id: string, @Body('status') status: string, @Body('note') note?: string) {

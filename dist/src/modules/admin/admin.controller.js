@@ -45,6 +45,9 @@ let AdminController = class AdminController {
     getAllDrivers(page, limit) {
         return this.adminService.getAllDrivers(page, limit);
     }
+    getReferralAnalytics(page, limit, search) {
+        return this.adminService.getReferralAnalytics(page ? Number(page) : 1, limit ? Number(limit) : 20, search);
+    }
     verifyDriver(id, status, note) {
         return this.adminService.verifyDriver(id, status, note);
     }
@@ -146,6 +149,16 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "getAllDrivers", null);
+__decorate([
+    (0, common_1.Get)('referrals'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get platform-wide driver referral analytics & 5% payout logs' }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('search')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "getReferralAnalytics", null);
 __decorate([
     (0, common_1.Patch)('drivers/:id/verify'),
     (0, swagger_1.ApiOperation)({ summary: 'Verify or reject a driver' }),

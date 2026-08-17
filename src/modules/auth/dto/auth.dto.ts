@@ -56,6 +56,11 @@ export class RegisterDto {
     @IsOptional()
     @IsString()
     dateOfBirth?: string;
+
+    @ApiPropertyOptional({ example: 'DRV-A8B9C2' })
+    @IsOptional()
+    @IsString()
+    referralCode?: string;
 }
 
 export class LoginDto {

@@ -17,7 +17,6 @@ export declare class TrucksService {
             description: string | null;
             year: number | null;
             driverId: string;
-            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -31,6 +30,7 @@ export declare class TrucksService {
             make: string | null;
             model: string | null;
             color: string | null;
+            truckType: string | null;
             approvalNote: string | null;
             registeredByAgentId: string | null;
         };
@@ -64,7 +64,6 @@ export declare class TrucksService {
             description: string | null;
             year: number | null;
             driverId: string;
-            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -78,6 +77,7 @@ export declare class TrucksService {
             make: string | null;
             model: string | null;
             color: string | null;
+            truckType: string | null;
             approvalNote: string | null;
             registeredByAgentId: string | null;
         })[];
@@ -114,11 +114,14 @@ export declare class TrucksService {
                     totalTrips: number;
                     rating: number;
                     paidCommission: number;
+                    referralCode: string | null;
+                    referralEarnings: number;
                     status: import("@prisma/client").$Enums.DriverStatus;
                     isAvailable: boolean;
                     currentLat: number | null;
                     currentLng: number | null;
                     verificationNote: string | null;
+                    referredById: string | null;
                 };
                 images: {
                     id: string;
@@ -138,7 +141,6 @@ export declare class TrucksService {
                 description: string | null;
                 year: number | null;
                 driverId: string;
-                truckType: string | null;
                 registrationNo: string;
                 numberPlateText: string | null;
                 roadPermitUrl: string | null;
@@ -152,6 +154,7 @@ export declare class TrucksService {
                 make: string | null;
                 model: string | null;
                 color: string | null;
+                truckType: string | null;
                 approvalNote: string | null;
                 registeredByAgentId: string | null;
             })[];
@@ -187,11 +190,14 @@ export declare class TrucksService {
                 totalTrips: number;
                 rating: number;
                 paidCommission: number;
+                referralCode: string | null;
+                referralEarnings: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                referredById: string | null;
             };
             images: {
                 id: string;
@@ -219,7 +225,6 @@ export declare class TrucksService {
             description: string | null;
             year: number | null;
             driverId: string;
-            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -233,6 +238,7 @@ export declare class TrucksService {
             make: string | null;
             model: string | null;
             color: string | null;
+            truckType: string | null;
             approvalNote: string | null;
             registeredByAgentId: string | null;
         };
@@ -250,7 +256,6 @@ export declare class TrucksService {
             description: string | null;
             year: number | null;
             driverId: string;
-            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -264,6 +269,7 @@ export declare class TrucksService {
             make: string | null;
             model: string | null;
             color: string | null;
+            truckType: string | null;
             approvalNote: string | null;
             registeredByAgentId: string | null;
         };
@@ -294,7 +300,6 @@ export declare class TrucksService {
             description: string | null;
             year: number | null;
             driverId: string;
-            truckType: string | null;
             registrationNo: string;
             numberPlateText: string | null;
             roadPermitUrl: string | null;
@@ -308,6 +313,7 @@ export declare class TrucksService {
             make: string | null;
             model: string | null;
             color: string | null;
+            truckType: string | null;
             approvalNote: string | null;
             registeredByAgentId: string | null;
         };

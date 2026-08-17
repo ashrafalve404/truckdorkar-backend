@@ -211,13 +211,15 @@ export class AdminService {
 
     async getAllDrivers(page: number = 1, limit: number = 20) {
         const [drivers, total] = await Promise.all([
-            this.prisma.driver.findMany({
+            (this.prisma.driver as any).findMany({
                 skip: (page - 1) * limit,
                 take: limit,
                 orderBy: { createdAt: 'desc' },
                 include: {
                     user: { select: { id: true, name: true, phone: true, email: true, avatar: true, isActive: true } },
                     trucks: { select: { id: true, name: true, registrationNo: true, category: true, status: true, capacityTon: true, lengthFt: true } },
+                    referredBy: { select: { id: true, referralCode: true, user: { select: { name: true, phone: true } } } },
+                    _count: { select: { referrals: true } },
                     bookings: {
                         select: {
                             id: true,
@@ -248,6 +250,104 @@ export class AdminService {
         });
 
         return { message: 'Drivers fetched', data: { drivers: driversWithBalance, total, page, limit } };
+    }
+
+    async getReferralAnalytics(page: number = 1, limit: number = 20, search?: string) {
+        const [totalReferralPayoutsAgg, totalReferredDrivers, totalReferrers, topReferrer] = await Promise.all([
+            (this.prisma as any).driverReferralLog.aggregate({
+                _sum: { commissionAmount: true }
+            }),
+            (this.prisma.driver as any).count({
+                where: { referredById: { not: null } }
+            }),
+            (this.prisma.driver as any).count({
+                where: { referralEarnings: { gt: 0 } }
+            }),
+            (this.prisma.driver as any).findFirst({
+                where: { referralEarnings: { gt: 0 } },
+                orderBy: { referralEarnings: 'desc' },
+                include: { user: { select: { name: true, phone: true } } }
+            })
+        ]);
+
+        const totalPayouts = totalReferralPayoutsAgg._sum?.commissionAmount || 0;
+
+        // Top referrers leaderboard
+        const topReferrers = await (this.prisma.driver as any).findMany({
+            where: { referrals: { some: {} } },
+            include: {
+                user: { select: { name: true, phone: true } },
+                _count: { select: { referrals: true } }
+            },
+            orderBy: { referralEarnings: 'desc' },
+            take: 50
+        });
+
+        // Commission Logs
+        const logWhere: any = {};
+        if (search && search.trim() !== '') {
+            const query = search.trim();
+            logWhere.OR = [
+                { bookingId: { contains: query, mode: 'insensitive' } },
+                { referrer: { user: { name: { contains: query, mode: 'insensitive' } } } },
+                { referrer: { user: { phone: { contains: query, mode: 'insensitive' } } } },
+                { referredDriver: { user: { name: { contains: query, mode: 'insensitive' } } } },
+                { referredDriver: { user: { phone: { contains: query, mode: 'insensitive' } } } },
+            ];
+        }
+
+        const [logs, totalLogs] = await Promise.all([
+            (this.prisma as any).driverReferralLog.findMany({
+                where: logWhere,
+                skip: (page - 1) * limit,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    referrer: { include: { user: { select: { name: true, phone: true } } } },
+                    referredDriver: { include: { user: { select: { name: true, phone: true } } } }
+                }
+            }),
+            (this.prisma as any).driverReferralLog.count({ where: logWhere })
+        ]);
+
+        return {
+            message: 'Referral analytics fetched',
+            data: {
+                summary: {
+                    totalPayouts,
+                    totalReferredDrivers,
+                    totalReferrers,
+                    topReferrer: topReferrer ? {
+                        name: topReferrer.user?.name || 'Driver',
+                        phone: topReferrer.user?.phone || '',
+                        referralCode: topReferrer.referralCode,
+                        referralEarnings: topReferrer.referralEarnings
+                    } : null
+                },
+                topReferrers: (topReferrers as any[]).map(d => ({
+                    id: d.id,
+                    name: d.user?.name || 'Driver',
+                    phone: d.user?.phone || '',
+                    referralCode: d.referralCode,
+                    totalReferred: d._count?.referrals || 0,
+                    referralEarnings: d.referralEarnings || 0
+                })),
+                logs: (logs as any[]).map(log => ({
+                    id: log.id,
+                    bookingId: log.bookingId,
+                    tripFare: log.tripFare,
+                    commissionAmount: log.commissionAmount,
+                    createdAt: log.createdAt,
+                    referrerName: log.referrer?.user?.name || 'Referrer',
+                    referrerPhone: log.referrer?.user?.phone || '',
+                    referredDriverName: log.referredDriver?.user?.name || 'Referred Driver',
+                    referredDriverPhone: log.referredDriver?.user?.phone || ''
+                })),
+                totalLogs,
+                page,
+                limit
+            }
+        };
     }
 
     async getPendingCommissionPayments() {

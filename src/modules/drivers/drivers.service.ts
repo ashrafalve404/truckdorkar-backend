@@ -59,7 +59,7 @@ export class DriversService {
     }
 
     async getEarnings(userId: string) {
-        const driver = await this.prisma.driver.findUnique({ where: { userId }, select: { totalEarnings: true, totalTrips: true, rating: true } });
+        const driver = await this.prisma.driver.findUnique({ where: { userId }, select: { totalEarnings: true, totalTrips: true, rating: true, referralEarnings: true } as any });
         if (!driver) throw new NotFoundException('Driver not found');
         const recentBookings = await this.prisma.booking.findMany({
             where: { driver: { userId }, status: 'COMPLETED' },
@@ -68,6 +68,78 @@ export class DriversService {
             orderBy: { createdAt: 'desc' },
         });
         return { message: 'Earnings fetched', data: { ...driver, recentBookings } };
+    }
+
+    async getReferralStats(userId: string) {
+        let driver: any = await this.prisma.driver.findUnique({
+            where: { userId },
+            include: { user: { select: { name: true, phone: true } } },
+        });
+        if (!driver) throw new NotFoundException('Driver not found');
+
+        const driverId = driver.id;
+
+        // Auto-generate referralCode if driver didn't have one
+        if (!driver.referralCode) {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let randomStr = '';
+            for (let i = 0; i < 6; i++) {
+                randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            const referralCode = `DRV-${randomStr}`;
+            driver = await this.prisma.driver.update({
+                where: { id: driverId },
+                data: { referralCode } as any,
+                include: { user: { select: { name: true, phone: true } } },
+            });
+        }
+
+        const [referredDrivers, referralLogs] = await Promise.all([
+            this.prisma.driver.findMany({
+                where: { referredById: driverId } as any,
+                include: {
+                    user: { select: { name: true, phone: true, createdAt: true } },
+                    trucks: { select: { registrationNo: true } }
+                },
+                orderBy: { createdAt: 'desc' }
+            }),
+            (this.prisma as any).driverReferralLog.findMany({
+                where: { referrerId: driverId },
+                include: {
+                    referredDriver: {
+                        include: { user: { select: { name: true, phone: true } } }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 100
+            })
+        ]);
+
+        return {
+            message: 'Referral stats fetched',
+            data: {
+                referralCode: driver.referralCode || '',
+                referralEarnings: driver.referralEarnings || 0,
+                totalReferredCount: (referredDrivers as any[]).length,
+                referredDrivers: (referredDrivers as any[]).map(d => ({
+                    id: d.id,
+                    name: d.user?.name || 'Driver',
+                    phone: d.user?.phone || '',
+                    totalTrips: d.totalTrips,
+                    status: d.status,
+                    createdAt: d.user?.createdAt || d.createdAt,
+                })),
+                referralLogs: (referralLogs as any[]).map(log => ({
+                    id: log.id,
+                    bookingId: log.bookingId,
+                    tripFare: log.tripFare,
+                    commissionAmount: log.commissionAmount,
+                    referredDriverName: log.referredDriver?.user?.name || 'Driver',
+                    referredDriverPhone: log.referredDriver?.user?.phone || '',
+                    createdAt: log.createdAt,
+                }))
+            }
+        };
     }
 
     async getDriverBookings(userId: string) {

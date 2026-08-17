@@ -25,7 +25,6 @@ export declare class DriversService {
                 description: string | null;
                 year: number | null;
                 driverId: string;
-                truckType: string | null;
                 registrationNo: string;
                 numberPlateText: string | null;
                 roadPermitUrl: string | null;
@@ -39,6 +38,7 @@ export declare class DriversService {
                 make: string | null;
                 model: string | null;
                 color: string | null;
+                truckType: string | null;
                 approvalNote: string | null;
                 registeredByAgentId: string | null;
             }[];
@@ -60,11 +60,14 @@ export declare class DriversService {
             totalTrips: number;
             rating: number;
             paidCommission: number;
+            referralCode: string | null;
+            referralEarnings: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
+            referredById: string | null;
         };
     }>;
     updateProfile(userId: string, dto: UpdateDriverProfileDto): Promise<{
@@ -94,11 +97,14 @@ export declare class DriversService {
             totalTrips: number;
             rating: number;
             paidCommission: number;
+            referralCode: string | null;
+            referralEarnings: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
+            referredById: string | null;
         };
     }>;
     uploadDocument(userId: string, type: string, url: string): Promise<{
@@ -121,11 +127,14 @@ export declare class DriversService {
             totalTrips: number;
             rating: number;
             paidCommission: number;
+            referralCode: string | null;
+            referralEarnings: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
+            referredById: string | null;
         };
     }>;
     setAvailability(userId: string, isAvailable: boolean, lat?: number, lng?: number): Promise<{
@@ -145,9 +154,31 @@ export declare class DriversService {
                 finalFare: number | null;
                 distance: number | null;
             }[];
-            totalEarnings: number;
-            totalTrips: number;
-            rating: number;
+        };
+    }>;
+    getReferralStats(userId: string): Promise<{
+        message: string;
+        data: {
+            referralCode: any;
+            referralEarnings: any;
+            totalReferredCount: number;
+            referredDrivers: {
+                id: any;
+                name: any;
+                phone: any;
+                totalTrips: any;
+                status: any;
+                createdAt: any;
+            }[];
+            referralLogs: {
+                id: any;
+                bookingId: any;
+                tripFare: any;
+                commissionAmount: any;
+                referredDriverName: any;
+                referredDriverPhone: any;
+                createdAt: any;
+            }[];
         };
     }>;
     getDriverBookings(userId: string): Promise<{
@@ -168,8 +199,9 @@ export declare class DriversService {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -177,7 +209,6 @@ export declare class DriversService {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -228,11 +259,14 @@ export declare class DriversService {
                 totalTrips: number;
                 rating: number;
                 paidCommission: number;
+                referralCode: string | null;
+                referralEarnings: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                referredById: string | null;
             })[];
             total: number;
             page: number;
@@ -259,11 +293,14 @@ export declare class DriversService {
             totalTrips: number;
             rating: number;
             paidCommission: number;
+            referralCode: string | null;
+            referralEarnings: number;
             status: import("@prisma/client").$Enums.DriverStatus;
             isAvailable: boolean;
             currentLat: number | null;
             currentLng: number | null;
             verificationNote: string | null;
+            referredById: string | null;
         };
     }>;
     submitCommissionPayment(userId: string, amount: number, transactionId: string): Promise<{

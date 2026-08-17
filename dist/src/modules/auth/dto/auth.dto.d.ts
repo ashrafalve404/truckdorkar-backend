@@ -11,6 +11,7 @@ export declare class RegisterDto {
     agentId?: string;
     nidNumber?: string;
     dateOfBirth?: string;
+    referralCode?: string;
 }
 export declare class LoginDto {
     identifier: string;

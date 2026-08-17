@@ -121,8 +121,53 @@ let AdminService = class AdminService {
                     createdAt: true,
                     isActive: true,
                     isPhoneVerified: true,
-                    driver: { select: { nidNumber: true } },
-                    agent: { select: { nidNumber: true } }
+                    driver: {
+                        select: {
+                            id: true,
+                            nidNumber: true,
+                            nidFront: true,
+                            nidBack: true,
+                            licenseNumber: true,
+                            licenseFront: true,
+                            licenseBack: true,
+                            licenseExpiry: true,
+                            experience: true,
+                            totalTrips: true,
+                            rating: true,
+                            totalEarnings: true,
+                            paidCommission: true,
+                            status: true,
+                            isAvailable: true,
+                            trucks: { select: { id: true, registrationNo: true, category: true, capacityTon: true, status: true } }
+                        }
+                    },
+                    agent: {
+                        select: {
+                            id: true,
+                            agentId: true,
+                            nidNumber: true,
+                            nidFrontUrl: true,
+                            nidBackUrl: true,
+                            verificationStatus: true,
+                            department: true,
+                            designation: true,
+                            walletBalance: true,
+                            totalEarnings: true
+                        }
+                    },
+                    bookings: {
+                        take: 10,
+                        orderBy: { createdAt: 'desc' },
+                        select: {
+                            id: true,
+                            bookingNumber: true,
+                            pickupAddress: true,
+                            dropAddress: true,
+                            status: true,
+                            estimatedFare: true,
+                            createdAt: true
+                        }
+                    }
                 },
             }),
             this.prisma.user.count(),
@@ -205,6 +250,8 @@ let AdminService = class AdminService {
                 include: {
                     user: { select: { id: true, name: true, phone: true, email: true, avatar: true, isActive: true } },
                     trucks: { select: { id: true, name: true, registrationNo: true, category: true, status: true, capacityTon: true, lengthFt: true } },
+                    referredBy: { select: { id: true, referralCode: true, user: { select: { name: true, phone: true } } } },
+                    _count: { select: { referrals: true } },
                     bookings: {
                         select: {
                             id: true,
@@ -233,6 +280,96 @@ let AdminService = class AdminService {
             };
         });
         return { message: 'Drivers fetched', data: { drivers: driversWithBalance, total, page, limit } };
+    }
+    async getReferralAnalytics(page = 1, limit = 20, search) {
+        const [totalReferralPayoutsAgg, totalReferredDrivers, totalReferrers, topReferrer] = await Promise.all([
+            this.prisma.driverReferralLog.aggregate({
+                _sum: { commissionAmount: true }
+            }),
+            this.prisma.driver.count({
+                where: { referredById: { not: null } }
+            }),
+            this.prisma.driver.count({
+                where: { referralEarnings: { gt: 0 } }
+            }),
+            this.prisma.driver.findFirst({
+                where: { referralEarnings: { gt: 0 } },
+                orderBy: { referralEarnings: 'desc' },
+                include: { user: { select: { name: true, phone: true } } }
+            })
+        ]);
+        const totalPayouts = totalReferralPayoutsAgg._sum?.commissionAmount || 0;
+        const topReferrers = await this.prisma.driver.findMany({
+            where: { referrals: { some: {} } },
+            include: {
+                user: { select: { name: true, phone: true } },
+                _count: { select: { referrals: true } }
+            },
+            orderBy: { referralEarnings: 'desc' },
+            take: 50
+        });
+        const logWhere = {};
+        if (search && search.trim() !== '') {
+            const query = search.trim();
+            logWhere.OR = [
+                { bookingId: { contains: query, mode: 'insensitive' } },
+                { referrer: { user: { name: { contains: query, mode: 'insensitive' } } } },
+                { referrer: { user: { phone: { contains: query, mode: 'insensitive' } } } },
+                { referredDriver: { user: { name: { contains: query, mode: 'insensitive' } } } },
+                { referredDriver: { user: { phone: { contains: query, mode: 'insensitive' } } } },
+            ];
+        }
+        const [logs, totalLogs] = await Promise.all([
+            this.prisma.driverReferralLog.findMany({
+                where: logWhere,
+                skip: (page - 1) * limit,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    referrer: { include: { user: { select: { name: true, phone: true } } } },
+                    referredDriver: { include: { user: { select: { name: true, phone: true } } } }
+                }
+            }),
+            this.prisma.driverReferralLog.count({ where: logWhere })
+        ]);
+        return {
+            message: 'Referral analytics fetched',
+            data: {
+                summary: {
+                    totalPayouts,
+                    totalReferredDrivers,
+                    totalReferrers,
+                    topReferrer: topReferrer ? {
+                        name: topReferrer.user?.name || 'Driver',
+                        phone: topReferrer.user?.phone || '',
+                        referralCode: topReferrer.referralCode,
+                        referralEarnings: topReferrer.referralEarnings
+                    } : null
+                },
+                topReferrers: topReferrers.map(d => ({
+                    id: d.id,
+                    name: d.user?.name || 'Driver',
+                    phone: d.user?.phone || '',
+                    referralCode: d.referralCode,
+                    totalReferred: d._count?.referrals || 0,
+                    referralEarnings: d.referralEarnings || 0
+                })),
+                logs: logs.map(log => ({
+                    id: log.id,
+                    bookingId: log.bookingId,
+                    tripFare: log.tripFare,
+                    commissionAmount: log.commissionAmount,
+                    createdAt: log.createdAt,
+                    referrerName: log.referrer?.user?.name || 'Referrer',
+                    referrerPhone: log.referrer?.user?.phone || '',
+                    referredDriverName: log.referredDriver?.user?.name || 'Referred Driver',
+                    referredDriverPhone: log.referredDriver?.user?.phone || ''
+                })),
+                totalLogs,
+                page,
+                limit
+            }
+        };
     }
     async getPendingCommissionPayments() {
         return this.prisma.commissionPayment.findMany({

@@ -176,6 +176,9 @@ model Driver {
   rating             Float        @default(0)
   totalEarnings      Float        @default(0)
   paidCommission     Float        @default(0)
+  referralCode       String?      @unique
+  referredById       String?
+  referralEarnings   Float        @default(0)
   status             DriverStatus @default(PENDING)
   isAvailable        Boolean      @default(false)
   currentLat         Float?
@@ -185,14 +188,20 @@ model Driver {
   updatedAt          DateTime     @updatedAt
   deletedAt          DateTime?
 
-  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trucks  Truck[]
-  bookings Booking[]
-  quotations Quotation[]
-  reviews  Review[]  @relation("DriverReviews")
-  commissionPayments CommissionPayment[]
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trucks              Truck[]
+  bookings            Booking[]
+  quotations          Quotation[]
+  reviews             Review[]  @relation("DriverReviews")
+  commissionPayments  CommissionPayment[]
+  referredBy          Driver?   @relation("DriverReferrals", fields: [referredById], references: [id])
+  referrals           Driver[]  @relation("DriverReferrals")
+  referrerLogs        DriverReferralLog[] @relation("ReferrerLogs")
+  referredLogs        DriverReferralLog[] @relation("ReferredDriverLogs")
 
   @@index([status])
+  @@index([referralCode])
+  @@index([referredById])
   @@map("drivers")
 }
 
@@ -216,6 +225,23 @@ model CommissionPayment {
   driver          Driver        @relation(fields: [driverId], references: [id])
 
   @@map("commission_payments")
+}
+
+model DriverReferralLog {
+  id                String   @id @default(cuid())
+  referrerId        String
+  referredDriverId  String
+  bookingId         String
+  tripFare          Float
+  commissionAmount  Float
+  createdAt         DateTime @default(now())
+
+  referrer        Driver  @relation("ReferrerLogs", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredDriver  Driver  @relation("ReferredDriverLogs", fields: [referredDriverId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId])
+  @@index([referredDriverId])
+  @@map("driver_referral_logs")
 }
 
 // ─── Agent ───────────────────────────────────────────────────────────────

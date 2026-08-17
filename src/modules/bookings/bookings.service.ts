@@ -331,6 +331,7 @@ export class BookingsService {
         let agentCommission: number | undefined = undefined;
         let companyCommission: number | undefined = undefined;
         let driverEarnings: number | undefined = undefined;
+        let referralCommission = 0;
 
         if (status === BookingStatus.COMPLETED) {
             const fare = booking.finalFare || booking.estimatedFare || 0;
@@ -344,6 +345,11 @@ export class BookingsService {
             // Agent gets 20% of the company's 10% cut — ONLY if truck was registered by an agent
             if (booking.truck?.registeredByAgentId) {
                 agentCommission = Math.round(companyCommission * 0.20 * 100) / 100;
+            }
+
+            // Referrer Driver gets 5% of trip fare (paid out of Company's 10% cut)
+            if (driver.referredById) {
+                referralCommission = Math.round(fare * 0.05 * 100) / 100;
             }
         }
 
@@ -376,6 +382,45 @@ export class BookingsService {
                         where: { id: currentBooking.truck.registeredByAgentId },
                         data: { totalEarnings: { increment: agentCommission } }
                     });
+                }
+
+                // 3. Update Referrer Driver earnings if driver was referred by another driver
+                if (referralCommission > 0 && driver.referredById) {
+                    await tx.driver.update({
+                        where: { id: driver.referredById },
+                        data: {
+                            referralEarnings: { increment: referralCommission },
+                            totalEarnings: { increment: referralCommission }
+                        }
+                    });
+
+                    // Create Referral Log
+                    await tx.driverReferralLog.create({
+                        data: {
+                            referrerId: driver.referredById,
+                            referredDriverId: driver.id,
+                            bookingId,
+                            tripFare: booking.finalFare || booking.estimatedFare || 0,
+                            commissionAmount: referralCommission,
+                        }
+                    });
+
+                    // Send Notification to Referrer
+                    const referrerDriver = await tx.driver.findUnique({
+                        where: { id: driver.referredById },
+                        select: { userId: true }
+                    });
+                    if (referrerDriver) {
+                        await tx.notification.create({
+                            data: {
+                                userId: referrerDriver.userId,
+                                type: 'PAYMENT',
+                                title: '🎉 Referral Bonus Received!',
+                                body: `You earned ৳${referralCommission} (5% referral bonus) from a completed trip by a driver you referred!`,
+                                data: { bookingId, fare: booking.finalFare || booking.estimatedFare || 0, referralCommission }
+                            }
+                        });
+                    }
                 }
             }
             return currentBooking;

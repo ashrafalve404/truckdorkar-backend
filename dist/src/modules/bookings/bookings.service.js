@@ -302,12 +302,16 @@ let BookingsService = class BookingsService {
         let agentCommission = undefined;
         let companyCommission = undefined;
         let driverEarnings = undefined;
+        let referralCommission = 0;
         if (status === client_1.BookingStatus.COMPLETED) {
             const fare = booking.finalFare || booking.estimatedFare || 0;
             companyCommission = Math.round(fare * 0.10 * 100) / 100;
             driverEarnings = Math.round((fare - companyCommission) * 100) / 100;
             if (booking.truck?.registeredByAgentId) {
                 agentCommission = Math.round(companyCommission * 0.20 * 100) / 100;
+            }
+            if (driver.referredById) {
+                referralCommission = Math.round(fare * 0.05 * 100) / 100;
             }
         }
         const updated = await this.prisma.$transaction(async (tx) => {
@@ -335,6 +339,39 @@ let BookingsService = class BookingsService {
                         where: { id: currentBooking.truck.registeredByAgentId },
                         data: { totalEarnings: { increment: agentCommission } }
                     });
+                }
+                if (referralCommission > 0 && driver.referredById) {
+                    await tx.driver.update({
+                        where: { id: driver.referredById },
+                        data: {
+                            referralEarnings: { increment: referralCommission },
+                            totalEarnings: { increment: referralCommission }
+                        }
+                    });
+                    await tx.driverReferralLog.create({
+                        data: {
+                            referrerId: driver.referredById,
+                            referredDriverId: driver.id,
+                            bookingId,
+                            tripFare: booking.finalFare || booking.estimatedFare || 0,
+                            commissionAmount: referralCommission,
+                        }
+                    });
+                    const referrerDriver = await tx.driver.findUnique({
+                        where: { id: driver.referredById },
+                        select: { userId: true }
+                    });
+                    if (referrerDriver) {
+                        await tx.notification.create({
+                            data: {
+                                userId: referrerDriver.userId,
+                                type: 'PAYMENT',
+                                title: '🎉 Referral Bonus Received!',
+                                body: `You earned ৳${referralCommission} (5% referral bonus) from a completed trip by a driver you referred!`,
+                                data: { bookingId, fare: booking.finalFare || booking.estimatedFare || 0, referralCommission }
+                            }
+                        });
+                    }
                 }
             }
             return currentBooking;

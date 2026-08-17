@@ -22,8 +22,9 @@ export declare class BookingsController {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -31,7 +32,6 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -84,8 +84,9 @@ export declare class BookingsController {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -93,7 +94,6 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -143,11 +143,14 @@ export declare class BookingsController {
                 totalTrips: number;
                 rating: number;
                 paidCommission: number;
+                referralCode: string | null;
+                referralEarnings: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                referredById: string | null;
             }) | null;
             quotations: ({
                 driver: {
@@ -173,11 +176,14 @@ export declare class BookingsController {
                     totalTrips: number;
                     rating: number;
                     paidCommission: number;
+                    referralCode: string | null;
+                    referralEarnings: number;
                     status: import("@prisma/client").$Enums.DriverStatus;
                     isAvailable: boolean;
                     currentLat: number | null;
                     currentLng: number | null;
                     verificationNote: string | null;
+                    referredById: string | null;
                 };
             } & {
                 id: string;
@@ -186,8 +192,8 @@ export declare class BookingsController {
                 status: import("@prisma/client").$Enums.QuotationStatus;
                 note: string | null;
                 driverId: string;
-                amount: number;
                 bookingId: string;
+                amount: number;
                 expiresAt: Date | null;
             })[];
             truck: ({
@@ -209,7 +215,6 @@ export declare class BookingsController {
                 description: string | null;
                 year: number | null;
                 driverId: string;
-                truckType: string | null;
                 registrationNo: string;
                 numberPlateText: string | null;
                 roadPermitUrl: string | null;
@@ -223,6 +228,7 @@ export declare class BookingsController {
                 make: string | null;
                 model: string | null;
                 color: string | null;
+                truckType: string | null;
                 approvalNote: string | null;
                 registeredByAgentId: string | null;
             }) | null;
@@ -252,8 +258,9 @@ export declare class BookingsController {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -261,7 +268,6 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -286,8 +292,9 @@ export declare class BookingsController {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -295,7 +302,6 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -320,8 +326,9 @@ export declare class BookingsController {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -329,7 +336,6 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -354,8 +360,9 @@ export declare class BookingsController {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -363,7 +370,6 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -392,7 +398,6 @@ export declare class BookingsController {
                 description: string | null;
                 year: number | null;
                 driverId: string;
-                truckType: string | null;
                 registrationNo: string;
                 numberPlateText: string | null;
                 roadPermitUrl: string | null;
@@ -406,6 +411,7 @@ export declare class BookingsController {
                 make: string | null;
                 model: string | null;
                 color: string | null;
+                truckType: string | null;
                 approvalNote: string | null;
                 registeredByAgentId: string | null;
             } | null;
@@ -417,8 +423,9 @@ export declare class BookingsController {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -426,7 +433,6 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;
@@ -464,8 +470,9 @@ export declare class BookingsController {
             deletedAt: Date | null;
             status: import("@prisma/client").$Enums.BookingStatus;
             type: import("@prisma/client").$Enums.BookingType;
-            bookingNumber: string;
             driverId: string | null;
+            truckType: string | null;
+            bookingNumber: string;
             truckId: string | null;
             pickupAddress: string;
             pickupLat: number | null;
@@ -473,7 +480,6 @@ export declare class BookingsController {
             dropAddress: string;
             dropLat: number | null;
             dropLng: number | null;
-            truckType: string | null;
             scheduledAt: Date | null;
             goodsType: string | null;
             goodsWeight: number | null;

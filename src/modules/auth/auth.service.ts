@@ -43,7 +43,7 @@ export class AuthService implements OnModuleInit {
     // ─── Register ────────────────────────────────────────────────────────────
 
     async register(dto: RegisterDto) {
-        const { name, email, phone, password, role, licenseNumber, experience } = dto;
+        const { name, email, phone, password, role, licenseNumber, experience, referralCode } = dto;
 
         // Check uniqueness for existing database users
         if (email && email.trim() !== '') {
@@ -71,6 +71,7 @@ export class AuthService implements OnModuleInit {
                 role: safeRole,
                 licenseNumber,
                 experience: experience ? Number(experience) : undefined,
+                referralCode,
                 otp,
             },
             {
@@ -125,6 +126,28 @@ export class AuthService implements OnModuleInit {
         const phoneExists = await this.prisma.user.findUnique({ where: { phone: payload.phone } });
         if (phoneExists) throw new ConflictException('Phone number is already registered.');
 
+        // Find referrer if referral code provided
+        let referredById: string | undefined = undefined;
+        if (payload.role === Role.DRIVER && payload.referralCode) {
+            const referrer = await this.prisma.driver.findFirst({
+                where: { referralCode: payload.referralCode.trim().toUpperCase() }
+            });
+            if (referrer) {
+                referredById = referrer.id;
+            }
+        }
+
+        // Generate unique referral code for the new driver
+        let newDriverReferralCode: string | undefined = undefined;
+        if (payload.role === Role.DRIVER) {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let randomStr = '';
+            for (let i = 0; i < 6; i++) {
+                randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            newDriverReferralCode = `DRV-${randomStr}`;
+        }
+
         // NOW CREATE USER IN DATABASE ONLY AFTER SUCCESSFUL OTP VERIFICATION!
         const user = await this.prisma.user.create({
             data: {
@@ -140,6 +163,8 @@ export class AuthService implements OnModuleInit {
                         create: {
                             licenseNumber: payload.licenseNumber,
                             experience: payload.experience,
+                            referralCode: newDriverReferralCode,
+                            referredById,
                         }
                     }
                 })

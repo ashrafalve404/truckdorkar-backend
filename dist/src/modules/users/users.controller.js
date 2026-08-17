@@ -16,6 +16,7 @@ exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 const users_service_1 = require("./users.service");
@@ -36,6 +37,9 @@ let UsersController = class UsersController {
         return this.usersService.updateProfile(userId, dto);
     }
     async uploadAvatar(userId, file) {
+        if (!file) {
+            throw new common_1.BadRequestException('Please select an image file to upload.');
+        }
         const url = await this.storageService.save(file, 'avatars');
         return this.usersService.updateAvatar(userId, url);
     }
@@ -77,7 +81,7 @@ __decorate([
     (0, common_1.Post)('profile/avatar'),
     (0, swagger_1.ApiOperation)({ summary: 'Upload profile avatar' }),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('avatar')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('avatar', { storage: (0, multer_1.memoryStorage)() })),
     __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),

@@ -12,8 +12,8 @@ export declare class QuotationsService {
             status: import("@prisma/client").$Enums.QuotationStatus;
             note: string | null;
             driverId: string;
-            amount: number;
             bookingId: string;
+            amount: number;
             expiresAt: Date | null;
         };
     }>;
@@ -44,11 +44,14 @@ export declare class QuotationsService {
                 totalTrips: number;
                 rating: number;
                 paidCommission: number;
+                referralCode: string | null;
+                referralEarnings: number;
                 status: import("@prisma/client").$Enums.DriverStatus;
                 isAvailable: boolean;
                 currentLat: number | null;
                 currentLng: number | null;
                 verificationNote: string | null;
+                referredById: string | null;
             };
         } & {
             id: string;
@@ -57,8 +60,8 @@ export declare class QuotationsService {
             status: import("@prisma/client").$Enums.QuotationStatus;
             note: string | null;
             driverId: string;
-            amount: number;
             bookingId: string;
+            amount: number;
             expiresAt: Date | null;
         })[];
     }>;

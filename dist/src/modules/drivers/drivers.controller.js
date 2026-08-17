@@ -47,6 +47,9 @@ let DriversController = class DriversController {
     getEarnings(userId) {
         return this.driversService.getEarnings(userId);
     }
+    getReferralStats(userId) {
+        return this.driversService.getReferralStats(userId);
+    }
     getBookings(userId) {
         return this.driversService.getDriverBookings(userId);
     }
@@ -114,6 +117,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DriversController.prototype, "getEarnings", null);
+__decorate([
+    (0, common_1.Get)('referral-stats'),
+    (0, roles_decorator_1.Roles)(client_1.Role.DRIVER),
+    (0, swagger_1.ApiOperation)({ summary: 'Get driver referral statistics and 5% commission logs' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DriversController.prototype, "getReferralStats", null);
 __decorate([
     (0, common_1.Get)('bookings'),
     (0, roles_decorator_1.Roles)(client_1.Role.DRIVER),

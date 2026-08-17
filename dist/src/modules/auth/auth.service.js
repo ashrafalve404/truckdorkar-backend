@@ -80,7 +80,7 @@ let AuthService = class AuthService {
         return `TDL-AGENT-${random}-${Date.now().toString().slice(-4)}`;
     }
     async register(dto) {
-        const { name, email, phone, password, role, licenseNumber, experience } = dto;
+        const { name, email, phone, password, role, licenseNumber, experience, referralCode } = dto;
         if (email && email.trim() !== '') {
             const emailExists = await this.prisma.user.findUnique({ where: { email } });
             if (emailExists)
@@ -100,6 +100,7 @@ let AuthService = class AuthService {
             role: safeRole,
             licenseNumber,
             experience: experience ? Number(experience) : undefined,
+            referralCode,
             otp,
         }, {
             secret: this.config.get('JWT_ACCESS_SECRET'),
@@ -140,6 +141,24 @@ let AuthService = class AuthService {
         const phoneExists = await this.prisma.user.findUnique({ where: { phone: payload.phone } });
         if (phoneExists)
             throw new common_1.ConflictException('Phone number is already registered.');
+        let referredById = undefined;
+        if (payload.role === client_1.Role.DRIVER && payload.referralCode) {
+            const referrer = await this.prisma.driver.findFirst({
+                where: { referralCode: payload.referralCode.trim().toUpperCase() }
+            });
+            if (referrer) {
+                referredById = referrer.id;
+            }
+        }
+        let newDriverReferralCode = undefined;
+        if (payload.role === client_1.Role.DRIVER) {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let randomStr = '';
+            for (let i = 0; i < 6; i++) {
+                randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            newDriverReferralCode = `DRV-${randomStr}`;
+        }
         const user = await this.prisma.user.create({
             data: {
                 name: payload.name,
@@ -154,6 +173,8 @@ let AuthService = class AuthService {
                         create: {
                             licenseNumber: payload.licenseNumber,
                             experience: payload.experience,
+                            referralCode: newDriverReferralCode,
+                            referredById,
                         }
                     }
                 })

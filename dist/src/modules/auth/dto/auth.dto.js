@@ -25,6 +25,7 @@ class RegisterDto {
     agentId;
     nidNumber;
     dateOfBirth;
+    referralCode;
 }
 exports.RegisterDto = RegisterDto;
 __decorate([
@@ -91,6 +92,12 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'DRV-A8B9C2' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "referralCode", void 0);
 class LoginDto {
     identifier;
     password;

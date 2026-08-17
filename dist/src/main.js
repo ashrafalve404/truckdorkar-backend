@@ -58,10 +58,14 @@ async function bootstrap() {
     }));
     app.use((0, cookie_parser_1.default)());
     app.enableCors({
-        origin: [frontendUrl, 'http://localhost:3000', 'http://localhost:3001'],
+        origin: [
+            'https://truckdorkar.com',
+            'https://www.truckdorkar.com',
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://localhost:3002',
+        ],
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     });
     app.setGlobalPrefix(apiPrefix);
     app.enableVersioning({ type: common_1.VersioningType.URI });
