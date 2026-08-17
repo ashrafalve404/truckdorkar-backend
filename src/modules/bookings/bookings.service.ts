@@ -348,7 +348,7 @@ export class BookingsService {
             }
 
             // Referrer Driver gets 5% of trip fare (paid out of Company's 10% cut)
-            if (driver.referredById) {
+            if ((driver as any).referredById) {
                 referralCommission = Math.round(fare * 0.05 * 100) / 100;
             }
         }
@@ -385,19 +385,20 @@ export class BookingsService {
                 }
 
                 // 3. Update Referrer Driver earnings if driver was referred by another driver
-                if (referralCommission > 0 && driver.referredById) {
+                const referrerDriverId = (driver as any).referredById;
+                if (referralCommission > 0 && referrerDriverId) {
                     await tx.driver.update({
-                        where: { id: driver.referredById },
+                        where: { id: referrerDriverId },
                         data: {
                             referralEarnings: { increment: referralCommission },
                             totalEarnings: { increment: referralCommission }
-                        }
+                        } as any
                     });
 
                     // Create Referral Log
-                    await tx.driverReferralLog.create({
+                    await (tx as any).driverReferralLog.create({
                         data: {
-                            referrerId: driver.referredById,
+                            referrerId: referrerDriverId,
                             referredDriverId: driver.id,
                             bookingId,
                             tripFare: booking.finalFare || booking.estimatedFare || 0,
@@ -407,7 +408,7 @@ export class BookingsService {
 
                     // Send Notification to Referrer
                     const referrerDriver = await tx.driver.findUnique({
-                        where: { id: driver.referredById },
+                        where: { id: referrerDriverId },
                         select: { userId: true }
                     });
                     if (referrerDriver) {
@@ -415,7 +416,7 @@ export class BookingsService {
                             data: {
                                 userId: referrerDriver.userId,
                                 type: 'PAYMENT',
-                                title: '🎉 Referral Bonus Received!',
+                                title: 'Referral Bonus Received!',
                                 body: `You earned ৳${referralCommission} (5% referral bonus) from a completed trip by a driver you referred!`,
                                 data: { bookingId, fare: booking.finalFare || booking.estimatedFare || 0, referralCommission }
                             }

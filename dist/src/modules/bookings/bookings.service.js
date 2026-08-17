@@ -340,9 +340,10 @@ let BookingsService = class BookingsService {
                         data: { totalEarnings: { increment: agentCommission } }
                     });
                 }
-                if (referralCommission > 0 && driver.referredById) {
+                const referrerDriverId = driver.referredById;
+                if (referralCommission > 0 && referrerDriverId) {
                     await tx.driver.update({
-                        where: { id: driver.referredById },
+                        where: { id: referrerDriverId },
                         data: {
                             referralEarnings: { increment: referralCommission },
                             totalEarnings: { increment: referralCommission }
@@ -350,7 +351,7 @@ let BookingsService = class BookingsService {
                     });
                     await tx.driverReferralLog.create({
                         data: {
-                            referrerId: driver.referredById,
+                            referrerId: referrerDriverId,
                             referredDriverId: driver.id,
                             bookingId,
                             tripFare: booking.finalFare || booking.estimatedFare || 0,
@@ -358,7 +359,7 @@ let BookingsService = class BookingsService {
                         }
                     });
                     const referrerDriver = await tx.driver.findUnique({
-                        where: { id: driver.referredById },
+                        where: { id: referrerDriverId },
                         select: { userId: true }
                     });
                     if (referrerDriver) {
@@ -366,7 +367,7 @@ let BookingsService = class BookingsService {
                             data: {
                                 userId: referrerDriver.userId,
                                 type: 'PAYMENT',
-                                title: '🎉 Referral Bonus Received!',
+                                title: 'Referral Bonus Received!',
                                 body: `You earned ৳${referralCommission} (5% referral bonus) from a completed trip by a driver you referred!`,
                                 data: { bookingId, fare: booking.finalFare || booking.estimatedFare || 0, referralCommission }
                             }
