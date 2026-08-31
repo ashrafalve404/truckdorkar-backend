@@ -132,6 +132,20 @@ let BookingsService = class BookingsService {
         catch (err) {
             console.error("Failed to send new booking notifications to drivers:", err);
         }
+        try {
+            const admins = await this.prisma.user.findMany({
+                where: { role: client_1.Role.ADMIN },
+                select: { id: true }
+            });
+            const fareFormatted = booking.estimatedFare ? `৳${booking.estimatedFare}` : `${minFare} TK`;
+            const truckTypeLabel = dto.truckType ? dto.truckType.replace(/_/g, ' ') : 'Truck';
+            for (const admin of admins) {
+                await this.notifications.create(admin.id, client_1.NotificationType.BOOKING, `New Booking Placed! (#${booking.bookingNumber})`, `New booking #${booking.bookingNumber} (${truckTypeLabel}) was placed. Pickup: ${dto.pickupAddress}, Drop: ${dto.dropAddress}. Est. Fare: ${fareFormatted}.`, { bookingId: booking.id, bookingNumber: booking.bookingNumber });
+            }
+        }
+        catch (err) {
+            console.error("Failed to send new booking notifications to admins:", err);
+        }
         return { message: 'Booking created successfully', data: booking };
     }
     async findAll(userId, role) {
