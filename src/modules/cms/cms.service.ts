@@ -68,6 +68,13 @@ export class CmsService {
         return { message: 'Banners fetched', data: banners };
     }
 
+    async getAllBannersAdmin() {
+        const banners = await this.prisma.banner.findMany({
+            orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+        });
+        return { message: 'All banners fetched', data: banners };
+    }
+
     async updateBanner(id: string, dto: Partial<CreateBannerDto>) {
         const banner = await this.prisma.banner.update({
             where: { id },
@@ -79,5 +86,10 @@ export class CmsService {
     async createBanner(dto: CreateBannerDto) {
         const banner = await this.prisma.banner.create({ data: dto });
         return { message: 'Banner created', data: banner };
+    }
+
+    async deleteBanner(id: string) {
+        await this.prisma.banner.delete({ where: { id } });
+        return { message: 'Banner deleted successfully' };
     }
 }
