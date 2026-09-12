@@ -86,7 +86,7 @@ export class BookingsService {
                 goodsWeight: dto.goodsWeight,
                 specialNote: dto.specialNote,
                 estimatedFare: dto.estimatedFare,
-                distance: dto.distance,
+                distance: distanceKm,
                 contactPhone: dto.contactPhone,
                 statusLogs: {
                     create: { status: BookingStatus.PENDING, note: 'Booking created' },
