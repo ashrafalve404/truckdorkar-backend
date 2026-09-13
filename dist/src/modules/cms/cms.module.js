@@ -10,11 +10,13 @@ exports.CmsModule = void 0;
 const common_1 = require("@nestjs/common");
 const cms_controller_1 = require("./cms.controller");
 const cms_service_1 = require("./cms.service");
+const storage_module_1 = require("../storage/storage.module");
 let CmsModule = class CmsModule {
 };
 exports.CmsModule = CmsModule;
 exports.CmsModule = CmsModule = __decorate([
     (0, common_1.Module)({
+        imports: [storage_module_1.StorageModule],
         controllers: [cms_controller_1.CmsController],
         providers: [cms_service_1.CmsService],
         exports: [cms_service_1.CmsService],

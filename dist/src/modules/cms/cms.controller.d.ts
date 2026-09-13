@@ -1,8 +1,10 @@
 import { CmsService } from './cms.service';
+import { StorageService } from '../storage/storage.service';
 import { UpdateCmsContentDto, CreateBannerDto } from './dto/cms.dto';
 export declare class CmsController {
     private readonly cmsService;
-    constructor(cmsService: CmsService);
+    private readonly storageService;
+    constructor(cmsService: CmsService, storageService: StorageService);
     getContent(key: string): Promise<{
         message: string;
         data: {
@@ -65,6 +67,38 @@ export declare class CmsController {
             sortOrder: number;
         }[];
     }>;
+    getAllBannersAdmin(): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            isActive: boolean;
+            titleEn: string;
+            titleBn: string | null;
+            imageUrl: string;
+            linkUrl: string | null;
+            sortOrder: number;
+        }[];
+    }>;
+    getAllBannersAll(): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            isActive: boolean;
+            titleEn: string;
+            titleBn: string | null;
+            imageUrl: string;
+            linkUrl: string | null;
+            sortOrder: number;
+        }[];
+    }>;
+    uploadBannerImage(file: Express.Multer.File): Promise<{
+        message: string;
+        url: string;
+    }>;
     createBanner(dto: CreateBannerDto): Promise<{
         message: string;
         data: {
@@ -92,5 +126,8 @@ export declare class CmsController {
             linkUrl: string | null;
             sortOrder: number;
         };
+    }>;
+    deleteBanner(id: string): Promise<{
+        message: string;
     }>;
 }

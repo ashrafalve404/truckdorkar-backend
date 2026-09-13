@@ -15,17 +15,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CmsController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../common/guards/roles.guard");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const public_decorator_1 = require("../../common/decorators/public.decorator");
 const cms_service_1 = require("./cms.service");
+const storage_service_1 = require("../storage/storage.service");
 const cms_dto_1 = require("./dto/cms.dto");
 const client_1 = require("@prisma/client");
 let CmsController = class CmsController {
     cmsService;
-    constructor(cmsService) {
+    storageService;
+    constructor(cmsService, storageService) {
         this.cmsService = cmsService;
+        this.storageService = storageService;
     }
     getContent(key) {
         return this.cmsService.getContent(key);
@@ -36,11 +41,27 @@ let CmsController = class CmsController {
     getBanners() {
         return this.cmsService.getBanners();
     }
+    getAllBannersAdmin() {
+        return this.cmsService.getAllBannersAdmin();
+    }
+    getAllBannersAll() {
+        return this.cmsService.getAllBannersAdmin();
+    }
+    async uploadBannerImage(file) {
+        if (!file) {
+            throw new common_1.BadRequestException('Please select an image file to upload.');
+        }
+        const url = await this.storageService.save(file, 'banners');
+        return { message: 'Image uploaded successfully', url };
+    }
     createBanner(dto) {
         return this.cmsService.createBanner(dto);
     }
     updateBanner(id, dto) {
         return this.cmsService.updateBanner(id, dto);
+    }
+    deleteBanner(id) {
+        return this.cmsService.deleteBanner(id);
     }
 };
 exports.CmsController = CmsController;
@@ -73,6 +94,36 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CmsController.prototype, "getBanners", null);
 __decorate([
+    (0, common_1.Get)('banners/admin'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Get all banners' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], CmsController.prototype, "getAllBannersAdmin", null);
+__decorate([
+    (0, common_1.Get)('banners/all'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Get all banners (alias)' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], CmsController.prototype, "getAllBannersAll", null);
+__decorate([
+    (0, common_1.Post)('banners/upload'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Upload banner image' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', { storage: (0, multer_1.memoryStorage)() })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CmsController.prototype, "uploadBannerImage", null);
+__decorate([
     (0, common_1.Post)('banners'),
     (0, swagger_1.ApiBearerAuth)('access-token'),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
@@ -93,10 +144,21 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], CmsController.prototype, "updateBanner", null);
+__decorate([
+    (0, common_1.Delete)('banners/:id'),
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Delete a banner' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], CmsController.prototype, "deleteBanner", null);
 exports.CmsController = CmsController = __decorate([
     (0, swagger_1.ApiTags)('cms'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, common_1.Controller)({ path: 'cms', version: '1' }),
-    __metadata("design:paramtypes", [cms_service_1.CmsService])
+    __metadata("design:paramtypes", [cms_service_1.CmsService,
+        storage_service_1.StorageService])
 ], CmsController);
 //# sourceMappingURL=cms.controller.js.map

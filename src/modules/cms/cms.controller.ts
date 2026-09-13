@@ -50,6 +50,14 @@ export class CmsController {
         return this.cmsService.getAllBannersAdmin();
     }
 
+    @Get('banners/all')
+    @ApiBearerAuth('access-token')
+    @Roles(Role.ADMIN)
+    @ApiOperation({ summary: '[Admin] Get all banners (alias)' })
+    getAllBannersAll() {
+        return this.cmsService.getAllBannersAdmin();
+    }
+
     @Post('banners/upload')
     @ApiBearerAuth('access-token')
     @Roles(Role.ADMIN)

@@ -90,7 +90,7 @@ let BookingsService = class BookingsService {
                 goodsWeight: dto.goodsWeight,
                 specialNote: dto.specialNote,
                 estimatedFare: dto.estimatedFare,
-                distance: dto.distance,
+                distance: distanceKm,
                 contactPhone: dto.contactPhone,
                 statusLogs: {
                     create: { status: client_1.BookingStatus.PENDING, note: 'Booking created' },

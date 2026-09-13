@@ -65,6 +65,20 @@ export declare class CmsService {
             sortOrder: number;
         }[];
     }>;
+    getAllBannersAdmin(): Promise<{
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            isActive: boolean;
+            titleEn: string;
+            titleBn: string | null;
+            imageUrl: string;
+            linkUrl: string | null;
+            sortOrder: number;
+        }[];
+    }>;
     updateBanner(id: string, dto: Partial<CreateBannerDto>): Promise<{
         message: string;
         data: {
@@ -92,5 +106,8 @@ export declare class CmsService {
             linkUrl: string | null;
             sortOrder: number;
         };
+    }>;
+    deleteBanner(id: string): Promise<{
+        message: string;
     }>;
 }
