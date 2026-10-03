@@ -66,7 +66,7 @@ export declare class AdminController {
             })[];
         };
     }>;
-    getAllUsers(page?: number, limit?: number): Promise<{
+    getAllUsers(page?: number, limit?: number, role?: string, search?: string, status?: string): Promise<{
         message: string;
         data: {
             users: {

@@ -67,7 +67,7 @@ export declare class AdminService {
             })[];
         };
     }>;
-    getAllUsers(page?: number, limit?: number): Promise<{
+    getAllUsers(page?: number, limit?: number, role?: string, search?: string, status?: string): Promise<{
         message: string;
         data: {
             users: {

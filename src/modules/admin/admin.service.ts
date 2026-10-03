@@ -66,9 +66,26 @@ export class AdminService {
         };
     }
 
-    async getAllUsers(page: number = 1, limit: number = 20) {
+    async getAllUsers(page: number = 1, limit: number = 500, role?: string, search?: string, status?: string) {
+        const where: any = {};
+        if (role && role !== 'ALL') {
+            where.role = role;
+        }
+        if (status && status !== 'ALL') {
+            where.isActive = status === 'ACTIVE';
+        }
+        if (search && search.trim()) {
+            const q = search.trim();
+            where.OR = [
+                { name: { contains: q, mode: 'insensitive' } },
+                { phone: { contains: q, mode: 'insensitive' } },
+                { email: { contains: q, mode: 'insensitive' } },
+            ];
+        }
+
         const [users, total] = await Promise.all([
             this.prisma.user.findMany({
+                where,
                 skip: (page - 1) * limit,
                 take: limit,
                 orderBy: { createdAt: 'desc' },
@@ -131,7 +148,7 @@ export class AdminService {
                     }
                 },
             }),
-            this.prisma.user.count(),
+            this.prisma.user.count({ where }),
         ]);
         return { message: 'Users fetched', data: { users, total, page, limit } };
     }

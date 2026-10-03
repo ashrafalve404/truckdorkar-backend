@@ -30,8 +30,8 @@ let AdminController = class AdminController {
     getStats() {
         return this.adminService.getDashboardStats();
     }
-    getAllUsers(page, limit) {
-        return this.adminService.getAllUsers(page, limit);
+    getAllUsers(page, limit, role, search, status) {
+        return this.adminService.getAllUsers(page ? Number(page) : 1, limit ? Number(limit) : 500, role, search, status);
     }
     createUser(dto) {
         return this.adminService.createUser(dto);
@@ -110,8 +110,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'List all users in the system' }),
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('role')),
+    __param(3, (0, common_1.Query)('search')),
+    __param(4, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:paramtypes", [Number, Number, String, String, String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "getAllUsers", null);
 __decorate([

@@ -24,8 +24,20 @@ export class AdminController {
 
     @Get('users')
     @ApiOperation({ summary: 'List all users in the system' })
-    getAllUsers(@Query('page') page?: number, @Query('limit') limit?: number) {
-        return this.adminService.getAllUsers(page, limit);
+    getAllUsers(
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+        @Query('role') role?: string,
+        @Query('search') search?: string,
+        @Query('status') status?: string,
+    ) {
+        return this.adminService.getAllUsers(
+            page ? Number(page) : 1,
+            limit ? Number(limit) : 500,
+            role,
+            search,
+            status,
+        );
     }
 
     @Post('users')
