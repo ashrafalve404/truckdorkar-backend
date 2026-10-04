@@ -302,6 +302,9 @@ export class BookingsService {
                 status: BookingStatus.ACCEPTED,
                 statusLogs: { create: { status: BookingStatus.ACCEPTED, note: `Driver accepted the booking with truck ${matchingTruck.name}` } },
             },
+            include: {
+                user: { select: { id: true, name: true, phone: true } }
+            }
         });
 
         // Send notification to user
